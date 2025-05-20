@@ -4,6 +4,8 @@ const cors = require("cors");
 require("dotenv").config();
 const apiCate = require("./router/apiCate");
 const apiAuth = require("./router/apiAuth");
+const apiRequest = require('./router/apiRequest')
+const apiStore = require('./router/apiStore')
 
 const hostname = process.env.HOSTNAME;
 const port = process.env.PORT;
@@ -25,6 +27,10 @@ mongoose
 app.use("/auth", apiAuth);
 
 app.use("/cate", apiCate);
+
+app.use('/request', apiRequest)
+
+app.use('/store', apiStore)
 
 app.listen(port, () => {
   console.log(`Server is running on http://${hostname}:${port}`);
