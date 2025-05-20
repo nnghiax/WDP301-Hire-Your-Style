@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 require("dotenv").config();
 const apiCate = require("./router/apiCate");
+const apiAuth = require("./router/apiAuth");
 
 const hostname = process.env.HOSTNAME;
 const port = process.env.PORT;
@@ -20,6 +21,8 @@ mongoose
   })
   .then(() => console.log("Connected to MongoDB successfully"))
   .catch((err) => console.error("MongoDB connection error:", err));
+
+app.use("/auth", apiAuth);
 
 app.use("/cate", apiCate);
 
