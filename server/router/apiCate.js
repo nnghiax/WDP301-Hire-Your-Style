@@ -1,28 +1,15 @@
-const router = require("express").Router();
-const middleware = require("../controller/middleware");
-const cateController = require("../controller/cateController");
+const router = require('express').Router()
+const middleware = require('../controller/middleware')
+const cateController = require('../controller/cateController')
 
-router.post(
-  "/create",
-  middleware.verifyToken,
-  middleware.verifyAdmin,
-  cateController.createCategory
-);
 
-router.get("/list", cateController.listCategory);
+router.post('/create', middleware.verifyToken, middleware.verifyAdmin, cateController.createCategory)
 
-router.put(
-  "/update/:cateId",
-  middleware.verifyToken,
-  middleware.verifyAdmin,
-  cateController.updateCategory
-);
+router.get('/list', cateController.listCategory)
 
-router.delete(
-  "/delete/:cateId",
-  middleware.verifyToken,
-  middleware.verifyAdmin,
-  cateController.deleteCategory
-);
+router.put('/update/:cateId', middleware.verifyToken, middleware.verifyAdmin, cateController.updateCategory)
 
-module.exports = router;
+router.delete('/delete/:cateId', middleware.verifyToken, middleware.verifyAdmin, cateController.deleteCategory)
+
+
+module.exports = router

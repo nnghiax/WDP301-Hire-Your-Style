@@ -37,7 +37,34 @@ const storeRequestController = {
 
     listStoreRequest: async (req, res) => {
         try {
-            const request = await StoreRequest.find()
+            const request = await StoreRequest.find().populate('userId')
+            const result = request.map((req) => {
+                return {
+                    _id: req._id,
+                    name: req.userId.name,
+                    email: req.userId.email,
+                    store: req.name,
+                    description: req.description,
+                    address: req.address,
+                    phone: req.phone,
+                    status: req.status,
+                    createdAt: req.createdAt
+                }
+            })
+            return res.status(200).json({data: result})
+        } catch (error) {
+            return res.status(500).json(error.message)
+        }
+    },
+
+
+    detailRequest: async (req, res) => {
+        try {
+            const requestId = req.params.requestId
+            const request = await StoreRequest.findById(requestId)
+            if(!request){
+                return res.status(404).json({message: 'Request not found'})
+            }
             return res.status(200).json({data: request})
         } catch (error) {
             return res.status(500).json(error.message)
@@ -93,6 +120,16 @@ const storeRequestController = {
             request.status = 'rejected'
             await request.save()
             return res.status(200).json({ message: 'Request rejected' })
+        } catch (error) {
+            return res.status(500).json(error.message)
+        }
+    },
+
+    deleteRequest: async (req, res) => {
+        try {
+            const requestId = req.params.requestId;
+            const request = await StoreRequest.findByIdAndDelete(requestId)
+            return res.status(200).json({message: 'Delete successfully'})
         } catch (error) {
             return res.status(500).json(error.message)
         }
