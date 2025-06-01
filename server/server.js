@@ -2,11 +2,13 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 require("dotenv").config();
-const apiCate = require("./router/apiCate");
 const apiAuth = require("./router/apiAuth");
+const apiCate = require("./router/apiCate");
 const apiRequest = require("./router/apiRequest");
 const apiStore = require("./router/apiStore");
 const apiProduct = require("./router/apiProduct");
+const apiCart = require("./router/apiCart");
+const apiUser = require("./router/apiUser");
 
 const hostname = process.env.HOSTNAME;
 const port = process.env.PORT;
@@ -25,15 +27,26 @@ mongoose
   .then(() => console.log("Connected to MongoDB successfully"))
   .catch((err) => console.error("MongoDB connection error:", err));
 
+// AUTHENTICATION
 app.use("/auth", apiAuth);
 
+// CATEGORY
 app.use("/cate", apiCate);
 
+// STORE REQUEST
 app.use("/request", apiRequest);
 
+// STORE
 app.use("/store", apiStore);
 
+// PRODUCT
 app.use("/product", apiProduct);
+
+// CART
+app.use("/cart", apiCart);
+
+// USER
+app.use("/user", apiUser);
 
 app.listen(port, () => {
   console.log(`Server is running on http://${hostname}:${port}`);

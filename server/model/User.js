@@ -1,15 +1,5 @@
 const mongoose = require('mongoose');
 
-const addressSchema = new mongoose.Schema({
-    street: String,
-    ward: String,
-    district: String,
-    city: String,
-    isDefault: {
-        type: Boolean,
-        default: false
-    }
-}, { _id: false });
 
 const userSchema = new mongoose.Schema({
     name: {
@@ -33,7 +23,12 @@ const userSchema = new mongoose.Schema({
         enum: ['customer', 'store_owner', 'admin'],
         default: 'customer'
     },
-    address: [addressSchema],
+    address: {
+        street: { type: String, required: true },
+        ward: { type: String, required: true },
+        district: { type: String, required: true },
+        city: { type: String, required: true }
+    },
     avatar: {
         type: String,
         default: 'https://res.cloudinary.com/dh4vnrtg5/image/upload/v1747473243/avatar_user_orcdde.jpg'

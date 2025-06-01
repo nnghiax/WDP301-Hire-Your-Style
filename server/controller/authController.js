@@ -61,7 +61,7 @@ const authController = {
                 return res.status(400).json({message: 'Email or password is incorrect'})
             }
 
-            const accessToken = await jwt.sign({userId: user._id, role: user.role}, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '1h'})
+            const accessToken = await jwt.sign({userId: user._id, role: user.role}, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '1d'})
             return res.status(200).json({message: 'Login successfully', user, accessToken})
         } catch (error) {
             return res.status(500).json(error.message)

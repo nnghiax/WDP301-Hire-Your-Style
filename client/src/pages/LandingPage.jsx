@@ -5,7 +5,7 @@ import SplashCursor from "../components/landing/SplashCursor";
 function LandingPage() {
   return (
     <>
-      <SplashCursor />
+      {/* <SplashCursor /> */}
       <TopbarNavbar />
       <BestSellers />
       {/* <Header />
