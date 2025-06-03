@@ -11,6 +11,7 @@ router.get('/detail/:proId', productController.detailProduct)
 
 router.put('/update/:proId', middleware.verifyToken, middleware.verifyOwner, uploadCloud.single('image'), productController.updateProduct)
 
+router.delete('/delete/:proId', productController.deleteProduct); 
 
 module.exports = router
 
