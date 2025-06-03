@@ -9,6 +9,7 @@ const apiStore = require("./router/apiStore");
 const apiProduct = require("./router/apiProduct");
 const apiCart = require("./router/apiCart");
 const apiUser = require("./router/apiUser");
+const apiRevenue = require("./router/apiRevenue");
 
 const hostname = process.env.HOSTNAME;
 const port = process.env.PORT;
@@ -47,6 +48,9 @@ app.use("/cart", apiCart);
 
 // USER
 app.use("/user", apiUser);
+
+// REVENUE
+app.use("/revenue", apiRevenue);
 
 app.listen(port, () => {
   console.log(`Server is running on http://${hostname}:${port}`);
