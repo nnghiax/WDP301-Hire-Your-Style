@@ -17,35 +17,38 @@ const Footer = () => {
               </h1>
             </a>
             <p>
-              Dolore erat dolor sit lorem vero amet. Sed sit lorem magna, ipsum
-              no sit erat lorem et magna ipsum dolore amet erat.
+              Chào mừng bạn đến với EShopper - nơi mua sắm trực tuyến uy tín tại
+              Việt Nam. Chúng tôi cam kết mang đến cho bạn trải nghiệm mua sắm
+              tốt nhất.
             </p>
             <p className="mb-2">
               <i className="fa fa-map-marker-alt text-primary mr-3"></i>
-              123 Street, New York, USA
+              123 Đường Lê Lợi, Quận 1, TP. Hồ Chí Minh, Việt Nam
             </p>
             <p className="mb-2">
               <i className="fa fa-envelope text-primary mr-3"></i>
-              info@example.com
+              lienhe@eshopper.vn
             </p>
             <p className="mb-0">
               <i className="fa fa-phone-alt text-primary mr-3"></i>
-              +012 345 67890
+              0901 234 567
             </p>
           </Col>
 
           <Col lg={8} md={12}>
             <Row>
               <Col md={4} className="mb-5">
-                <h5 className="font-weight-bold text-dark mb-4">Quick Links</h5>
+                <h5 className="font-weight-bold text-dark mb-4">
+                  Liên kết nhanh
+                </h5>
                 <div className="d-flex flex-column justify-content-start">
                   {[
-                    "Home",
-                    "Our Shop",
-                    "Shop Detail",
-                    "Shopping Cart",
-                    "Checkout",
-                    "Contact Us",
+                    "Trang chủ",
+                    "Cửa hàng",
+                    "Chi tiết sản phẩm",
+                    "Giỏ hàng",
+                    "Thanh toán",
+                    "Liên hệ",
                   ].map((item, idx) => (
                     <a key={idx} className="text-dark mb-2" href="#">
                       <i className="fa fa-angle-right mr-2"></i>
@@ -56,15 +59,17 @@ const Footer = () => {
               </Col>
 
               <Col md={4} className="mb-5">
-                <h5 className="font-weight-bold text-dark mb-4">Quick Links</h5>
+                <h5 className="font-weight-bold text-dark mb-4">
+                  Liên kết nhanh
+                </h5>
                 <div className="d-flex flex-column justify-content-start">
                   {[
-                    "Home",
-                    "Our Shop",
-                    "Shop Detail",
-                    "Shopping Cart",
-                    "Checkout",
-                    "Contact Us",
+                    "Trang chủ",
+                    "Cửa hàng",
+                    "Chi tiết sản phẩm",
+                    "Giỏ hàng",
+                    "Thanh toán",
+                    "Liên hệ",
                   ].map((item, idx) => (
                     <a key={idx} className="text-dark mb-2" href="#">
                       <i className="fa fa-angle-right mr-2"></i>
@@ -75,12 +80,14 @@ const Footer = () => {
               </Col>
 
               <Col md={4} className="mb-5">
-                <h5 className="font-weight-bold text-dark mb-4">Newsletter</h5>
+                <h5 className="font-weight-bold text-dark mb-4">
+                  Đăng ký nhận tin
+                </h5>
                 <Form>
                   <Form.Group controlId="formName">
                     <Form.Control
                       type="text"
-                      placeholder="Your Name"
+                      placeholder="Họ và tên"
                       className="border-0 py-4"
                       required
                     />
@@ -88,7 +95,7 @@ const Footer = () => {
                   <Form.Group controlId="formEmail">
                     <Form.Control
                       type="email"
-                      placeholder="Your Email"
+                      placeholder="Email của bạn"
                       className="border-0 py-4"
                       required
                     />
@@ -98,7 +105,7 @@ const Footer = () => {
                     type="submit"
                     className="btn-block border-0 py-3"
                   >
-                    Subscribe Now
+                    Đăng ký ngay
                   </Button>
                 </Form>
               </Col>
@@ -111,9 +118,9 @@ const Footer = () => {
             <p className="mb-md-0 text-dark">
               &copy;{" "}
               <a className="text-dark font-weight-semi-bold" href="#">
-                Your Site Name
+                EShopper Việt Nam
               </a>
-              . All Rights Reserved. Designed by{" "}
+              . Đã đăng ký bản quyền. Thiết kế bởi{" "}
               <a
                 className="text-dark font-weight-semi-bold"
                 href="https://htmlcodex.com"
@@ -123,7 +130,11 @@ const Footer = () => {
             </p>
           </Col>
           <Col md={6} className="px-xl-0 text-center text-md-right">
-            <img className="img-fluid" src="/img/payments.png" alt="Payments" />
+            <img
+              className="img-fluid"
+              src="/img/payments.png"
+              alt="Thanh toán"
+            />
           </Col>
         </Row>
       </Container>
