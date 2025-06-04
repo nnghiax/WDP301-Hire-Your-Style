@@ -137,7 +137,34 @@ const productController = {
         } catch (error) {
             return res.status(500).json(error.message)
         }
+    },
+
+ 
+  deleteProduct: async (req, res) => {
+    try {
+      const proId = req.params.proId;
+      const userId = req.user._id;
+      const store = await Store.findOne({ userId, isActive: true });
+
+      if (!store) {
+        return res.status(403).json({ success: false, message: "You don't own any store or the store is inactive" });
+      }
+
+      const product = await Product.findOne({ _id: proId, storeId: store._id });
+      if (!product) {
+        return res.status(404).json({ success: false, message: 'Product does not exist or is not in your store' });
+      }
+
+      if (product.image) {
+        await deleteImage(product.image);
+      }
+
+      await Product.findByIdAndDelete(proId);
+      return res.status(200).json({ success: true, message: 'Product deleted successfully' });
+    } catch (error) {
+      return res.status(500).json({ success: false, message: 'Server error', error: error.message });
     }
+  },
 
 }
 
