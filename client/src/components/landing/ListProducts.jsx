@@ -264,6 +264,85 @@ function TopbarNavbar(props) {
 
   return (
     <div style={{ backgroundColor: "#f1f1f0", color: "#000" }}>
+      <Container fluid>
+        <Row className="bg-secondary py-2 px-xl-5">
+          <Col lg={6} className="d-none d-lg-block">
+            <div className="d-inline-flex align-items-center">
+              <a className="text-dark" href="#">
+                FAQs
+              </a>
+              <span className="text-muted px-2">|</span>
+              <a className="text-dark" href="#">
+                Help
+              </a>
+              <span className="text-muted px-2">|</span>
+              <a className="text-dark" href="#">
+                Support
+              </a>
+            </div>
+          </Col>
+          <Col lg={6} className="text-center text-lg-right">
+            <div className="d-flex w-100 justify-content-end align-items-center">
+              <a className="text-dark px-2" href="#">
+                <i className="fab fa-facebook-f"></i>
+              </a>
+              <a className="text-dark px-2" href="#">
+                <i className="fab fa-twitter"></i>
+              </a>
+              <a className="text-dark px-2" href="#">
+                <i className="fab fa-linkedin-in"></i>
+              </a>
+              <a className="text-dark px-2" href="#">
+                <i className="fab fa-instagram"></i>
+              </a>
+              <a className="text-dark pl-2" href="#">
+                <i className="fab fa-youtube"></i>
+              </a>
+            </div>
+          </Col>
+        </Row>
+
+        <Row
+          className="align-items-center py-3 px-xl-5"
+          style={{ backgroundColor: "#f1f1f0" }}
+        >
+          <Col lg={3} className="d-none d-lg-block">
+            <a href="#" className="text-decoration-none">
+              <h1 className="m-0 display-5 font-weight-semi-bold">
+                <span className="text-primary font-weight-bold border px-3 mr-1">
+                  E
+                </span>
+                Shopper
+              </h1>
+            </a>
+          </Col>
+
+          <Col lg={6} xs={6} className="text-left">
+            <Form>
+              <Form.Control
+                type="text"
+                placeholder="Search for products"
+                style={{ backgroundColor: "#fff" }}
+              />
+            </Form>
+          </Col>
+
+          <Col lg={3} xs={6} className="text-right">
+            <Button variant="light" className="border mr-2">
+              <i className="fas fa-heart text-primary"></i>
+              <Badge variant="danger" className="ml-1">
+                0
+              </Badge>
+            </Button>
+            <Button variant="light" className="border">
+              <i className="fas fa-shopping-cart text-primary"></i>
+              <Badge variant="danger" className="ml-1">
+                0
+              </Badge>
+            </Button>
+          </Col>
+        </Row>
+      </Container>
       <Container fluid className="mb-5" style={{ backgroundColor: "#f1f1f0" }}>
         <Row className="border-top px-xl-5">
           <Col lg={3} className="d-none d-lg-block">
@@ -380,7 +459,7 @@ function TopbarNavbar(props) {
   );
 }
 
-const BestSellers = () => {
+const ListProducts = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState([]);
@@ -580,4 +659,4 @@ const BestSellers = () => {
   );
 };
 
-export default BestSellers;
+export default ListProducts;
