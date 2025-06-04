@@ -2,11 +2,13 @@ import BestSellers from "../components/landing/ListProducts";
 
 import SplashCursor from "../components/common/SplashCursor";
 import Footer from "../components/common/Footer";
+import Header from "../components/common/Header";
 
 function LandingPage() {
   return (
     <>
       {/* <SplashCursor /> */}
+
       <BestSellers />
       <Footer />
     </>

@@ -14,24 +14,25 @@ import {
   Badge,
   Collapse,
 } from "react-bootstrap";
-// cac chinh sach
+
+// Các chính sách
 const Featured = () => {
   const features = [
     {
       icon: "fa-check",
-      title: "Quality Product",
+      title: "Sản phẩm chất lượng",
     },
     {
       icon: "fa-shipping-fast",
-      title: "Free Shipping",
+      title: "Miễn phí vận chuyển",
     },
     {
       icon: "fa-exchange-alt",
-      title: "14-Day Return",
+      title: "Đổi trả trong 14 ngày",
     },
     {
       icon: "fa-phone-volume",
-      title: "24/7 Support",
+      title: "Hỗ trợ 24/7",
     },
   ];
 
@@ -53,137 +54,8 @@ const Featured = () => {
     </Container>
   );
 };
-//footer
 
-// const Footer = () => {
-//   return (
-//     <div className="bg-secondary text-dark mt-5 ">
-//       <Container fluid>
-//         <Row className="px-xl-5 pt-5">
-//           <Col lg={4} md={12} className="mb-5 pr-3 pr-xl-5">
-//             <a href="#" className="text-decoration-none">
-//               <h1 className="mb-4 display-5 font-weight-semi-bold">
-//                 <span className="text-primary font-weight-bold border border-white px-3 mr-1">
-//                   E
-//                 </span>
-//                 Shopper
-//               </h1>
-//             </a>
-//             <p>
-//               Dolore erat dolor sit lorem vero amet. Sed sit lorem magna, ipsum
-//               no sit erat lorem et magna ipsum dolore amet erat.
-//             </p>
-//             <p className="mb-2">
-//               <i className="fa fa-map-marker-alt text-primary mr-3"></i>
-//               123 Street, New York, USA
-//             </p>
-//             <p className="mb-2">
-//               <i className="fa fa-envelope text-primary mr-3"></i>
-//               info@example.com
-//             </p>
-//             <p className="mb-0">
-//               <i className="fa fa-phone-alt text-primary mr-3"></i>
-//               +012 345 67890
-//             </p>
-//           </Col>
-
-//           <Col lg={8} md={12}>
-//             <Row>
-//               <Col md={4} className="mb-5">
-//                 <h5 className="font-weight-bold text-dark mb-4">Quick Links</h5>
-//                 <div className="d-flex flex-column justify-content-start">
-//                   {[
-//                     "Home",
-//                     "Our Shop",
-//                     "Shop Detail",
-//                     "Shopping Cart",
-//                     "Checkout",
-//                     "Contact Us",
-//                   ].map((item, idx) => (
-//                     <a key={idx} className="text-dark mb-2" href="#">
-//                       <i className="fa fa-angle-right mr-2"></i>
-//                       {item}
-//                     </a>
-//                   ))}
-//                 </div>
-//               </Col>
-
-//               <Col md={4} className="mb-5">
-//                 <h5 className="font-weight-bold text-dark mb-4">Quick Links</h5>
-//                 <div className="d-flex flex-column justify-content-start">
-//                   {[
-//                     "Home",
-//                     "Our Shop",
-//                     "Shop Detail",
-//                     "Shopping Cart",
-//                     "Checkout",
-//                     "Contact Us",
-//                   ].map((item, idx) => (
-//                     <a key={idx} className="text-dark mb-2" href="#">
-//                       <i className="fa fa-angle-right mr-2"></i>
-//                       {item}
-//                     </a>
-//                   ))}
-//                 </div>
-//               </Col>
-
-//               <Col md={4} className="mb-5">
-//                 <h5 className="font-weight-bold text-dark mb-4">Newsletter</h5>
-//                 <Form>
-//                   <Form.Group controlId="formName">
-//                     <Form.Control
-//                       type="text"
-//                       placeholder="Your Name"
-//                       className="border-0 py-4"
-//                       required
-//                     />
-//                   </Form.Group>
-//                   <Form.Group controlId="formEmail">
-//                     <Form.Control
-//                       type="email"
-//                       placeholder="Your Email"
-//                       className="border-0 py-4"
-//                       required
-//                     />
-//                   </Form.Group>
-//                   <Button
-//                     variant="primary"
-//                     type="submit"
-//                     className="btn-block border-0 py-3"
-//                   >
-//                     Subscribe Now
-//                   </Button>
-//                 </Form>
-//               </Col>
-//             </Row>
-//           </Col>
-//         </Row>
-
-//         <Row className="border-top border-light mx-xl-5 py-4">
-//           <Col md={6} className="px-xl-0 text-center text-md-left">
-//             <p className="mb-md-0 text-dark">
-//               &copy;{" "}
-//               <a className="text-dark font-weight-semi-bold" href="#">
-//                 Your Site Name
-//               </a>
-//               . All Rights Reserved. Designed by{" "}
-//               <a
-//                 className="text-dark font-weight-semi-bold"
-//                 href="https://htmlcodex.com"
-//               >
-//                 HTML Codex
-//               </a>
-//             </p>
-//           </Col>
-//           <Col md={6} className="px-xl-0 text-center text-md-right">
-//             <img className="img-fluid" src="/img/payments.png" alt="Payments" />
-//           </Col>
-//         </Row>
-//       </Container>
-//     </div>
-//   );
-// };
-// icon back to top
+// Icon quay về đầu trang
 const BackToTop = () => {
   const scrollToTop = (e) => {
     e.preventDefault();
@@ -207,14 +79,14 @@ const BackToTop = () => {
         alignItems: "center",
         zIndex: 9999,
       }}
-      aria-label="Back to top"
+      aria-label="Lên đầu trang"
     >
       <i className="fa fa-angle-double-up"></i>
     </Button>
   );
 };
 
-// Custom arrow components
+// Mũi tên slider tuỳ chỉnh
 function SampleNextArrow(props) {
   const { className, style, onClick } = props;
   return (
@@ -247,6 +119,7 @@ function SamplePrevArrow(props) {
     />
   );
 }
+
 function TopbarNavbar(props) {
   const [open, setOpen] = React.useState(true);
   const categories = props.cate;
@@ -269,15 +142,15 @@ function TopbarNavbar(props) {
           <Col lg={6} className="d-none d-lg-block">
             <div className="d-inline-flex align-items-center">
               <a className="text-dark" href="#">
-                FAQs
+                Câu hỏi thường gặp
               </a>
               <span className="text-muted px-2">|</span>
               <a className="text-dark" href="#">
-                Help
+                Trợ giúp
               </a>
               <span className="text-muted px-2">|</span>
               <a className="text-dark" href="#">
-                Support
+                Hỗ trợ
               </a>
             </div>
           </Col>
@@ -310,18 +183,18 @@ function TopbarNavbar(props) {
             <a href="#" className="text-decoration-none">
               <h1 className="m-0 display-5 font-weight-semi-bold">
                 <span className="text-primary font-weight-bold border px-3 mr-1">
-                  E
+                  Hire
                 </span>
-                Shopper
+                Your Style
               </h1>
             </a>
           </Col>
 
-          <Col lg={6} xs={6} className="text-left">
+          <Col lg={5} xs={5} className="text-left">
             <Form>
               <Form.Control
                 type="text"
-                placeholder="Search for products"
+                placeholder="Tìm kiếm sản phẩm"
                 style={{ backgroundColor: "#fff" }}
               />
             </Form>
@@ -341,6 +214,15 @@ function TopbarNavbar(props) {
               </Badge>
             </Button>
           </Col>
+          <Col lg={1} xs={1} className="d-none d-lg-block text-right">
+            <img
+              src="/img/profile.png"
+              alt="Hồ sơ"
+              className="rounded-circle"
+              width="40"
+              height="40"
+            />
+          </Col>
         </Row>
       </Container>
       <Container fluid className="mb-5" style={{ backgroundColor: "#f1f1f0" }}>
@@ -354,7 +236,7 @@ function TopbarNavbar(props) {
               aria-controls="navbar-vertical"
               aria-expanded={open}
             >
-              <h6 className="m-0 text-white">Categories</h6>
+              <h6 className="m-0 text-white">Danh mục</h6>
               <i
                 className={`fa fa-angle-${open ? "up" : "down"} text-dark`}
               ></i>
@@ -371,13 +253,6 @@ function TopbarNavbar(props) {
                 }}
               >
                 <Nav className="flex-column w-100">
-                  {/* <NavDropdown title="Dresses" id="nav-dropdown-dresses">
-                    <NavDropdown.Item href="#">Men's Dresses</NavDropdown.Item>
-                    <NavDropdown.Item href="#">
-                      Women's Dresses
-                    </NavDropdown.Item>
-                    <NavDropdown.Item href="#">Baby's Dresses</NavDropdown.Item>
-                  </NavDropdown> */}
                   {categories.map((category, index) => (
                     <Nav.Link key={index} href="#" className="text-dark">
                       {category.name}
@@ -389,6 +264,56 @@ function TopbarNavbar(props) {
           </Col>
 
           <Col lg={9}>
+            <Navbar bg="light" expand="lg" className="py-3 py-lg-0 px-0">
+              <Navbar.Brand href="#" className="d-block d-lg-none">
+                <h1 className="m-0 display-5 font-weight-semi-bold">
+                  <span className="text-primary font-weight-bold border px-3 mr-1">
+                    E
+                  </span>
+                  Shopper
+                </h1>
+              </Navbar.Brand>
+              <Navbar.Toggle aria-controls="navbarCollapse" />
+              <Navbar.Collapse
+                id="navbarCollapse"
+                className="justify-content-between"
+              >
+                <Nav className="mr-auto py-0">
+                  <Nav.Link href="index.html" active className="text-dark">
+                    Trang chủ
+                  </Nav.Link>
+                  <Nav.Link href="shop.html" className="text-dark">
+                    Cửa hàng
+                  </Nav.Link>
+                  <Nav.Link href="detail.html" className="text-dark">
+                    Chi tiết sản phẩm
+                  </Nav.Link>
+                  <NavDropdown
+                    title="Trang"
+                    id="nav-dropdown-pages"
+                    className="text-dark"
+                  >
+                    <NavDropdown.Item href="cart.html">
+                      Giỏ hàng
+                    </NavDropdown.Item>
+                    <NavDropdown.Item href="checkout.html">
+                      Thanh toán
+                    </NavDropdown.Item>
+                  </NavDropdown>
+                  <Nav.Link href="contact.html" className="text-dark">
+                    Liên hệ
+                  </Nav.Link>
+                </Nav>
+                <Nav className="ml-auto py-0">
+                  <Nav.Link href="#" className="text-dark">
+                    Đăng nhập
+                  </Nav.Link>
+                  <Nav.Link href="#" className="text-dark">
+                    Đăng ký
+                  </Nav.Link>
+                </Nav>
+              </Navbar.Collapse>
+            </Navbar>
             {/* Slider */}
             <Slider {...sliderSettings} className="mt-4">
               <div>
@@ -415,9 +340,9 @@ function TopbarNavbar(props) {
                       color: "#000",
                     }}
                   >
-                    <h3>Slide 1 Title</h3>
-                    <p>Description for slide 1 goes here</p>
-                    <Button variant="primary">Shop Now</Button>
+                    <h3>Tiêu đề slide 1</h3>
+                    <p>Mô tả cho slide 1</p>
+                    <Button variant="primary">Mua ngay</Button>
                   </div>
                 </div>
               </div>
@@ -445,9 +370,9 @@ function TopbarNavbar(props) {
                       color: "#000",
                     }}
                   >
-                    <h3>Slide 2 Title</h3>
-                    <p>Description for slide 2 goes here</p>
-                    <Button variant="primary">Shop Now</Button>
+                    <h3>Tiêu đề slide 2</h3>
+                    <p>Mô tả cho slide 2</p>
+                    <Button variant="primary">Mua ngay</Button>
                   </div>
                 </div>
               </div>
@@ -476,7 +401,7 @@ const ListProducts = () => {
         });
         setProducts(res.data.data);
       } catch (error) {
-        console.error("Lỗi khi tải yêu cầu:", error);
+        console.error("Lỗi khi tải sản phẩm:", error);
       } finally {
         setLoading(false);
       }
@@ -494,9 +419,9 @@ const ListProducts = () => {
           },
         });
         setCategories(res.data.data);
-        console.log("Categories:", res.data.data);
+        console.log("Danh mục:", res.data.data);
       } catch (error) {
-        console.error("Lỗi khi tải yêu cầu:", error);
+        console.error("Lỗi khi tải danh mục:", error);
       } finally {
         setLoading(false);
       }
@@ -505,59 +430,86 @@ const ListProducts = () => {
     fetchCategories();
   }, []);
 
+  const NextArrow = (props) => {
+    const { className, style, onClick } = props;
+    return (
+      <div
+        className={className}
+        style={{
+          ...style,
+          right: "-35px",
+          zIndex: 2,
+          top: "50%",
+          transform: "translateY(-50%)",
+          width: "40px",
+          height: "40px",
+          background: "#ffffff",
+          borderRadius: "50%",
+          boxShadow: "0 4px 10px rgba(0,0,0,0.15)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+        onClick={onClick}
+      >
+        <i className="bi bi-chevron-right fs-5 text-dark"></i>
+      </div>
+    );
+  };
+
+  const PrevArrow = (props) => {
+    const { className, style, onClick } = props;
+    return (
+      <div
+        className={className}
+        style={{
+          ...style,
+          left: "-35px",
+          zIndex: 2,
+          top: "50%",
+          transform: "translateY(-50%)",
+          width: "40px",
+          height: "40px",
+          background: "#ffffff",
+          borderRadius: "50%",
+          boxShadow: "0 4px 10px rgba(0,0,0,0.15)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+        onClick={onClick}
+      >
+        <i className="bi bi-chevron-left fs-5 text-dark"></i>
+      </div>
+    );
+  };
+
   const settings = {
-    dots: true,
+    dots: false,
     infinite: true,
     speed: 500,
     slidesToShow: 4,
     slidesToScroll: 1,
-    nextArrow: <SampleNextArrow />,
-    prevArrow: <SamplePrevArrow />,
-    responsive: [
-      {
-        breakpoint: 1024,
-        settings: {
-          slidesToShow: 3,
-          slidesToScroll: 1,
-        },
-      },
-      {
-        breakpoint: 768,
-        settings: {
-          slidesToShow: 2,
-          slidesToScroll: 1,
-        },
-      },
-      {
-        breakpoint: 480,
-        settings: {
-          slidesToShow: 1,
-          slidesToScroll: 1,
-        },
-      },
-    ],
+    nextArrow: <NextArrow />,
+    prevArrow: <PrevArrow />,
   };
 
   return (
-    <section
-      id="best-sellers"
-      // className="py-5 position-relative overflow-hidden"
-      style={{ backgroundColor: "#f1f1f0" }}
-    >
+    <section id="best-sellers" style={{ backgroundColor: "#f1f1f0" }}>
       <BackToTop />
       <TopbarNavbar cate={categories} />
       <Featured />
       <Container>
         <div className="d-flex flex-wrap justify-content-between align-items-center mt-5 mb-3">
-          <h4 className="text-uppercase">Best Selling Items</h4>
+          <h4 className="text-uppercase">Áo Dài</h4>
           <Button variant="link" className="text-decoration-none p-0">
-            View All Products
+            Xem tất cả sản phẩm
           </Button>
         </div>
         <Slider {...settings} className="product-carousel">
           {products.map((product) => (
-            <div key={product.id} className="px-2">
-              <Card className="border-0 bg-transparent">
+            <div key={product.id} className="px-3">
+              <Card className="border-0 shadow-sm rounded-4 overflow-hidden h-100">
                 <div className="position-relative">
                   <Card.Img
                     variant="top"
@@ -565,40 +517,49 @@ const ListProducts = () => {
                     alt={product.name}
                     className="img-fluid"
                   />
-                  <Button
-                    variant="link"
-                    className="position-absolute top-0 end-0 p-2"
-                  >
-                    <svg width="24" height="24" viewBox="0 0 24 24">
-                      <path
-                        d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
-                        fill="currentColor"
-                      />
-                    </svg>
-                  </Button>
                 </div>
-                <Card.Body className="px-0">
-                  <Card.Title className="text-uppercase">
+                <Card.Body className="px-3 pt-3 pb-4 d-flex flex-column justify-content-between">
+                  <Card.Title
+                    className="text-uppercase fs-6 mb-2 fw-semibold text-truncate"
+                    style={{
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                    }}
+                  >
                     <Button
                       variant="link"
-                      className="text-dark p-0 text-decoration-none"
+                      className="text-dark text-decoration-none p-0"
+                      style={{
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      }}
                     >
                       {product.name}
                     </Button>
                   </Card.Title>
-                  <div className="d-flex justify-content-between align-items-center">
-                    <span className="fw-bold">{product.price}</span>
+
+                  <div className="d-flex justify-content-between align-items-center mb-2">
+                    <span className="fw-bold text-primary">
+                      {product.price}
+                    </span>
                     <Button
-                      variant="link"
-                      className="text-decoration-none p-0"
-                      onClick={() => navigate(`/product-detail/${product.id}`)}
+                      variant="outline-primary"
+                      size="sm"
+                      className="rounded-pill px-3 py-1"
                     >
-                      view details
-                    </Button>
-                    <Button variant="link" className="text-decoration-none p-0">
-                      <i className="fas fa-shopping-cart text-primary"></i>
+                      Thêm vào giỏ
                     </Button>
                   </div>
+
+                  <Button
+                    variant="link"
+                    size="sm"
+                    className="text-primary text-decoration-none p-0 mt-1 text-start"
+                  >
+                    Xem chi tiết
+                  </Button>
                 </Card.Body>
               </Card>
             </div>
@@ -606,15 +567,15 @@ const ListProducts = () => {
         </Slider>
 
         <div className="d-flex flex-wrap justify-content-between align-items-center mt-5 mb-3">
-          <h4 className="text-uppercase">Best Selling Items</h4>
+          <h4 className="text-uppercase">Vest</h4>
           <Button variant="link" className="text-decoration-none p-0">
-            View All Products
+            Xem tất cả sản phẩm
           </Button>
         </div>
         <Slider {...settings} className="product-carousel">
           {products.map((product) => (
-            <div key={product.id} className="px-2">
-              <Card className="border-0 bg-transparent">
+            <div key={product.id} className="px-3">
+              <Card className="border-0 shadow-sm rounded-4 overflow-hidden h-100">
                 <div className="position-relative">
                   <Card.Img
                     variant="top"
@@ -622,33 +583,115 @@ const ListProducts = () => {
                     alt={product.name}
                     className="img-fluid"
                   />
-                  <Button
-                    variant="link"
-                    className="position-absolute top-0 end-0 p-2"
-                  >
-                    <svg width="24" height="24" viewBox="0 0 24 24">
-                      <path
-                        d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
-                        fill="currentColor"
-                      />
-                    </svg>
-                  </Button>
                 </div>
-                <Card.Body className="px-0">
-                  <Card.Title className="text-uppercase">
+                <Card.Body className="px-3 pt-3 pb-4 d-flex flex-column justify-content-between">
+                  <Card.Title
+                    className="text-uppercase fs-6 mb-2 fw-semibold text-truncate"
+                    style={{
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                    }}
+                  >
                     <Button
                       variant="link"
-                      className="text-dark p-0 text-decoration-none"
+                      className="text-dark text-decoration-none p-0"
+                      style={{
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      }}
                     >
                       {product.name}
                     </Button>
                   </Card.Title>
-                  <div className="d-flex justify-content-between align-items-center">
-                    <span className="fw-bold">{product.price}</span>
-                    <Button variant="link" className="text-decoration-none p-0">
-                      Add to cart
+
+                  <div className="d-flex justify-content-between align-items-center mb-2">
+                    <span className="fw-bold text-primary">
+                      {product.price}
+                    </span>
+                    <Button
+                      variant="outline-primary"
+                      size="sm"
+                      className="rounded-pill px-3 py-1"
+                    >
+                      Thêm vào giỏ
                     </Button>
                   </div>
+
+                  <Button
+                    variant="link"
+                    size="sm"
+                    className="text-primary text-decoration-none p-0 mt-1 text-start"
+                  >
+                    Xem chi tiết
+                  </Button>
+                </Card.Body>
+              </Card>
+            </div>
+          ))}
+        </Slider>
+
+        <div className="d-flex flex-wrap justify-content-between align-items-center mt-5 mb-3">
+          <h4 className="text-uppercase">Váy Cưới</h4>
+          <Button variant="link" className="text-decoration-none p-0">
+            Xem tất cả sản phẩm
+          </Button>
+        </div>
+        <Slider {...settings} className="product-carousel">
+          {products.map((product) => (
+            <div key={product.id} className="px-3">
+              <Card className="border-0 shadow-sm rounded-4 overflow-hidden h-100">
+                <div className="position-relative">
+                  <Card.Img
+                    variant="top"
+                    src={product.image}
+                    alt={product.name}
+                    className="img-fluid"
+                  />
+                </div>
+                <Card.Body className="px-3 pt-3 pb-4 d-flex flex-column justify-content-between">
+                  <Card.Title
+                    className="text-uppercase fs-6 mb-2 fw-semibold text-truncate"
+                    style={{
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                    }}
+                  >
+                    <Button
+                      variant="link"
+                      className="text-dark text-decoration-none p-0"
+                      style={{
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      }}
+                    >
+                      {product.name}
+                    </Button>
+                  </Card.Title>
+
+                  <div className="d-flex justify-content-between align-items-center mb-2">
+                    <span className="fw-bold text-primary">
+                      {product.price}
+                    </span>
+                    <Button
+                      variant="outline-primary"
+                      size="sm"
+                      className="rounded-pill px-3 py-1"
+                    >
+                      Thêm vào giỏ
+                    </Button>
+                  </div>
+
+                  <Button
+                    variant="link"
+                    size="sm"
+                    className="text-primary text-decoration-none p-0 mt-1 text-start"
+                  >
+                    Xem chi tiết
+                  </Button>
                 </Card.Body>
               </Card>
             </div>
