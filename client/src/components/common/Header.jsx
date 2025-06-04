@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Container,
   Row,
@@ -11,59 +11,34 @@ import {
   Badge,
   Collapse,
 } from "react-bootstrap";
+import axios from "axios";
 
-import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
-// Custom arrow components
-function SampleNextArrow(props) {
-  const { className, style, onClick } = props;
-  return (
-    <div
-      className={className}
-      style={{
-        ...style,
-        display: "block",
-        background: "rgba(0,0,0,0.5)",
-        right: "10px",
-      }}
-      onClick={onClick}
-    />
-  );
-}
+export default function Header() {
+  const [open, setOpen] = React.useState(false);
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await axios.get("http://localhost:9999/cate/list", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+        setCategories(res.data.data);
+        console.log("Categories:", res.data.data);
+      } catch (error) {
+        console.error("Lỗi khi tải yêu cầu:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-function SamplePrevArrow(props) {
-  const { className, style, onClick } = props;
-  return (
-    <div
-      className={className}
-      style={{
-        ...style,
-        display: "block",
-        background: "rgba(0,0,0,0.5)",
-        left: "10px",
-        zIndex: 1,
-      }}
-      onClick={onClick}
-    />
-  );
-}
-
-export default function TopbarNavbar() {
-  const [open, setOpen] = React.useState(true);
-
-  // Cấu hình slider react-slick
-  const sliderSettings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    autoplay: true,
-    nextArrow: <SampleNextArrow />,
-    prevArrow: <SamplePrevArrow />,
-  };
+    fetchCategories();
+  }, []);
 
   return (
     <div style={{ backgroundColor: "#f1f1f0", color: "#000" }}>
@@ -85,7 +60,7 @@ export default function TopbarNavbar() {
             </div>
           </Col>
           <Col lg={6} className="text-center text-lg-right">
-            <div className="d-inline-flex align-items-center">
+            <div className="d-flex w-100 justify-content-end align-items-center">
               <a className="text-dark px-2" href="#">
                 <i className="fab fa-facebook-f"></i>
               </a>
@@ -163,7 +138,6 @@ export default function TopbarNavbar() {
                 className={`fa fa-angle-${open ? "up" : "down"} text-dark`}
               ></i>
             </Button>
-
             <Collapse in={open}>
               <nav
                 id="navbar-vertical"
@@ -175,40 +149,18 @@ export default function TopbarNavbar() {
                 }}
               >
                 <Nav className="flex-column w-100">
-                  <NavDropdown title="Dresses" id="nav-dropdown-dresses">
+                  {/* <NavDropdown title="Dresses" id="nav-dropdown-dresses">
                     <NavDropdown.Item href="#">Men's Dresses</NavDropdown.Item>
                     <NavDropdown.Item href="#">
                       Women's Dresses
                     </NavDropdown.Item>
                     <NavDropdown.Item href="#">Baby's Dresses</NavDropdown.Item>
-                  </NavDropdown>
-                  <Nav.Link href="#" className="text-dark">
-                    Shirts
-                  </Nav.Link>
-                  <Nav.Link href="#" className="text-dark">
-                    Jeans
-                  </Nav.Link>
-                  <Nav.Link href="#" className="text-dark">
-                    Swimwear
-                  </Nav.Link>
-                  <Nav.Link href="#" className="text-dark">
-                    Sleepwear
-                  </Nav.Link>
-                  <Nav.Link href="#" className="text-dark">
-                    Sportswear
-                  </Nav.Link>
-                  <Nav.Link href="#" className="text-dark">
-                    Jumpsuits
-                  </Nav.Link>
-                  <Nav.Link href="#" className="text-dark">
-                    Blazers
-                  </Nav.Link>
-                  <Nav.Link href="#" className="text-dark">
-                    Jackets
-                  </Nav.Link>
-                  <Nav.Link href="#" className="text-dark">
-                    Shoes
-                  </Nav.Link>
+                  </NavDropdown> */}
+                  {categories.map((category, index) => (
+                    <Nav.Link key={index} href="#" className="text-dark">
+                      {category.name}
+                    </Nav.Link>
+                  ))}
                 </Nav>
               </nav>
             </Collapse>
@@ -265,70 +217,6 @@ export default function TopbarNavbar() {
                 </Nav>
               </Navbar.Collapse>
             </Navbar>
-
-            {/* Slider */}
-            <Slider {...sliderSettings} className="mt-4">
-              <div>
-                <div style={{ position: "relative" }}>
-                  <img
-                    src="/img/carousel-1.jpg"
-                    alt="Slide 1"
-                    style={{
-                      width: "100%",
-                      height: "410px",
-                      objectFit: "cover",
-                    }}
-                  />
-                  <div
-                    style={{
-                      position: "absolute",
-                      top: "50%",
-                      left: "50%",
-                      transform: "translate(-50%, -50%)",
-                      backgroundColor: "rgba(255,255,255,0.8)",
-                      padding: "20px",
-                      borderRadius: "5px",
-                      textAlign: "center",
-                      color: "#000",
-                    }}
-                  >
-                    <h3>Slide 1 Title</h3>
-                    <p>Description for slide 1 goes here</p>
-                    <Button variant="primary">Shop Now</Button>
-                  </div>
-                </div>
-              </div>
-              <div>
-                <div style={{ position: "relative" }}>
-                  <img
-                    src="/img/carousel-2.jpg"
-                    alt="Slide 2"
-                    style={{
-                      width: "100%",
-                      height: "410px",
-                      objectFit: "cover",
-                    }}
-                  />
-                  <div
-                    style={{
-                      position: "absolute",
-                      top: "50%",
-                      left: "50%",
-                      transform: "translate(-50%, -50%)",
-                      backgroundColor: "rgba(255,255,255,0.8)",
-                      padding: "20px",
-                      borderRadius: "5px",
-                      textAlign: "center",
-                      color: "#000",
-                    }}
-                  >
-                    <h3>Slide 2 Title</h3>
-                    <p>Description for slide 2 goes here</p>
-                    <Button variant="primary">Shop Now</Button>
-                  </div>
-                </div>
-              </div>
-            </Slider>
           </Col>
         </Row>
       </Container>
