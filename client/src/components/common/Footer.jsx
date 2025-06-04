@@ -11,27 +11,27 @@ const Footer = () => {
             <a href="#" className="text-decoration-none">
               <h1 className="mb-4 display-5 font-weight-semi-bold">
                 <span className="text-primary font-weight-bold border border-white px-3 mr-1">
-                  E
+                  Hire
                 </span>
-                Shopper
+                Your Style
               </h1>
             </a>
             <p>
-              Chào mừng bạn đến với EShopper - nơi mua sắm trực tuyến uy tín tại
-              Việt Nam. Chúng tôi cam kết mang đến cho bạn trải nghiệm mua sắm
-              tốt nhất.
+              Chào mừng bạn đến với Hire Your - nơi Thuê Trang Phục trực tuyến
+              uy tín tại Việt Nam. Chúng tôi cam kết mang đến cho bạn trải
+              nghiệm tốt nhất.
             </p>
             <p className="mb-2">
               <i className="fa fa-map-marker-alt text-primary mr-3"></i>
-              123 Đường Lê Lợi, Quận 1, TP. Hồ Chí Minh, Việt Nam
+              Khu Công Nghệ Cao Hòa Lạc, km 29, Đại lộ, Thăng Long, Hà Nội
             </p>
             <p className="mb-2">
               <i className="fa fa-envelope text-primary mr-3"></i>
-              lienhe@eshopper.vn
+              nghianthe170569@eshopper.vn
             </p>
             <p className="mb-0">
               <i className="fa fa-phone-alt text-primary mr-3"></i>
-              0901 234 567
+              0962286003
             </p>
           </Col>
 
