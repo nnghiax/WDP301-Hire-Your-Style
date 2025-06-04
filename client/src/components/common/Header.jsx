@@ -47,15 +47,15 @@ export default function Header() {
           <Col lg={6} className="d-none d-lg-block">
             <div className="d-inline-flex align-items-center">
               <a className="text-dark" href="#">
-                FAQs
+                Câu hỏi thường gặp
               </a>
               <span className="text-muted px-2">|</span>
               <a className="text-dark" href="#">
-                Help
+                Trợ giúp
               </a>
               <span className="text-muted px-2">|</span>
               <a className="text-dark" href="#">
-                Support
+                Hỗ trợ
               </a>
             </div>
           </Col>
@@ -88,9 +88,9 @@ export default function Header() {
             <a href="#" className="text-decoration-none">
               <h1 className="m-0 display-5 font-weight-semi-bold">
                 <span className="text-primary font-weight-bold border px-3 mr-1">
-                  E
+                  Hire
                 </span>
-                Shopper
+                Your Style
               </h1>
             </a>
           </Col>
@@ -99,7 +99,7 @@ export default function Header() {
             <Form>
               <Form.Control
                 type="text"
-                placeholder="Search for products"
+                placeholder="Tìm kiếm sản phẩm"
                 style={{ backgroundColor: "#fff" }}
               />
             </Form>
@@ -133,7 +133,7 @@ export default function Header() {
               aria-controls="navbar-vertical"
               aria-expanded={open}
             >
-              <h6 className="m-0 text-white">Categories</h6>
+              <h6 className="m-0 text-white">Danh mục</h6>
               <i
                 className={`fa fa-angle-${open ? "up" : "down"} text-dark`}
               ></i>
@@ -149,13 +149,6 @@ export default function Header() {
                 }}
               >
                 <Nav className="flex-column w-100">
-                  {/* <NavDropdown title="Dresses" id="nav-dropdown-dresses">
-                    <NavDropdown.Item href="#">Men's Dresses</NavDropdown.Item>
-                    <NavDropdown.Item href="#">
-                      Women's Dresses
-                    </NavDropdown.Item>
-                    <NavDropdown.Item href="#">Baby's Dresses</NavDropdown.Item>
-                  </NavDropdown> */}
                   {categories.map((category, index) => (
                     <Nav.Link key={index} href="#" className="text-dark">
                       {category.name}
@@ -171,9 +164,9 @@ export default function Header() {
               <Navbar.Brand href="#" className="d-block d-lg-none">
                 <h1 className="m-0 display-5 font-weight-semi-bold">
                   <span className="text-primary font-weight-bold border px-3 mr-1">
-                    E
+                    Hire
                   </span>
-                  Shopper
+                  Your Style
                 </h1>
               </Navbar.Brand>
               <Navbar.Toggle aria-controls="navbarCollapse" />
@@ -183,36 +176,36 @@ export default function Header() {
               >
                 <Nav className="mr-auto py-0">
                   <Nav.Link href="index.html" active className="text-dark">
-                    Home
+                    Trang chủ
                   </Nav.Link>
                   <Nav.Link href="shop.html" className="text-dark">
-                    Shop
+                    Cửa hàng
                   </Nav.Link>
                   <Nav.Link href="detail.html" className="text-dark">
-                    Shop Detail
+                    Chi tiết sản phẩm
                   </Nav.Link>
                   <NavDropdown
-                    title="Pages"
+                    title="Trang"
                     id="nav-dropdown-pages"
                     className="text-dark"
                   >
                     <NavDropdown.Item href="cart.html">
-                      Shopping Cart
+                      Giỏ hàng
                     </NavDropdown.Item>
                     <NavDropdown.Item href="checkout.html">
-                      Checkout
+                      Thanh toán
                     </NavDropdown.Item>
                   </NavDropdown>
                   <Nav.Link href="contact.html" className="text-dark">
-                    Contact
+                    Liên hệ
                   </Nav.Link>
                 </Nav>
                 <Nav className="ml-auto py-0">
                   <Nav.Link href="#" className="text-dark">
-                    Login
+                    Đăng nhập
                   </Nav.Link>
                   <Nav.Link href="#" className="text-dark">
-                    Register
+                    Đăng ký
                   </Nav.Link>
                 </Nav>
               </Navbar.Collapse>
