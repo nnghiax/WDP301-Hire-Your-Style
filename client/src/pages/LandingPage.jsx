@@ -1,4 +1,4 @@
-import BestSellers from "../components/landing/ListProducts";
+import ListProducts from "../components/landing/ListProducts";
 
 import SplashCursor from "../components/common/SplashCursor";
 import Footer from "../components/common/Footer";
@@ -9,7 +9,7 @@ function LandingPage() {
     <>
       {/* <SplashCursor /> */}
 
-      <BestSellers />
+      <ListProducts />
       <Footer />
     </>
   );
