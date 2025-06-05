@@ -182,7 +182,56 @@ const revenueController = {
     } catch (error) {
       return res.status(500).json({ success: false, message: 'Server error', error: error.message });
     }
+  },
+
+  getAdminMonthlyAndYearlyCommission: async (req, res) => {
+  try {
+    const admin = req.user;
+    if (admin.role !== 'admin') {
+      return res.status(403).json({ success: false, message: 'Access denied. Admin only.' });
+    }
+
+    const stores = await Store.find({ isActive: true });
+    const storeIds = stores.map(s => s._id);
+
+    const rentals = await Rental.find({
+      storeId: { $in: storeIds },
+      status: 'completed'
+    }).populate('storeId', 'name');
+
+    const result = {}; // { storeId: { storeName, monthly: {}, yearly: {} } }
+
+    rentals.forEach(rental => {
+      const date = new Date(rental.rentalDate);
+      const month = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+      const year = date.getFullYear().toString();
+      const storeId = rental.storeId._id.toString();
+      const storeName = rental.storeId.name;
+      const commission = rental.totalAmount * 0.1;
+
+      if (!result[storeId]) {
+        result[storeId] = {
+          storeName,
+          monthly: {},
+          yearly: {}
+        };
+      }
+
+      result[storeId].monthly[month] = (result[storeId].monthly[month] || 0) + commission;
+      result[storeId].yearly[year] = (result[storeId].yearly[year] || 0) + commission;
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: 'Admin monthly and yearly commission calculated per store.',
+      data: result
+    });
+
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Server error', error: error.message });
   }
+}
+
 };
 
 module.exports = revenueController;
