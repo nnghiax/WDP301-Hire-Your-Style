@@ -1,31 +1,47 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "@fortawesome/fontawesome-free/css/all.min.css";
-const ProductDetail = () => {
-  const product = {
-    userId: "60f7e9a3c25e4f0023c9b12a",
-    storeId: "60f7ea2ac25e4f0023c9b12b",
-    categoryId: "60f7ea70c25e4f0023c9b12c",
-    name: "Áo thun thể thao nam",
-    image: "https://picsum.photos/500/500",
-    description: "Áo thun thoáng mát, thích hợp chơi thể thao. Chất liệu cotton cao cấp, thoải mái và bền đẹp.",
-    sizes: ["M", "L", "XL"],
-    quantity: 100,
-    price: 250000,
-    color: "Đen",
-    isAvailable: true,
-    createdAt: "2025-05-21T10:00:00Z",
-    updatedAt: "2025-05-21T10:00:00Z",
-  };
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
+const ProductDetail = () => {
+  const [product, setProduct] = useState({});
+  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("description");
   const [selectedSize, setSelectedSize] = useState("");
   const [quantity, setQuantity] = useState(1);
-  const [selectedImage, setSelectedImage] = useState(product.image);
+  const [selectedImage, setSelectedImage] = useState("");
+  const productId = "6829ef3b6ec994982cf44d9c";
 
- 
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const res = await axios.get(`http://localhost:9999/product/detail/${productId}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+        setProduct(res.data.data);
+        setSelectedImage(res.data.data.image);
+        console.log("Product data:", res.data.data);
+      } catch (error) {
+        console.error("Lỗi khi tải sản phẩm:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProduct();
+  }, []);
 
   const handleQuantityChange = (change) => {
     setQuantity(prev => Math.max(1, prev + change));
+  };
+
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD'
+    }).format(price);
   };
 
   const customStyles = `
@@ -164,25 +180,32 @@ const ProductDetail = () => {
     }
   `;
 
+  if (loading) {
+    return (
+      <div className="d-flex justify-content-center align-items-center min-vh-100">
+        <div className="spinner-border text-primary" role="status">
+          <span className="sr-only">Đang tải...</span>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>
       <style>{customStyles}</style>
       <div className="bg-light min-vh-100">
-       
-
         <div className="container py-5">
           <div className="row">
             {/* Image Gallery */}
             <div className="col-lg-6 mb-5">
               <div className="mb-4">
                 <img
-                  src={selectedImage}
+                  src={ product.image}
                   alt={product.name}
                   className="img-fluid product-image-main w-100"
-                  style={{ height: '400px', objectFit: 'cover' }}
+                  style={{ height: 'auto', objectFit: 'cover' }}
                 />
               </div>
-              
             </div>
 
             {/* Product Info */}
@@ -200,7 +223,7 @@ const ProductDetail = () => {
                 </div>
                 <div className="price-tag p-3 mb-4">
                   <h2 className="mb-0 font-weight-bold">
-                    {product.price.toLocaleString("vi-VN")}₫
+                    {formatPrice(product.price)}
                   </h2>
                 </div>
               </div>
@@ -215,7 +238,7 @@ const ProductDetail = () => {
                   <i className="fas fa-ruler me-2 text-primary"></i>Kích thước
                 </h5>
                 <div className="d-flex gap-3">
-                  {product.sizes.map((size) => (
+                  {product.sizes && product.sizes.map((size) => (
                     <button
                       key={size}
                       onClick={() => setSelectedSize(size)}
@@ -237,7 +260,7 @@ const ProductDetail = () => {
                 <div className="d-flex align-items-center">
                   <div 
                     className="rounded-circle me-3 border" 
-                    style={{ width: '35px', height: '35px', background: 'black' }}
+                    style={{ width: '35px', height: '35px', background: product.color === 'Trắng' ? 'white' : 'black' }}
                   ></div>
                   <span className="font-weight-semibold">{product.color}</span>
                 </div>
@@ -277,7 +300,6 @@ const ProductDetail = () => {
                     <i className="fas fa-shopping-cart me-2"></i>
                     Thêm vào giỏ hàng
                   </button>
-                  
                 </div>
               </div>
 
@@ -347,26 +369,26 @@ const ProductDetail = () => {
                             <ul className="list-unstyled">
                               <li className="mb-2">
                                 <i className="fas fa-check text-success me-2"></i>
-                                Chất liệu cotton cao cấp
+                                Thiết kế xẻ tà lệch độc đáo
                               </li>
                               <li className="mb-2">
                                 <i className="fas fa-check text-success me-2"></i>
-                                Thoáng mát, thấm hút mồ hôi
+                                Phong cách truyền thống kết hợp hiện đại
                               </li>
                               <li className="mb-2">
                                 <i className="fas fa-check text-success me-2"></i>
-                                Phù hợp với mọi hoạt động thể thao
+                                Tông màu thanh lịch
                               </li>
                               <li className="mb-2">
                                 <i className="fas fa-check text-success me-2"></i>
-                                Dễ dàng giặt và bảo quản
+                                Tôn lên vẻ trang nhã và mạnh mẽ
                               </li>
                             </ul>
                           </div>
                           <div className="col-md-6">
                             <h5 className="font-weight-bold text-info mb-3">
                               <i className="fas fa-info-circle me-2"></i>
-                              Hướng dẫn sử dụng
+                              Hướng dẫn bảo quản
                             </h5>
                             <ul className="list-unstyled">
                               <li className="mb-2">
