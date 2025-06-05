@@ -15,11 +15,13 @@ import axios from "axios";
 
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-
+import { useNavigate } from 'react-router-dom';
 export default function Header() {
   const [open, setOpen] = React.useState(false);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -201,10 +203,16 @@ export default function Header() {
                   </Nav.Link>
                 </Nav>
                 <Nav className="ml-auto py-0">
-                  <Nav.Link href="#" className="text-dark">
+                  <Nav.Link
+                    onClick={() => navigate('/login')}
+                    className="text-dark"
+                  >
                     Đăng nhập
                   </Nav.Link>
-                  <Nav.Link href="#" className="text-dark">
+                  <Nav.Link
+                    onClick={() => navigate('/register')}
+                    className="text-dark"
+                  >
                     Đăng ký
                   </Nav.Link>
                 </Nav>
