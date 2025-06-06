@@ -24,10 +24,10 @@ const userSchema = new mongoose.Schema({
         default: 'customer'
     },
     address: {
-        street: { type: String, required: true },
-        ward: { type: String, required: true },
-        district: { type: String, required: true },
-        city: { type: String, required: true }
+        street: { type: String, default: '' },
+        ward: { type: String, default: '' },
+        district: { type: String, default: '' },
+        city: { type: String, default: '' }
     },
     avatar: {
         type: String,

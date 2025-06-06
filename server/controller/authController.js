@@ -7,39 +7,49 @@ require('dotenv').config()
 
 const authController = {
 
-    registerUser: async (req, res) => {
+registerUser: async (req, res) => {
         try {
-            const { name, email, password, confirmPassword } = req.body
+            const { name, email, password, confirmPassword, address } = req.body
 
             if (!name || !email || !password || !confirmPassword) {
-                return res.status(400).json({ message: 'Please fill all fields' })
+                return res.status(400).json({ message: 'Vui lòng điền đầy đủ các trường' })
             }
 
             const emailRegex = /^\S+@\S+\.\S+$/;
             if (!emailRegex.test(email)) {
-                return res.status(400).json({ message: 'Invalid email' });
+                return res.status(400).json({ message: 'Email không hợp lệ' });
             }
 
             const normalizedEmail = email.trim().toLowerCase();
             const existingUser = await User.findOne({ email: normalizedEmail });
             if (existingUser) {
-                return res.status(400).json({ message: 'Email already exists' });
+                return res.status(400).json({ message: 'Email đã tồn tại' });
             }
 
             if (password.length < 6) {
-                return res.status(400).json({ message: 'Password must be at least 6 characters long' })
+                return res.status(400).json({ message: 'Mật khẩu phải dài ít nhất 6 ký tự' })
             }
 
             if (password !== confirmPassword) {
-                return res.status(400).json({ message: 'Password do not match' })
+                return res.status(400).json({ message: 'Mật khẩu không khớp' })
             }
 
             const hashdPassword = await argon2.hash(password)
-            const newUser = new User({ name, email: normalizedEmail, password: hashdPassword })
+            const newUser = new User({ 
+                name, 
+                email: normalizedEmail, 
+                password: hashdPassword, 
+                address: address || { 
+                    street: '',
+                    ward: '',
+                    district: '',
+                    city: ''
+                }
+            })
             await newUser.save()
-            return res.status(201).json({ message: 'Register user successfully' })
+            return res.status(201).json({ message: 'Đăng ký người dùng thành công' })
         } catch (error) {
-            return res.status(500).json(error.message)
+            return res.status(500).json({ message: error.message })
         }
     },
 
