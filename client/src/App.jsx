@@ -23,7 +23,7 @@ function App() {
         <Route path="/LandingPage" element={<LandingPage />} />
         <Route path="/filter-product" element={<FilterProduct />} />
         <Route path="/product-detail" element={<ProductDetailPage />} />
-        <Route path="/cart" element={<CartPage />} />1
+        <Route path="/cart" element={<CartPage />} />
 
         {/* Route store-owner */}
         <Route path="/store-owner/dashboard" element={<StoreOwnerDashboard />} />

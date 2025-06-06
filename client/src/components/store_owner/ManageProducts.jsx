@@ -21,11 +21,11 @@ function ManageProducts() {
   const [isEdit, setIsEdit] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [error, setError] = useState('');
-  const [successMessage, setSuccessMessage] = useState(''); // Thêm state cho thông báo thành công
+  const [successMessage, setSuccessMessage] = useState(''); 
 
   const navigate = useNavigate();
 
-  // Hàm để tự động ẩn thông báo sau 3 giây
+
   const showSuccessMessage = (message) => {
     setSuccessMessage(message);
     setTimeout(() => {
@@ -163,13 +163,13 @@ function ManageProducts() {
           headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' },
         });
         setProducts(products.map(p => (p._id === selectedProduct._id ? res.data.data : p)));
-        showSuccessMessage('Cập nhật sản phẩm thành công!'); // Thêm thông báo thành công
+        showSuccessMessage('Cập nhật sản phẩm thành công!'); 
       } else {
         const res = await axios.post('http://localhost:9999/product/create', form, {
           headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' },
         });
         setProducts([...products, res.data.data]);
-        showSuccessMessage('Thêm sản phẩm thành công!'); // Thêm thông báo thành công
+        showSuccessMessage('Thêm sản phẩm thành công!'); 
       }
       setShowModal(false);
       setError('');
@@ -186,7 +186,7 @@ function ManageProducts() {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         });
         setProducts(products.filter(p => p._id !== proId));
-        showSuccessMessage('Xóa sản phẩm thành công!'); // Thêm thông báo thành công
+        showSuccessMessage('Xóa sản phẩm thành công!');
       } catch (error) {
         console.error('Error deleting product:', error);
         setError(error.response?.data?.message || 'Lỗi khi xóa sản phẩm. Vui lòng thử lại.');
@@ -214,7 +214,6 @@ function ManageProducts() {
       <div style={{ marginLeft: '250px', flexGrow: 1, backgroundColor: '#f8f9fa', minHeight: '100vh' }}>
         <HeaderStoreOwner />
         <Container fluid className="px-4">
-          {/* Thêm style tag để áp dụng CSS tùy chỉnh */}
           <style>{customStyles}</style>
           <Row className="mb-3">
             <Col>
@@ -224,7 +223,7 @@ function ManageProducts() {
               </Button>
             </Col>
           </Row>
-          {successMessage && <Alert variant="success">{successMessage}</Alert>} {/* Thêm Alert cho thông báo thành công */}
+          {successMessage && <Alert variant="success">{successMessage}</Alert>} 
           {error && <Alert variant="danger">{error}</Alert>}
           <Card className="shadow-sm border-0">
             <Card.Body className="p-3">
@@ -286,7 +285,7 @@ function ManageProducts() {
               </Table>
             </Card.Body>
           </Card>
-          {/* Sử dụng size="lg" và thêm className để áp dụng CSS tùy chỉnh */}
+         
           <Modal show={showModal} onHide={() => setShowModal(false)} centered size="lg" className="custom-modal">
             <Modal.Header closeButton>
               <Modal.Title>{isEdit ? 'Sửa sản phẩm' : 'Thêm sản phẩm'}</Modal.Title>
