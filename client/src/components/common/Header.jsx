@@ -12,14 +12,20 @@ import {
   Collapse,
 } from "react-bootstrap";
 import axios from "axios";
-
+import { useNavigate } from "react-router-dom";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { useNavigate } from 'react-router-dom';
 export default function Header() {
   const [open, setOpen] = React.useState(false);
   const [categories, setCategories] = useState([]);
+  const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const [filterProducts, setFilterProducts] = useState([]);
+  const [searchValue, setSearchValue] = useState("");
+
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -41,6 +47,44 @@ export default function Header() {
 
     fetchCategories();
   }, []);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await axios.get("http://localhost:9999/product/list", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+        setProducts(res.data.data);
+        console.log("Products:", res.data.data);
+      } catch (error) {
+        console.error("Lỗi khi tải yêu cầu:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProducts();
+  }, []);
+
+  useEffect(() => {
+    const filterSearch = products.filter((rep) => {
+      let matchesSearch = true;
+      let matchesSort = true;
+      let matchesRadio = true;
+      let matchesCheckBox = true;
+      let matchesSelectUser = true;
+
+      if (searchValue) {
+        matchesSearch = String(rep?.name)
+          .toLowerCase()
+          .includes(searchValue.toLowerCase());
+      }
+
+      return matchesCheckBox & matchesSearch;
+    });
+    setFilterProducts(filterSearch);
+  }, [searchValue, products, categories]);
 
   return (
     <div style={{ backgroundColor: "#f1f1f0", color: "#000" }}>
@@ -98,12 +142,28 @@ export default function Header() {
           </Col>
 
           <Col lg={6} xs={6} className="text-left">
-            <Form>
+            <Form className="d-flex">
               <Form.Control
                 type="text"
                 placeholder="Tìm kiếm sản phẩm"
                 style={{ backgroundColor: "#fff" }}
+                onChange={(e) => setSearchValue(e.target.value)}
+                value={searchValue}
               />
+              <Button
+                variant="primary"
+                className="ml-2"
+                onClick={() =>
+                  navigate(
+                    "/filter-product?search=" + encodeURIComponent(searchValue),
+                    {
+                      state: { products: filterProducts },
+                    }
+                  )
+                }
+              >
+                <i className="fas fa-search"></i>
+              </Button>
             </Form>
           </Col>
 

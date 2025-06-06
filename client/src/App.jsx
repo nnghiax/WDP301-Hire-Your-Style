@@ -21,9 +21,9 @@ function App() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/forget-password" element={<ForgetPasswordPage />} />
         <Route path="/LandingPage" element={<LandingPage />} />
+        <Route path="/filter-product" element={<FilterProduct />} />
         <Route path="/product-detail" element={<ProductDetailPage />} />
-        <Route path="/cart" element={<CartPage />} />
-        <Route path="/FilterProduct" element={<FilterProduct />} />
+        <Route path="/cart" element={<CartPage />} />1
 
         {/* Route store-owner */}
         <Route path="/store-owner/dashboard" element={<StoreOwnerDashboard />} />

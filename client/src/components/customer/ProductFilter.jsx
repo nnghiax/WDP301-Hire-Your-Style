@@ -15,10 +15,24 @@ import axios from "axios";
 import { FaSearch, FaEye, FaShoppingCart } from "react-icons/fa";
 import "../css/ProductFilter.css"; // Assuming you have a CSS file for styles
 
-function ProductFilter() {
-  const [products, setProducts] = useState([]);
+function ProductFilter({ headerProducts }) {
+  const [products, setProducts] = useState(headerProducts || []);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
+  const [filterProducts, setFilterProducts] = useState([]);
+
+  // useEffect(() => {
+  //   const filterSearch = products.filter((rep) => {
+  //     let matchesSearch = true;
+  //     let matchesSort = true;
+  //     let matchesRadio = true;
+  //     let matchesCheckBox = true;
+  //     let matchesSelectUser = true;
+
+  //     if (headerProducts) return matchesCheckBox & matchesSearch;
+  //   });
+  //   setFilterProducts(filterSearch);
+  // }, [products]);
 
   const itemsPerPage = 12;
 
