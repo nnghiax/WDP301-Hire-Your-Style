@@ -507,63 +507,65 @@ const ListProducts = () => {
           </Button>
         </div>
         <Slider {...settings} className="product-carousel">
-          {products.map((product) => (
-            <div key={product.id} className="px-3">
-              <Card className="border-0 shadow-sm rounded-4 overflow-hidden h-100">
-                <div className="position-relative">
-                  <Card.Img
-                    variant="top"
-                    src={product.image}
-                    alt={product.name}
-                    className="img-fluid"
-                  />
-                </div>
-                <Card.Body className="px-3 pt-3 pb-4 d-flex flex-column justify-content-between">
-                  <Card.Title
-                    className="text-uppercase fs-6 mb-2 fw-semibold text-truncate"
-                    style={{
-                      whiteSpace: "nowrap",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                    }}
-                  >
-                    <Button
-                      variant="link"
-                      className="text-dark text-decoration-none p-0"
+          {products
+            .filter((p) => p.categoryId === "682835c1b3ac70579bc4ccf6")
+            .map((product) => (
+              <div key={product.id} className="px-3">
+                <Card className="border-0 shadow-sm rounded-4 overflow-hidden h-100">
+                  <div className="position-relative">
+                    <Card.Img
+                      variant="top"
+                      src={product.image}
+                      alt={product.name}
+                      className="img-fluid"
+                    />
+                  </div>
+                  <Card.Body className="px-3 pt-3 pb-4 d-flex flex-column justify-content-between">
+                    <Card.Title
+                      className="text-uppercase fs-6 mb-2 fw-semibold text-truncate"
                       style={{
                         whiteSpace: "nowrap",
                         overflow: "hidden",
                         textOverflow: "ellipsis",
                       }}
                     >
-                      {product.name}
-                    </Button>
-                  </Card.Title>
+                      <Button
+                        variant="link"
+                        className="text-dark text-decoration-none p-0"
+                        style={{
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}
+                      >
+                        {product.name}
+                      </Button>
+                    </Card.Title>
 
-                  <div className="d-flex justify-content-between align-items-center mb-2">
-                    <span className="fw-bold text-primary">
-                      {product.price}
-                    </span>
+                    <div className="d-flex justify-content-between align-items-center mb-2">
+                      <span className="fw-bold text-primary">
+                        {product.price}
+                      </span>
+                      <Button
+                        variant="outline-primary"
+                        size="sm"
+                        className="rounded-pill px-3 py-1"
+                      >
+                        Thêm vào giỏ
+                      </Button>
+                    </div>
+
                     <Button
-                      variant="outline-primary"
+                      variant="link"
                       size="sm"
-                      className="rounded-pill px-3 py-1"
+                      className="text-primary text-decoration-none p-0 mt-1 text-start"
                     >
-                      Thêm vào giỏ
+                      Xem chi tiết
                     </Button>
-                  </div>
-
-                  <Button
-                    variant="link"
-                    size="sm"
-                    className="text-primary text-decoration-none p-0 mt-1 text-start"
-                  >
-                    Xem chi tiết
-                  </Button>
-                </Card.Body>
-              </Card>
-            </div>
-          ))}
+                  </Card.Body>
+                </Card>
+              </div>
+            ))}
         </Slider>
 
         <div className="d-flex flex-wrap justify-content-between align-items-center mt-5 mb-3">
@@ -573,63 +575,65 @@ const ListProducts = () => {
           </Button>
         </div>
         <Slider {...settings} className="product-carousel">
-          {products.map((product) => (
-            <div key={product.id} className="px-3">
-              <Card className="border-0 shadow-sm rounded-4 overflow-hidden h-100">
-                <div className="position-relative">
-                  <Card.Img
-                    variant="top"
-                    src={product.image}
-                    alt={product.name}
-                    className="img-fluid"
-                  />
-                </div>
-                <Card.Body className="px-3 pt-3 pb-4 d-flex flex-column justify-content-between">
-                  <Card.Title
-                    className="text-uppercase fs-6 mb-2 fw-semibold text-truncate"
-                    style={{
-                      whiteSpace: "nowrap",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                    }}
-                  >
-                    <Button
-                      variant="link"
-                      className="text-dark text-decoration-none p-0"
+          {products
+            .filter((p) => p.categoryId === "6839b61a5c80c624e38683ab")
+            .map((product) => (
+              <div key={product.id} className="px-3">
+                <Card className="border-0 shadow-sm rounded-4 overflow-hidden h-100">
+                  <div className="position-relative">
+                    <Card.Img
+                      variant="top"
+                      src={product.image}
+                      alt={product.name}
+                      className="img-fluid"
+                    />
+                  </div>
+                  <Card.Body className="px-3 pt-3 pb-4 d-flex flex-column justify-content-between">
+                    <Card.Title
+                      className="text-uppercase fs-6 mb-2 fw-semibold text-truncate"
                       style={{
                         whiteSpace: "nowrap",
                         overflow: "hidden",
                         textOverflow: "ellipsis",
                       }}
                     >
-                      {product.name}
-                    </Button>
-                  </Card.Title>
+                      <Button
+                        variant="link"
+                        className="text-dark text-decoration-none p-0"
+                        style={{
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}
+                      >
+                        {product.name}
+                      </Button>
+                    </Card.Title>
 
-                  <div className="d-flex justify-content-between align-items-center mb-2">
-                    <span className="fw-bold text-primary">
-                      {product.price}
-                    </span>
+                    <div className="d-flex justify-content-between align-items-center mb-2">
+                      <span className="fw-bold text-primary">
+                        {product.price}
+                      </span>
+                      <Button
+                        variant="outline-primary"
+                        size="sm"
+                        className="rounded-pill px-3 py-1"
+                      >
+                        Thêm vào giỏ
+                      </Button>
+                    </div>
+
                     <Button
-                      variant="outline-primary"
+                      variant="link"
                       size="sm"
-                      className="rounded-pill px-3 py-1"
+                      className="text-primary text-decoration-none p-0 mt-1 text-start"
                     >
-                      Thêm vào giỏ
+                      Xem chi tiết
                     </Button>
-                  </div>
-
-                  <Button
-                    variant="link"
-                    size="sm"
-                    className="text-primary text-decoration-none p-0 mt-1 text-start"
-                  >
-                    Xem chi tiết
-                  </Button>
-                </Card.Body>
-              </Card>
-            </div>
-          ))}
+                  </Card.Body>
+                </Card>
+              </div>
+            ))}
         </Slider>
 
         <div className="d-flex flex-wrap justify-content-between align-items-center mt-5 mb-3">
@@ -639,63 +643,65 @@ const ListProducts = () => {
           </Button>
         </div>
         <Slider {...settings} className="product-carousel">
-          {products.map((product) => (
-            <div key={product.id} className="px-3">
-              <Card className="border-0 shadow-sm rounded-4 overflow-hidden h-100">
-                <div className="position-relative">
-                  <Card.Img
-                    variant="top"
-                    src={product.image}
-                    alt={product.name}
-                    className="img-fluid"
-                  />
-                </div>
-                <Card.Body className="px-3 pt-3 pb-4 d-flex flex-column justify-content-between">
-                  <Card.Title
-                    className="text-uppercase fs-6 mb-2 fw-semibold text-truncate"
-                    style={{
-                      whiteSpace: "nowrap",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                    }}
-                  >
-                    <Button
-                      variant="link"
-                      className="text-dark text-decoration-none p-0"
+          {products
+            .filter((p) => p.categoryId === "682835e33bae4dfdf16522c1")
+            .map((product) => (
+              <div key={product.id} className="px-3">
+                <Card className="border-0 shadow-sm rounded-4 overflow-hidden h-100">
+                  <div className="position-relative">
+                    <Card.Img
+                      variant="top"
+                      src={product.image}
+                      alt={product.name}
+                      className="img-fluid"
+                    />
+                  </div>
+                  <Card.Body className="px-3 pt-3 pb-4 d-flex flex-column justify-content-between">
+                    <Card.Title
+                      className="text-uppercase fs-6 mb-2 fw-semibold text-truncate"
                       style={{
                         whiteSpace: "nowrap",
                         overflow: "hidden",
                         textOverflow: "ellipsis",
                       }}
                     >
-                      {product.name}
-                    </Button>
-                  </Card.Title>
+                      <Button
+                        variant="link"
+                        className="text-dark text-decoration-none p-0"
+                        style={{
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}
+                      >
+                        {product.name}
+                      </Button>
+                    </Card.Title>
 
-                  <div className="d-flex justify-content-between align-items-center mb-2">
-                    <span className="fw-bold text-primary">
-                      {product.price}
-                    </span>
+                    <div className="d-flex justify-content-between align-items-center mb-2">
+                      <span className="fw-bold text-primary">
+                        {product.price}
+                      </span>
+                      <Button
+                        variant="outline-primary"
+                        size="sm"
+                        className="rounded-pill px-3 py-1"
+                      >
+                        Thêm vào giỏ
+                      </Button>
+                    </div>
+
                     <Button
-                      variant="outline-primary"
+                      variant="link"
                       size="sm"
-                      className="rounded-pill px-3 py-1"
+                      className="text-primary text-decoration-none p-0 mt-1 text-start"
                     >
-                      Thêm vào giỏ
+                      Xem chi tiết
                     </Button>
-                  </div>
-
-                  <Button
-                    variant="link"
-                    size="sm"
-                    className="text-primary text-decoration-none p-0 mt-1 text-start"
-                  >
-                    Xem chi tiết
-                  </Button>
-                </Card.Body>
-              </Card>
-            </div>
-          ))}
+                  </Card.Body>
+                </Card>
+              </div>
+            ))}
         </Slider>
       </Container>
     </section>
