@@ -8,7 +8,7 @@ function LandingPage() {
   return (
     <>
       {/* <SplashCursor /> */}
-
+      <Header />
       <ListProducts />
       <Footer />
     </>

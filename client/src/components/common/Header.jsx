@@ -9,22 +9,20 @@ import {
   Form,
   Button,
   Badge,
-  Collapse,
 } from "react-bootstrap";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { useNavigate } from 'react-router-dom';
+
 export default function Header() {
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const [filterProducts, setFilterProducts] = useState([]);
   const [searchValue, setSearchValue] = useState("");
-
 
   const navigate = useNavigate();
 
@@ -37,14 +35,12 @@ export default function Header() {
           },
         });
         setCategories(res.data.data);
-        console.log("Categories:", res.data.data);
       } catch (error) {
-        console.error("Lỗi khi tải yêu cầu:", error);
+        console.error("Lỗi khi tải danh mục:", error);
       } finally {
         setLoading(false);
       }
     };
-
     fetchCategories();
   }, []);
 
@@ -57,9 +53,8 @@ export default function Header() {
           },
         });
         setProducts(res.data.data);
-        console.log("Products:", res.data.data);
       } catch (error) {
-        console.error("Lỗi khi tải yêu cầu:", error);
+        console.error("Lỗi khi tải sản phẩm:", error);
       } finally {
         setLoading(false);
       }
@@ -70,10 +65,6 @@ export default function Header() {
   useEffect(() => {
     const filterSearch = products.filter((rep) => {
       let matchesSearch = true;
-      let matchesSort = true;
-      let matchesRadio = true;
-      let matchesCheckBox = true;
-      let matchesSelectUser = true;
 
       if (searchValue) {
         matchesSearch = String(rep?.name)
@@ -81,10 +72,10 @@ export default function Header() {
           .includes(searchValue.toLowerCase());
       }
 
-      return matchesCheckBox & matchesSearch;
+      return matchesSearch;
     });
     setFilterProducts(filterSearch);
-  }, [searchValue, products, categories]);
+  }, [searchValue, products]);
 
   return (
     <div style={{ backgroundColor: "#f1f1f0", color: "#000" }}>
@@ -184,15 +175,14 @@ export default function Header() {
         </Row>
       </Container>
 
-      <Container fluid className="mb-5" style={{ backgroundColor: "#f1f1f0" }}>
+      <Container fluid style={{ backgroundColor: "#f1f1f0" }}>
         <Row className="border-top px-xl-5">
-          <Col lg={3} className="d-none d-lg-block">
+          <Col lg={3} className="d-none d-lg-block position-relative">
             <Button
               variant="primary"
               className="d-flex align-items-center justify-content-between w-100 shadow-none"
               style={{ height: "65px", marginTop: "-1px", padding: "0 30px" }}
               onClick={() => setOpen(!open)}
-              aria-controls="navbar-vertical"
               aria-expanded={open}
             >
               <h6 className="m-0 text-white">Danh mục</h6>
@@ -200,14 +190,20 @@ export default function Header() {
                 className={`fa fa-angle-${open ? "up" : "down"} text-dark`}
               ></i>
             </Button>
-            <Collapse in={open}>
+
+            {open && (
               <nav
-                id="navbar-vertical"
                 className="navbar navbar-vertical navbar-light align-items-start p-0 border border-top-0 border-bottom-0"
                 style={{
+                  position: "absolute",
+                  top: "100%",
+                  left: 0,
+                  zIndex: 1050,
+                  width: "100%",
                   maxHeight: "410px",
                   overflowY: "auto",
                   backgroundColor: "#fff",
+                  boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
                 }}
               >
                 <Nav className="flex-column w-100">
@@ -218,7 +214,7 @@ export default function Header() {
                   ))}
                 </Nav>
               </nav>
-            </Collapse>
+            )}
           </Col>
 
           <Col lg={9}>
@@ -264,13 +260,13 @@ export default function Header() {
                 </Nav>
                 <Nav className="ml-auto py-0">
                   <Nav.Link
-                    onClick={() => navigate('/login')}
+                    onClick={() => navigate("/login")}
                     className="text-dark"
                   >
                     Đăng nhập
                   </Nav.Link>
                   <Nav.Link
-                    onClick={() => navigate('/register')}
+                    onClick={() => navigate("/register")}
                     className="text-dark"
                   >
                     Đăng ký
