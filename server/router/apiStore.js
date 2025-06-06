@@ -2,7 +2,7 @@ const router = require('express').Router()
 const storeController = require('../controller/storeController')
 const middleware = require('../controller/middleware')
 const {uploadCloud} = require('../controller/imageUpload')
-
+router.get('/list', middleware.verifyToken, storeController.listStores);
 
 router.get('/detail/:storeId', storeController.detailStore)
 

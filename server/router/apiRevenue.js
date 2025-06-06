@@ -7,7 +7,7 @@ const middlewareController = require('../controller/middleware');
 router.use(middlewareController.verifyToken, middlewareController.verifyOwner);
 
 router.get('/total', revenueController.getTotalRevenue); 
-router.get('/list', revenueController.getRevenueDetails); 
+router.get('/details', revenueController.getRevenueDetails); 
 router.get('/daily', revenueController.getDailyRevenue); 
 router.get('/monthly', revenueController.getMonthlyRevenue); 
 router.get('/yearly', revenueController.getYearlyRevenue);
