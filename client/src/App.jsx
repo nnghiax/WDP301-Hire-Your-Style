@@ -14,7 +14,7 @@ function App() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/forget-password" element={<ForgetPasswordPage />} />
         <Route path="/LandingPage" element={<LandingPage />} />
-        <Route path="/FilterProduct" element={<FilterProduct />} />
+        <Route path="/filter-product" element={<FilterProduct />} />
       </Routes>
     </Router>
   );
