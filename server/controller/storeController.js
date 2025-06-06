@@ -2,6 +2,18 @@ const Store = require('../model/Store')
 
 
 const storeController = {
+    listStores: async (req, res) => {
+    try {
+      const userId = req.userId; // Lấy userId từ middleware verifyToken
+      const stores = await Store.find({ userId, isActive: true }); // Chỉ lấy cửa hàng active của user
+      if (!stores || stores.length === 0) {
+        return res.status(404).json({ message: 'No stores found for this user' });
+      }
+      return res.status(200).json({ success: true, data: stores });
+    } catch (error) {
+      return res.status(500).json({ message: 'Server error', error: error.message });
+    }
+  },
 
     detailStore: async (req, res) => {
         try {
