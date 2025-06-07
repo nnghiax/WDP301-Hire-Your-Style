@@ -1,6 +1,7 @@
 const Product = require('../model/Product');
 const User = require('../model/User');
 const nodemailer = require('nodemailer');
+const Review = require('../model/Review');
 
 exports.toggleProductVisibility = async (req, res) => {
     try {
@@ -50,4 +51,62 @@ exports.toggleProductVisibility = async (req, res) => {
     } catch (err) {
         res.status(500).json({ message: 'Server error', error: err.message });
     }
+};
+exports.getLowRatedProducts = async (req, res) => {
+  try {
+    // Lấy tất cả review có rating <= 2
+    const lowRated = await Review.aggregate([
+      {
+        $match: { rating: { $lte: 2 } }
+      },
+      {
+        $group: {
+          _id: "$productId",
+          avgRating: { $avg: "$rating" },
+          count: { $sum: 1 }
+        }
+      },
+      {
+        $match: { avgRating: { $lte: 2 } }
+      },
+      {
+        $lookup: {
+          from: "products",
+          localField: "_id",
+          foreignField: "_id",
+          as: "product"
+        }
+      },
+      {
+        $unwind: "$product"
+      },
+      {
+        $project: {
+          _id: "$product._id",
+          name: "$product.name",
+          price: "$product.price",
+          isAvailable: "$product.isAvailable",
+          avgRating: 1,
+          reviewCount: "$count"
+        }
+      }
+    ]);
+
+    res.status(200).json({
+      success: true,
+      message: "Low-rated products fetched successfully.",
+      data: lowRated
+    });
+
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Server error', error: error.message });
+  }
+};
+exports.testGetReviews = async (req, res) => {
+  try {
+    const reviews = await Review.find().limit(10);
+    res.status(200).json({ success: true, reviews });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
 };

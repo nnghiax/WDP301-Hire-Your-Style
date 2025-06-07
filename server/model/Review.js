@@ -6,6 +6,11 @@ const reviewSchema = mongoose.Schema({
         ref: 'users',
         required: true
     },
+    productId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'products',
+        required: true
+    },
     rentalId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'rentals',
@@ -24,4 +29,4 @@ const reviewSchema = mongoose.Schema({
     },
 }, { timestamps: true })
 
-module.exports = mongoose.model('reviews', reviewSchema)
+module.exports = mongoose.model('reviews', reviewSchema,'reviews')
