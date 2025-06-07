@@ -3,11 +3,11 @@ const router = express.Router();
 const revenueController = require('../controller/revenueController');
 const { verifyToken, verifyAdmin, verifyOwner } = require('../controller/middleware');
 
-router.get('/total', revenueController.getTotalRevenue); 
-router.get('/details', revenueController.getRevenueDetails); 
-router.get('/daily', revenueController.getDailyRevenue); 
-router.get('/monthly', revenueController.getMonthlyRevenue); 
-router.get('/yearly', revenueController.getYearlyRevenue);
+router.get('/total', verifyToken, verifyOwner, revenueController.getTotalRevenue); 
+router.get('/details',verifyToken, verifyOwner, revenueController.getRevenueDetails); 
+router.get('/daily',verifyToken, verifyOwner, revenueController.getDailyRevenue); 
+router.get('/monthly', verifyToken, verifyOwner,revenueController.getMonthlyRevenue); 
+router.get('/yearly',verifyToken, verifyOwner, revenueController.getYearlyRevenue);
 router.get('/admin/commission', verifyToken, verifyAdmin, revenueController.getAdminMonthlyAndYearlyCommission);
 
 
