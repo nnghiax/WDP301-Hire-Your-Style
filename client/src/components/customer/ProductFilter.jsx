@@ -19,55 +19,187 @@ function ProductFilter({ headerProducts }) {
   const [products, setProducts] = useState(headerProducts || []);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const [filterProducts, setFilterProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortOption, setSortOption] = useState("latest");
 
-  // useEffect(() => {
-  //   const filterSearch = products.filter((rep) => {
-  //     let matchesSearch = true;
-  //     let matchesSort = true;
-  //     let matchesRadio = true;
-  //     let matchesCheckBox = true;
-  //     let matchesSelectUser = true;
-
-  //     if (headerProducts) return matchesCheckBox & matchesSearch;
-  //   });
-  //   setFilterProducts(filterSearch);
-  // }, [products]);
+  // Filter states
+  const [selectedPriceRanges, setSelectedPriceRanges] = useState(["all"]);
+  const [selectedColors, setSelectedColors] = useState(["all"]);
+  const [selectedSizes, setSelectedSizes] = useState(["all"]);
 
   const itemsPerPage = 12;
 
   const priceOptions = [
     { id: "all", label: "All Price", count: 1000, checked: true },
-    { id: "1", label: "$0 - $100", count: 150 },
-    { id: "2", label: "$100 - $200", count: 295 },
-    { id: "3", label: "$200 - $300", count: 246 },
-    { id: "4", label: "$300 - $400", count: 145 },
-    { id: "5", label: "$400 - $500", count: 168 },
+    { id: "0-100", label: "$0 - $100", count: 150 },
+    { id: "100-200", label: "$100 - $200", count: 295 },
+    { id: "200-300", label: "$200 - $300", count: 246 },
+    { id: "300-400", label: "$300 - $400", count: 145 },
+    { id: "400-500", label: "$400 - $500", count: 168 },
   ];
 
   const colorOptions = [
     { id: "all", label: "All Color", count: 1000, checked: true },
-    { id: "1", label: "Black", count: 150 },
-    { id: "2", label: "White", count: 295 },
-    { id: "3", label: "Red", count: 246 },
-    { id: "4", label: "Blue", count: 145 },
-    { id: "5", label: "Green", count: 168 },
+    { id: "Trắng", label: "Trắng", count: 295 },
+    { id: "Xanh lá", label: "Xanh lá", count: 168 },
+    { id: "Đỏ", label: "Đỏ", count: 246 },
+    { id: "Be", label: "Be", count: 120 },
+    { id: "Đen", label: "Đen", count: 150 },
+    { id: "Tím", label: "Tím", count: 90 },
   ];
 
   const sizeOptions = [
     { id: "all", label: "All Size", count: 1000, checked: true },
-    { id: "1", label: "XS", count: 150 },
-    { id: "2", label: "S", count: 295 },
-    { id: "3", label: "M", count: 246 },
-    { id: "4", label: "L", count: 145 },
-    { id: "5", label: "XL", count: 168 },
+    { id: "xs", label: "XS", count: 150 },
+    { id: "s", label: "S", count: 295 },
+    { id: "m", label: "M", count: 246 },
+    { id: "l", label: "L", count: 145 },
+    { id: "xl", label: "XL", count: 168 },
   ];
 
-  const FilterSection = ({ title, options, namePrefix }) => (
+  // Filter functions
+  const filterByPrice = (product, priceRanges) => {
+    if (priceRanges.includes("all")) return true;
+
+    const price = product.price || 0;
+    return priceRanges.some((range) => {
+      const [min, max] = range.split("-").map(Number);
+      return price >= min && price <= max;
+    });
+  };
+
+  const filterByColor = (product, colors) => {
+    if (colors.includes("all")) return true;
+
+    // Giả sử product có thuộc tính color hoặc colors (array)
+    const productColors = product.color
+      ? [product.color.toLowerCase()]
+      : product.colors
+      ? product.colors.map((c) => c.toLowerCase())
+      : [];
+
+    return colors.some((color) => productColors.includes(color.toLowerCase()));
+  };
+
+  const filterBySize = (product, sizes) => {
+    if (sizes.includes("all")) return true;
+
+    // Giả sử product có thuộc tính size hoặc sizes (array)
+    const productSizes = product.size
+      ? [product.size.toLowerCase()]
+      : product.sizes
+      ? product.sizes.map((s) => s.toLowerCase())
+      : [];
+
+    return sizes.some((size) => productSizes.includes(size.toLowerCase()));
+  };
+
+  const filterBySearch = (product, searchTerm) => {
+    if (!searchTerm) return true;
+
+    const productName = product.name ? product.name.toLowerCase() : "";
+    return productName.includes(searchTerm.toLowerCase());
+  };
+
+  const sortProducts = (products, sortOption) => {
+    const sortedProducts = [...products];
+
+    switch (sortOption) {
+      case "latest":
+        return sortedProducts.sort(
+          (a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0)
+        );
+      case "popularity":
+        return sortedProducts.sort(
+          (a, b) => (b.popularity || 0) - (a.popularity || 0)
+        );
+      case "rating":
+        return sortedProducts.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+      case "price-low":
+        return sortedProducts.sort((a, b) => (a.price || 0) - (b.price || 0));
+      case "price-high":
+        return sortedProducts.sort((a, b) => (b.price || 0) - (a.price || 0));
+      default:
+        return sortedProducts;
+    }
+  };
+
+  // Filter effect
+  useEffect(() => {
+    let filtered = [...products];
+
+    // Apply filters
+    filtered = filtered.filter(
+      (product) =>
+        filterByPrice(product, selectedPriceRanges) &&
+        filterByColor(product, selectedColors) &&
+        filterBySize(product, selectedSizes) &&
+        filterBySearch(product, searchTerm)
+    );
+
+    // Apply sorting
+    filtered = sortProducts(filtered, sortOption);
+
+    setFilteredProducts(filtered);
+    setCurrentPage(1); // Reset to first page when filter changes
+  }, [
+    products,
+    selectedPriceRanges,
+    selectedColors,
+    selectedSizes,
+    searchTerm,
+    sortOption,
+  ]);
+
+  // Handle filter changes
+  const handlePriceFilterChange = (priceId, checked) => {
+    if (priceId === "all") {
+      setSelectedPriceRanges(checked ? ["all"] : []);
+    } else {
+      const newRanges = checked
+        ? [...selectedPriceRanges.filter((id) => id !== "all"), priceId]
+        : selectedPriceRanges.filter((id) => id !== priceId);
+
+      setSelectedPriceRanges(newRanges.length === 0 ? ["all"] : newRanges);
+    }
+  };
+
+  const handleColorFilterChange = (colorId, checked) => {
+    if (colorId === "all") {
+      setSelectedColors(checked ? ["all"] : []);
+    } else {
+      const newColors = checked
+        ? [...selectedColors.filter((id) => id !== "all"), colorId]
+        : selectedColors.filter((id) => id !== colorId);
+
+      setSelectedColors(newColors.length === 0 ? ["all"] : newColors);
+    }
+  };
+
+  const handleSizeFilterChange = (sizeId, checked) => {
+    if (sizeId === "all") {
+      setSelectedSizes(checked ? ["all"] : []);
+    } else {
+      const newSizes = checked
+        ? [...selectedSizes.filter((id) => id !== "all"), sizeId]
+        : selectedSizes.filter((id) => id !== sizeId);
+
+      setSelectedSizes(newSizes.length === 0 ? ["all"] : newSizes);
+    }
+  };
+
+  const FilterSection = ({
+    title,
+    options,
+    namePrefix,
+    selectedItems,
+    onFilterChange,
+  }) => (
     <div className="border-bottom mb-4 pb-4">
       <h5 className="fw-semibold mb-4">{title}</h5>
       <Form>
-        {options.map(({ id, label, count, checked }) => (
+        {options.map(({ id, label, count }) => (
           <div
             key={id}
             className="d-flex align-items-center justify-content-between mb-3"
@@ -76,7 +208,8 @@ function ProductFilter({ headerProducts }) {
               type="checkbox"
               id={`${namePrefix}-${id}`}
               label={label}
-              defaultChecked={checked}
+              checked={selectedItems.includes(id)}
+              onChange={(e) => onFilterChange(id, e.target.checked)}
               className="m-0"
             />
             <Badge bg="light" text="dark" className="border fw-normal">
@@ -88,32 +221,48 @@ function ProductFilter({ headerProducts }) {
     </div>
   );
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const res = await axios.get("http://localhost:9999/product/list", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
-        setProducts(res.data.data);
-      } catch (error) {
-        console.error("Lỗi khi tải sản phẩm:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  console.log("Filtered Products:", filteredProducts);
 
-    fetchProducts();
-  }, []);
+  useEffect(() => {
+    if (headerProducts && headerProducts.length > 0) {
+      setProducts(headerProducts);
+      setCurrentPage(1);
+      setLoading(false);
+    } else {
+      fetchProducts(); // Nếu không có headerProducts, gọi API
+    }
+  }, [headerProducts]);
+
+  const fetchProducts = async () => {
+    try {
+      const res = await axios.get("http://localhost:9999/product/list", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      setProducts(res.data.data);
+    } catch (error) {
+      console.error("Lỗi khi tải sản phẩm:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Phân trang
-  const totalPages = Math.ceil(products.length / itemsPerPage);
+  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
   const indexOfLast = currentPage * itemsPerPage;
   const indexOfFirst = indexOfLast - itemsPerPage;
-  const currentProducts = products.slice(indexOfFirst, indexOfLast);
+  const currentProducts = filteredProducts.slice(indexOfFirst, indexOfLast);
 
   const handlePageChange = (page) => setCurrentPage(page);
+
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const handleSortChange = (sortValue) => {
+    setSortOption(sortValue);
+  };
 
   return (
     <Row>
@@ -123,16 +272,22 @@ function ProductFilter({ headerProducts }) {
           title="Filter by price"
           options={priceOptions}
           namePrefix="price"
+          selectedItems={selectedPriceRanges}
+          onFilterChange={handlePriceFilterChange}
         />
         <FilterSection
           title="Filter by color"
           options={colorOptions}
           namePrefix="color"
+          selectedItems={selectedColors}
+          onFilterChange={handleColorFilterChange}
         />
         <FilterSection
           title="Filter by size"
           options={sizeOptions}
           namePrefix="size"
+          selectedItems={selectedSizes}
+          onFilterChange={handleSizeFilterChange}
         />
       </Col>
 
@@ -143,7 +298,11 @@ function ProductFilter({ headerProducts }) {
             <div className="d-flex align-items-center justify-content-between mb-4">
               <Form className="d-flex">
                 <InputGroup>
-                  <FormControl placeholder="Search by name" />
+                  <FormControl
+                    placeholder="Search by name"
+                    value={searchTerm}
+                    onChange={handleSearchChange}
+                  />
                   <InputGroup.Text className="bg-transparent text-primary">
                     <FaSearch />
                   </InputGroup.Text>
@@ -154,74 +313,113 @@ function ProductFilter({ headerProducts }) {
                   Sort by
                 </Dropdown.Toggle>
                 <Dropdown.Menu align="end">
-                  <Dropdown.Item href="#">Latest</Dropdown.Item>
-                  <Dropdown.Item href="#">Popularity</Dropdown.Item>
-                  <Dropdown.Item href="#">Best Rating</Dropdown.Item>
+                  <Dropdown.Item onClick={() => handleSortChange("latest")}>
+                    Latest
+                  </Dropdown.Item>
+                  <Dropdown.Item onClick={() => handleSortChange("popularity")}>
+                    Popularity
+                  </Dropdown.Item>
+                  <Dropdown.Item onClick={() => handleSortChange("rating")}>
+                    Best Rating
+                  </Dropdown.Item>
+                  <Dropdown.Item onClick={() => handleSortChange("price-low")}>
+                    Price: Low to High
+                  </Dropdown.Item>
+                  <Dropdown.Item onClick={() => handleSortChange("price-high")}>
+                    Price: High to Low
+                  </Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>
             </div>
           </Col>
 
-          {/* Hiển thị 12 sản phẩm, 4 sản phẩm mỗi hàng */}
-          {currentProducts.map((product) => (
-            <Col lg={3} md={4} sm={6} xs={12} className="pb-1" key={product.id}>
-              <Card className="product-item border-0 mb-4">
-                <Card.Header className="product-img position-relative overflow-hidden bg-transparent border p-0">
-                  <Card.Img
-                    variant="top"
-                    src={product.image}
-                    className="img-fluid w-100"
-                  />
-                </Card.Header>
-                <Card.Body className="border-start border-end text-center p-0 pt-4 pb-3">
-                  <h6 className="text-truncate mb-3">{product.name}</h6>
-                  <div className="d-flex justify-content-center">
-                    <h6>${product.price?.toFixed(2) || "0.00"}</h6>
-                    <h6 className="text-muted ms-2">
-                      <del>${product.price?.toFixed(2) || "0.00"}</del>
-                    </h6>
-                  </div>
-                </Card.Body>
-                <Card.Footer className="d-flex justify-content-between bg-light border">
-                  <Button variant="link" className="text-dark p-0 btn-sm">
-                    <FaEye className="text-primary me-1" />
-                    View Detail
-                  </Button>
-                  <Button variant="link" className="text-dark p-0 btn-sm">
-                    <FaShoppingCart className="text-primary me-1" />
-                    Add To Cart
-                  </Button>
-                </Card.Footer>
-              </Card>
+          {/* Hiển thị kết quả tìm kiếm */}
+          <Col xs={12} className="pb-3">
+            <p className="text-muted">
+              Showing {currentProducts.length} of {filteredProducts.length}{" "}
+              products
+            </p>
+          </Col>
+
+          {/* Hiển thị sản phẩm đã lọc */}
+          {currentProducts.length > 0 ? (
+            currentProducts.map((product) => (
+              <Col
+                lg={3}
+                md={4}
+                sm={6}
+                xs={12}
+                className="pb-1"
+                key={product.id || product._id}
+              >
+                <Card className="product-item border-0 mb-4">
+                  <Card.Header className="product-img position-relative overflow-hidden bg-transparent border p-0">
+                    <Card.Img
+                      variant="top"
+                      src={product.image}
+                      className="img-fluid w-100"
+                    />
+                  </Card.Header>
+                  <Card.Body className="border-start border-end text-center p-0 pt-4 pb-3">
+                    <h6 className="text-truncate mb-3">{product.name}</h6>
+                    <div className="d-flex justify-content-center">
+                      <h6>${product.price?.toFixed(2) || "0.00"}</h6>
+                      <h6 className="text-muted ms-2">
+                        <del>${product.price?.toFixed(2) || "0.00"}</del>
+                      </h6>
+                    </div>
+                  </Card.Body>
+                  <Card.Footer className="d-flex justify-content-between bg-light border">
+                    <Button variant="link" className="text-dark p-0 btn-sm">
+                      <FaEye className="text-primary me-1" />
+                      View Detail
+                    </Button>
+                    <Button variant="link" className="text-dark p-0 btn-sm">
+                      <FaShoppingCart className="text-primary me-1" />
+                      Add To Cart
+                    </Button>
+                  </Card.Footer>
+                </Card>
+              </Col>
+            ))
+          ) : (
+            <Col xs={12} className="text-center py-5">
+              <h5>Không tìm thấy sản phẩm nào</h5>
+              <p className="text-muted">
+                Vui lòng thử thay đổi bộ lọc hoặc từ khóa tìm kiếm
+              </p>
             </Col>
-          ))}
+          )}
 
           {/* Phân trang */}
-          <Col xs={12} className="pb-1">
-            <Pagination className="justify-content-center mb-3">
-              <Pagination.Prev
-                onClick={() =>
-                  currentPage > 1 && handlePageChange(currentPage - 1)
-                }
-                disabled={currentPage === 1}
-              />
-              {Array.from({ length: totalPages }, (_, i) => (
-                <Pagination.Item
-                  key={i + 1}
-                  active={i + 1 === currentPage}
-                  onClick={() => handlePageChange(i + 1)}
-                >
-                  {i + 1}
-                </Pagination.Item>
-              ))}
-              <Pagination.Next
-                onClick={() =>
-                  currentPage < totalPages && handlePageChange(currentPage + 1)
-                }
-                disabled={currentPage === totalPages}
-              />
-            </Pagination>
-          </Col>
+          {totalPages > 1 && (
+            <Col xs={12} className="pb-1">
+              <Pagination className="justify-content-center mb-3">
+                <Pagination.Prev
+                  onClick={() =>
+                    currentPage > 1 && handlePageChange(currentPage - 1)
+                  }
+                  disabled={currentPage === 1}
+                />
+                {Array.from({ length: totalPages }, (_, i) => (
+                  <Pagination.Item
+                    key={i + 1}
+                    active={i + 1 === currentPage}
+                    onClick={() => handlePageChange(i + 1)}
+                  >
+                    {i + 1}
+                  </Pagination.Item>
+                ))}
+                <Pagination.Next
+                  onClick={() =>
+                    currentPage < totalPages &&
+                    handlePageChange(currentPage + 1)
+                  }
+                  disabled={currentPage === totalPages}
+                />
+              </Pagination>
+            </Col>
+          )}
         </Row>
       </Col>
     </Row>

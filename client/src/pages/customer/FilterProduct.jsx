@@ -10,14 +10,12 @@ function FilterProduct() {
   const location = useLocation();
   const products = location.state?.products || [];
 
-  console.log("Filtered Products:", products);
-
   return (
     <>
       <BackToTop />
       <Header />
       <Container>
-        <ProductFilter products={products} />
+        <ProductFilter headerProducts={products} />
       </Container>
       <Footer />
     </>
