@@ -395,6 +395,7 @@ const ListProducts = () => {
                       variant="link"
                       size="sm"
                       className="text-primary text-decoration-none p-0 mt-1 text-start"
+                      onClick={() => navigate(`/product-detail/${product._id}`)}
                     >
                       Xem chi tiết
                     </Button>

@@ -1,55 +1,69 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from "axios";
 
-const ShoppingCart = () => {
-  // Sample data matching your structure
-  const [cartData, setCartData] = useState([
-    {
-      _id: "682df8d6ea31f03318b60851",
-      userId: "68276d08bbb0238de8f4e48a",
-      items: [
-        {
-          productId: "6829efb36ec994982cf44d9f",
-          size: "L",
-          quantity: 2,
-          _id: "682df8d6ea31f03318b60852",
-          productDetails: {
-            name: "Áo Sơ Mi Cao Cấp",
-            image: "https://picsum.photos/300/300?random=1",
-            price: 150000
-          }
-        },
-        {
-          productId: "6829ef3b6ec994982cf44d9c",
-          size: "M",
-          quantity: 3,
-          _id: "682df8fdea31f03318b60861",
-          productDetails: {
-            name: "Áo Dài Cách Tân Nam Bạch Gia",
-            image: "https://picsum.photos/300/300?random=2",
-            price: 250000
-          }
+const ShoppingCart = ({ userId }) => {
+  const [cartData, setCartData] = useState([]);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  
+  const fetchCartData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const token = localStorage.getItem('token');
+      console.log('Token:', token);
+      
+      if (!token) {
+        throw new Error('Không tìm thấy token xác thực');
+      }
+      
+      const response = await axios.get('http://localhost:9999/cart/list', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
         }
-      ],
-      updatedAt: "2025-05-21T16:01:26.979Z"
+      });
+  
+      console.log('Response:', response.data);
+      setCartData(response.data.data || response.data || []);
+    } catch (err) {
+      console.error('Error fetching cart data:', err);
+      if (err.response) {
+        setError(`Lỗi server: ${err.response.status} - ${err.response.data.message || err.response.statusText}`);
+      } else if (err.request) {
+        setError('Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng.');
+      } else {
+        setError(err.message);
+      }
+      setCartData([]);
+    } finally {
+      setLoading(false);
     }
-  ]);
+  };
+  
+  useEffect(() => {
+    fetchCartData();
+  }, [userId]);
+  
 
   // Get all items from cart
   const getAllItems = () => {
-    return cartData.length > 0 ? cartData[0].items : [];
+    return cartData || [];
   };
 
-  // Format price
+  // Format price - assuming price is included in the product data
   const formatPrice = (price) => {
-    return new Intl.NumberFormat('vi-VN', {
+    return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'VND'
-    }).format(price);
+      currency: 'USD'
+    }).format(price || 0);
   };
 
   // Calculate item total
   const getItemTotal = (item) => {
-    return item.quantity * item.productDetails.price;
+    return item.quantity * (item.price || 0);
   };
 
   // Calculate subtotal
@@ -60,35 +74,113 @@ const ShoppingCart = () => {
   };
 
   // Update quantity
-  const updateQuantity = (itemId, change) => {
-    setCartData(prevData => {
-      return prevData.map(cart => ({
-        ...cart,
-        items: cart.items.map(item => {
-          if (item._id === itemId) {
-            const newQuantity = Math.max(1, item.quantity + change);
-            return { ...item, quantity: newQuantity };
+  const updateQuantity = async (itemId, change) => {
+    try {
+      const item = cartData.find(item => item._id === itemId);
+      if (!item) return;
+
+      const newQuantity = Math.max(1, item.quantity + change);
+      
+      // Update locally first for better UX
+      setCartData(prevData => 
+        prevData.map(item => 
+          item._id === itemId 
+            ? { ...item, quantity: newQuantity }
+            : item
+        )
+      );
+
+      // Then sync with backend using axios
+      const response = await axios.put(
+        `http://localhost:9999/cart/update-quantity/${itemId}`, 
+        { quantity: newQuantity }, // data object for axios
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
           }
-          return item;
-        })
-      }));
-    });
+        }
+      );
+
+      console.log('Update quantity response:', response.data);
+    } catch (error) {
+      console.error('Error updating quantity:', error);
+      // Revert local changes if API call fails
+      fetchCartData();
+      // Optionally show error message to user
+    }
   };
 
   // Remove item
-  const removeItem = (itemId) => {
-    setCartData(prevData => {
-      return prevData.map(cart => ({
-        ...cart,
-        items: cart.items.filter(item => item._id !== itemId)
-      }));
-    });
+  const removeItem = async (itemId) => {
+    try {
+      // Update locally first
+      setCartData(prevData => prevData.filter(item => item._id !== itemId));
+
+      // Then sync with backend using axios
+      const response = await axios.delete(`http://localhost:9999/cart/delete/${itemId}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        }
+      });
+
+      console.log('Remove item response:', response.data);
+    } catch (error) {
+      console.error('Error removing item:', error);
+      // Revert local changes if API call fails
+      fetchCartData();
+      // Optionally show error message to user
+    }
   };
 
   const subtotal = getSubtotal();
-  const shipping = 30000;
+  const shipping = 1;
   const total = subtotal + shipping;
   const items = getAllItems();
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="container-fluid bg-light py-5">
+        <div className="container">
+          <div className="row justify-content-center">
+            <div className="col-md-6 text-center">
+              <div className="spinner-border text-primary mb-3" role="status">
+                <span className="sr-only">Loading...</span>
+              </div>
+              <h5>Đang tải giỏ hàng...</h5>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="container-fluid bg-light py-5">
+        <div className="container">
+          <div className="row justify-content-center">
+            <div className="col-md-6 text-center">
+              <div className="alert alert-danger">
+                <i className="fas fa-exclamation-triangle me-2"></i>
+                Lỗi tải dữ liệu: {error}
+              </div>
+              <button 
+                className="btn btn-primary"
+                
+              >
+                <i className="fas fa-redo me-2"></i>
+                Thử lại
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container-fluid bg-light py-5">
@@ -125,8 +217,8 @@ const ShoppingCart = () => {
                         {/* Product Image */}
                         <div className="col-md-2 col-sm-3 mb-3 mb-md-0">
                           <img 
-                            src={item.productDetails.image} 
-                            alt={item.productDetails.name}
+                            src={item.image || `https://picsum.photos/300/300?random=${index + 1}`} 
+                            alt={item.name}
                             className="img-fluid rounded shadow-sm"
                             style={{ aspectRatio: '1/1', objectFit: 'cover' }}
                           />
@@ -135,14 +227,14 @@ const ShoppingCart = () => {
                         {/* Product Info */}
                         <div className="col-md-4 col-sm-5 mb-3 mb-md-0">
                           <h5 className="font-weight-bold text-dark mb-2">
-                            {item.productDetails.name}
+                            {item.name}
                           </h5>
                           <p className="text-muted mb-2">
                             <i className="fas fa-tag me-1"></i>
                             Size: <span className="badge badge-secondary">{item.size}</span>
                           </p>
                           <h6 className="text-primary font-weight-bold">
-                            {formatPrice(item.productDetails.price)}
+                            {formatPrice(item.price)}
                           </h6>
                         </div>
                         
@@ -211,9 +303,8 @@ const ShoppingCart = () => {
             </div>
           </div>
 
-          {/* Order Summary */}
           <div className="col-lg-4">
-            <div className="card shadow-sm border-0 rounded-lg overflow-hidden sticky-top" style={{ top: '20px' }}>
+          <div className="card shadow-sm border-0 rounded-lg overflow-hidden" style={{position: 'sticky',top: '20px',zIndex: 1000,background: 'white' }}>
               <div className="card-header bg-gradient-success text-white py-3">
                 <h4 className="mb-0 font-weight-bold">
                   <i className="fas fa-calculator me-2"></i>
@@ -302,6 +393,14 @@ const ShoppingCart = () => {
                   <i className="fas fa-share-alt me-1"></i>
                   Chia sẻ
                 </button>
+                <button 
+                  className="btn btn-outline-info btn-sm mb-2 ms-2"
+                  onClick={fetchCartData}
+                  title="Làm mới giỏ hàng"
+                >
+                  <i className="fas fa-sync-alt me-1"></i>
+                  Làm mới
+                </button>
               </div>
             </div>
           </div>
@@ -331,6 +430,16 @@ const ShoppingCart = () => {
           position: sticky;
           top: 20px;
         }
+        .spinner-border {
+          width: 3rem;
+          height: 3rem;
+        }
+          .cart-summary-sticky {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 20px;
+  z-index: 1020;
+}
       `}</style>
     </div>
   );
