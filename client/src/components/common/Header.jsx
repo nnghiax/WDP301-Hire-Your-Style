@@ -19,11 +19,10 @@ export default function Header() {
   const [open, setOpen] = useState(false);
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-
   const [filterProducts, setFilterProducts] = useState([]);
   const [searchValue, setSearchValue] = useState("");
-
+  const [activeSearchValue, setActiveSearchValue] = useState(""); // Giá trị tìm kiếm thực tế
+  const [selectedCategory, setSelectedCategory] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -37,14 +36,8 @@ export default function Header() {
         setCategories(res.data.data);
       } catch (error) {
         console.error("Lỗi khi tải danh mục:", error);
-      } finally {
-        setLoading(false);
       }
     };
-    fetchCategories();
-  }, []);
-
-  useEffect(() => {
     const fetchProducts = async () => {
       try {
         const res = await axios.get("http://localhost:9999/product/list", {
@@ -55,27 +48,50 @@ export default function Header() {
         setProducts(res.data.data);
       } catch (error) {
         console.error("Lỗi khi tải sản phẩm:", error);
-      } finally {
-        setLoading(false);
       }
     };
+    fetchCategories();
     fetchProducts();
   }, []);
 
   useEffect(() => {
     const filterSearch = products.filter((rep) => {
       let matchesSearch = true;
-
-      if (searchValue) {
-        matchesSearch = String(rep?.name)
-          .toLowerCase()
-          .includes(searchValue.toLowerCase());
+      let matchesCategory = true;
+      if (activeSearchValue) {
+        const keyword = removeVietnameseTones(activeSearchValue.toLowerCase());
+        const productName = removeVietnameseTones(
+          String(rep?.name).toLowerCase()
+        );
+        matchesSearch = productName.includes(keyword);
       }
-
-      return matchesSearch;
+      if (selectedCategory) {
+        matchesCategory = String(rep.categoryId) === String(selectedCategory);
+      }
+      return matchesSearch && matchesCategory;
     });
     setFilterProducts(filterSearch);
-  }, [searchValue, products]);
+    navigate(
+      `/filter-product?search=${encodeURIComponent(
+        activeSearchValue
+      )}&category=${encodeURIComponent(selectedCategory || "")}`,
+      {
+        state: { products: filterSearch },
+      }
+    );
+  }, [activeSearchValue, selectedCategory, products]);
+
+  function removeVietnameseTones(str) {
+    return str
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/đ/g, "d")
+      .replace(/Đ/g, "D");
+  }
+
+  const handleSearch = () => {
+    setActiveSearchValue(searchValue); // Cập nhật giá trị tìm kiếm thực tế
+  };
 
   return (
     <div style={{ backgroundColor: "#f1f1f0", color: "#000" }}>
@@ -116,7 +132,6 @@ export default function Header() {
             </div>
           </Col>
         </Row>
-
         <Row
           className="align-items-center py-3 px-xl-5"
           style={{ backgroundColor: "#f1f1f0" }}
@@ -131,33 +146,26 @@ export default function Header() {
               </h1>
             </a>
           </Col>
-
           <Col lg={6} xs={6} className="text-left">
-            <Form className="d-flex">
+            <Form
+              className="d-flex"
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleSearch();
+              }}
+            >
               <Form.Control
                 type="text"
                 placeholder="Tìm kiếm sản phẩm"
-                style={{ backgroundColor: "#fff" }}
-                onChange={(e) => setSearchValue(e.target.value)}
                 value={searchValue}
+                onChange={(e) => setSearchValue(e.target.value)}
+                style={{ backgroundColor: "#fff" }}
               />
-              <Button
-                variant="primary"
-                className="ml-2"
-                onClick={() =>
-                  navigate(
-                    "/filter-product?search=" + encodeURIComponent(searchValue),
-                    {
-                      state: { products: filterProducts },
-                    }
-                  )
-                }
-              >
+              <Button variant="primary" className="ml-2" type="submit">
                 <i className="fas fa-search"></i>
               </Button>
             </Form>
           </Col>
-
           <Col lg={3} xs={6} className="text-right">
             <Button variant="light" className="border mr-2">
               <i className="fas fa-heart text-primary"></i>
@@ -174,7 +182,6 @@ export default function Header() {
           </Col>
         </Row>
       </Container>
-
       <Container fluid style={{ backgroundColor: "#f1f1f0" }}>
         <Row className="border-top px-xl-5">
           <Col lg={3} className="d-none d-lg-block position-relative">
@@ -190,7 +197,6 @@ export default function Header() {
                 className={`fa fa-angle-${open ? "up" : "down"} text-dark`}
               ></i>
             </Button>
-
             {open && (
               <nav
                 className="navbar navbar-vertical navbar-light align-items-start p-0 border border-top-0 border-bottom-0"
@@ -207,8 +213,33 @@ export default function Header() {
                 }}
               >
                 <Nav className="flex-column w-100">
+                  <Nav.Link
+                    key={0}
+                    href="#"
+                    className={`text-dark ${
+                      selectedCategory === "" ? "fw-bold" : ""
+                    }`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setSelectedCategory("");
+                      setOpen(false);
+                    }}
+                  >
+                    Tất cả danh mục
+                  </Nav.Link>
                   {categories.map((category, index) => (
-                    <Nav.Link key={index} href="#" className="text-dark">
+                    <Nav.Link
+                      key={index + 1}
+                      href="#"
+                      className={`text-dark ${
+                        selectedCategory === category._id ? "fw-bold" : ""
+                      }`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setSelectedCategory(category._id);
+                        setOpen(false);
+                      }}
+                    >
                       {category.name}
                     </Nav.Link>
                   ))}
@@ -216,7 +247,6 @@ export default function Header() {
               </nav>
             )}
           </Col>
-
           <Col lg={9}>
             <Navbar bg="light" expand="lg" className="py-3 py-lg-0 px-0">
               <Navbar.Brand href="#" className="d-block d-lg-none">
@@ -233,13 +263,13 @@ export default function Header() {
                 className="justify-content-between"
               >
                 <Nav className="mr-auto py-0">
-                  <Nav.Link href="index.html" active className="text-dark">
+                  <Nav.Link href="/" className="text-dark">
                     Trang chủ
                   </Nav.Link>
-                  <Nav.Link href="shop.html" className="text-dark">
+                  <Nav.Link href="/shop" className="text-dark">
                     Cửa hàng
                   </Nav.Link>
-                  <Nav.Link href="detail.html" className="text-dark">
+                  <Nav.Link href="/detail" className="text-dark">
                     Chi tiết sản phẩm
                   </Nav.Link>
                   <NavDropdown
@@ -247,14 +277,12 @@ export default function Header() {
                     id="nav-dropdown-pages"
                     className="text-dark"
                   >
-                    <NavDropdown.Item href="cart.html">
-                      Giỏ hàng
-                    </NavDropdown.Item>
-                    <NavDropdown.Item href="checkout.html">
+                    <NavDropdown.Item href="/cart">Giỏ hàng</NavDropdown.Item>
+                    <NavDropdown.Item href="/checkout">
                       Thanh toán
                     </NavDropdown.Item>
                   </NavDropdown>
-                  <Nav.Link href="contact.html" className="text-dark">
+                  <Nav.Link href="/contact" className="text-dark">
                     Liên hệ
                   </Nav.Link>
                 </Nav>
