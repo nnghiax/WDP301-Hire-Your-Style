@@ -22,7 +22,7 @@ function App() {
         <Route path="/forget-password" element={<ForgetPasswordPage />} />
         <Route path="/LandingPage" element={<LandingPage />} />
         <Route path="/filter-product" element={<FilterProduct />} />
-        <Route path="/product-detail" element={<ProductDetailPage />} />
+        <Route path="/product-detail/:productId" element={<ProductDetailPage />} />
         <Route path="/cart" element={<CartPage />} />
 
         {/* Route store-owner */}
