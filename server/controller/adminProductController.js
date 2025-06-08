@@ -54,7 +54,6 @@ exports.toggleProductVisibility = async (req, res) => {
 };
 exports.getLowRatedProducts = async (req, res) => {
   try {
-    // Lấy tất cả review có rating <= 2
     const lowRated = await Review.aggregate([
       {
         $match: { rating: { $lte: 2 } }
@@ -67,7 +66,7 @@ exports.getLowRatedProducts = async (req, res) => {
         }
       },
       {
-        $match: { avgRating: { $lte: 2 } }
+        $match: { avgRating: { $lte: 2 }, _id: { $ne: null } } // tránh productId null
       },
       {
         $lookup: {
@@ -77,9 +76,32 @@ exports.getLowRatedProducts = async (req, res) => {
           as: "product"
         }
       },
+      { $unwind: "$product" },
+
+      // Join user (store owner) info
       {
-        $unwind: "$product"
+        $lookup: {
+          from: "users",
+          localField: "product.userId",
+          foreignField: "_id",
+          as: "owner"
+        }
       },
+      { $unwind: "$owner" },
+
+      // Join comments for that productId
+      {
+        $lookup: {
+          from: "reviews",
+          let: { prodId: "$_id" },
+          pipeline: [
+            { $match: { $expr: { $eq: ["$productId", "$$prodId"] } } },
+            { $project: { comment: 1, _id: 0 } }
+          ],
+          as: "comments"
+        }
+      },
+
       {
         $project: {
           _id: "$product._id",
@@ -87,7 +109,9 @@ exports.getLowRatedProducts = async (req, res) => {
           price: "$product.price",
           isAvailable: "$product.isAvailable",
           avgRating: 1,
-          reviewCount: "$count"
+          reviewCount: "$count",
+          storeName: "$owner.name",
+          comments: "$comments.comment"
         }
       }
     ]);
@@ -100,13 +124,5 @@ exports.getLowRatedProducts = async (req, res) => {
 
   } catch (error) {
     res.status(500).json({ success: false, message: 'Server error', error: error.message });
-  }
-};
-exports.testGetReviews = async (req, res) => {
-  try {
-    const reviews = await Review.find().limit(10);
-    res.status(200).json({ success: true, reviews });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
   }
 };

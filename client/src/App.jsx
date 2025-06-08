@@ -11,6 +11,8 @@ import StoreOwnerDashboard from "./components/store_owner/StoreOwnerDashboard";
 import StoreOwnerSidebar from "./components/store_owner/StoreOwnerSidebar";
 import StoreOwnerProducts from "./components/store_owner/ManageProducts";
 import Revenue from "./components/store_owner/Revenue";
+import AdminDashboard from "./components/admin/AdminDashboard";
+import AdminProduct from "./components/admin/AdminProduct";
 
 function App() {
   return (
@@ -30,6 +32,10 @@ function App() {
         <Route path="/store-owner/sidebar" element={<StoreOwnerSidebar />} />
         <Route path="/store-owner/products" element={<StoreOwnerProducts />} />
         <Route path="/store-owner/revenue" element={<Revenue />} />
+
+        {/* Route admin */}
+        <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        <Route path="/admin/products" element={<AdminProduct />} />
 
         {/* Add more*/}
         
