@@ -14,6 +14,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { FaSearch, FaEye, FaShoppingCart } from "react-icons/fa";
 import "../css/ProductFilter.css"; // Assuming you have a CSS file for styles
+import { useNavigate } from "react-router-dom";
 
 function ProductFilter({ headerProducts }) {
   const [products, setProducts] = useState(headerProducts || []);
@@ -29,7 +30,7 @@ function ProductFilter({ headerProducts }) {
   const [selectedSizes, setSelectedSizes] = useState(["all"]);
 
   const itemsPerPage = 12;
-
+  const navigate = useNavigate();
   const priceOptions = [
     { id: "all", label: "All Price", count: 1000, checked: true },
     { id: "0-100", label: "$0 - $100", count: 150 },
@@ -370,7 +371,11 @@ function ProductFilter({ headerProducts }) {
                     </div>
                   </Card.Body>
                   <Card.Footer className="d-flex justify-content-between bg-light border">
-                    <Button variant="link" className="text-dark p-0 btn-sm">
+                    <Button
+                      variant="link"
+                      className="text-dark p-0 btn-sm"
+                      onClick={() => navigate(`/product-detail/${product._id}`)}
+                    >
                       <FaEye className="text-primary me-1" />
                       View Detail
                     </Button>

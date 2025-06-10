@@ -19,9 +19,8 @@ export default function Header() {
   const [open, setOpen] = useState(false);
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
-  const [filterProducts, setFilterProducts] = useState([]);
   const [searchValue, setSearchValue] = useState("");
-  const [activeSearchValue, setActiveSearchValue] = useState(""); // Giá trị tìm kiếm thực tế
+  const [activeSearchValue, setActiveSearchValue] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const navigate = useNavigate();
 
@@ -54,33 +53,6 @@ export default function Header() {
     fetchProducts();
   }, []);
 
-  useEffect(() => {
-    const filterSearch = products.filter((rep) => {
-      let matchesSearch = true;
-      let matchesCategory = true;
-      if (activeSearchValue) {
-        const keyword = removeVietnameseTones(activeSearchValue.toLowerCase());
-        const productName = removeVietnameseTones(
-          String(rep?.name).toLowerCase()
-        );
-        matchesSearch = productName.includes(keyword);
-      }
-      if (selectedCategory) {
-        matchesCategory = String(rep.categoryId) === String(selectedCategory);
-      }
-      return matchesSearch && matchesCategory;
-    });
-    setFilterProducts(filterSearch);
-    navigate(
-      `/filter-product?search=${encodeURIComponent(
-        activeSearchValue
-      )}&category=${encodeURIComponent(selectedCategory || "")}`,
-      {
-        state: { products: filterSearch },
-      }
-    );
-  }, [activeSearchValue, selectedCategory, products]);
-
   function removeVietnameseTones(str) {
     return str
       .normalize("NFD")
@@ -90,7 +62,75 @@ export default function Header() {
   }
 
   const handleSearch = () => {
-    setActiveSearchValue(searchValue); // Cập nhật giá trị tìm kiếm thực tế
+    const currentSearchValue = searchValue; // Lấy giá trị hiện tại của searchValue
+    const currentSelectedCategory = selectedCategory; // Lấy giá trị hiện tại của selectedCategory
+    setActiveSearchValue(currentSearchValue);
+
+    const filterSearch = products.filter((rep) => {
+      let matchesSearch = true;
+      let matchesCategory = true;
+      if (currentSearchValue) {
+        const keyword = removeVietnameseTones(currentSearchValue.toLowerCase());
+        const productName = removeVietnameseTones(
+          String(rep?.name).toLowerCase()
+        );
+        matchesSearch = productName.includes(keyword);
+      }
+      if (currentSelectedCategory) {
+        matchesCategory =
+          String(rep.categoryId) === String(currentSelectedCategory);
+      }
+      return matchesSearch && matchesCategory;
+    });
+
+    if (currentSearchValue || currentSelectedCategory) {
+      navigate(
+        `/filter-product?search=${encodeURIComponent(
+          currentSearchValue
+        )}&category=${encodeURIComponent(currentSelectedCategory || "")}`,
+        {
+          state: { products: filterSearch }, // Truyền filterSearch trực tiếp
+        }
+      );
+    }
+  };
+
+  const handleCategorySelect = (categoryId) => {
+    setSelectedCategory(categoryId);
+    setOpen(false);
+
+    const currentActiveSearchValue = activeSearchValue; // Lấy giá trị hiện tại của activeSearchValue
+    const currentSelectedCategory = categoryId; // Lấy giá trị categoryId được chọn
+
+    const filterSearch = products.filter((rep) => {
+      let matchesSearch = true;
+      let matchesCategory = true;
+      if (currentActiveSearchValue) {
+        const keyword = removeVietnameseTones(
+          currentActiveSearchValue.toLowerCase()
+        );
+        const productName = removeVietnameseTones(
+          String(rep?.name).toLowerCase()
+        );
+        matchesSearch = productName.includes(keyword);
+      }
+      if (currentSelectedCategory) {
+        matchesCategory =
+          String(rep.categoryId) === String(currentSelectedCategory);
+      }
+      return matchesSearch && matchesCategory;
+    });
+
+    if (currentSelectedCategory || currentActiveSearchValue) {
+      navigate(
+        `/filter-product?search=${encodeURIComponent(
+          currentActiveSearchValue
+        )}&category=${encodeURIComponent(currentSelectedCategory || "")}`,
+        {
+          state: { products: filterSearch }, // Truyền filterSearch trực tiếp
+        }
+      );
+    }
   };
 
   return (
@@ -221,8 +261,7 @@ export default function Header() {
                     }`}
                     onClick={(e) => {
                       e.preventDefault();
-                      setSelectedCategory("");
-                      setOpen(false);
+                      handleCategorySelect("");
                     }}
                   >
                     Tất cả danh mục
@@ -236,8 +275,7 @@ export default function Header() {
                       }`}
                       onClick={(e) => {
                         e.preventDefault();
-                        setSelectedCategory(category._id);
-                        setOpen(false);
+                        handleCategorySelect(category._id);
                       }}
                     >
                       {category.name}
