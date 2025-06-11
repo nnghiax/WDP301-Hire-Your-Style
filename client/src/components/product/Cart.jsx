@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 const ShoppingCart = ({ userId }) => {
@@ -6,34 +6,39 @@ const ShoppingCart = ({ userId }) => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  
   const fetchCartData = async () => {
     try {
       setLoading(true);
       setError(null);
-      
-      const token = localStorage.getItem('token');
-      console.log('Token:', token);
-      
+
+      const token = localStorage.getItem("token");
+      console.log("Token:", token);
+
       if (!token) {
-        throw new Error('Không tìm thấy token xác thực');
+        throw new Error("Không tìm thấy token xác thực");
       }
-      
-      const response = await axios.get('http://localhost:9999/cart/list', {
+
+      const response = await axios.get("http://localhost:9999/cart/list", {
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
       });
-  
-      console.log('Response:', response.data);
+
+      console.log("Response:", response.data);
       setCartData(response.data.data || response.data || []);
     } catch (err) {
-      console.error('Error fetching cart data:', err);
+      console.error("Error fetching cart data:", err);
       if (err.response) {
-        setError(`Lỗi server: ${err.response.status} - ${err.response.data.message || err.response.statusText}`);
+        setError(
+          `Lỗi server: ${err.response.status} - ${
+            err.response.data.message || err.response.statusText
+          }`
+        );
       } else if (err.request) {
-        setError('Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng.');
+        setError(
+          "Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng."
+        );
       } else {
         setError(err.message);
       }
@@ -42,11 +47,10 @@ const ShoppingCart = ({ userId }) => {
       setLoading(false);
     }
   };
-  
+
   useEffect(() => {
     fetchCartData();
   }, [userId]);
-  
 
   // Get all items from cart
   const getAllItems = () => {
@@ -55,9 +59,9 @@ const ShoppingCart = ({ userId }) => {
 
   // Format price - assuming price is included in the product data
   const formatPrice = (price) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD'
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
     }).format(price || 0);
   };
 
@@ -76,35 +80,33 @@ const ShoppingCart = ({ userId }) => {
   // Update quantity
   const updateQuantity = async (itemId, change) => {
     try {
-      const item = cartData.find(item => item._id === itemId);
+      const item = cartData.find((item) => item._id === itemId);
       if (!item) return;
 
       const newQuantity = Math.max(1, item.quantity + change);
-      
+
       // Update locally first for better UX
-      setCartData(prevData => 
-        prevData.map(item => 
-          item._id === itemId 
-            ? { ...item, quantity: newQuantity }
-            : item
+      setCartData((prevData) =>
+        prevData.map((item) =>
+          item._id === itemId ? { ...item, quantity: newQuantity } : item
         )
       );
 
       // Then sync with backend using axios
       const response = await axios.put(
-        `http://localhost:9999/cart/update-quantity/${itemId}`, 
+        `http://localhost:9999/cart/update-quantity/${itemId}`,
         { quantity: newQuantity }, // data object for axios
         {
           headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          }
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         }
       );
 
-      console.log('Update quantity response:', response.data);
+      console.log("Update quantity response:", response.data);
     } catch (error) {
-      console.error('Error updating quantity:', error);
+      console.error("Error updating quantity:", error);
       // Revert local changes if API call fails
       fetchCartData();
       // Optionally show error message to user
@@ -115,19 +117,22 @@ const ShoppingCart = ({ userId }) => {
   const removeItem = async (itemId) => {
     try {
       // Update locally first
-      setCartData(prevData => prevData.filter(item => item._id !== itemId));
+      setCartData((prevData) => prevData.filter((item) => item._id !== itemId));
 
       // Then sync with backend using axios
-      const response = await axios.delete(`http://localhost:9999/cart/delete/${itemId}`, {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+      const response = await axios.delete(
+        `http://localhost:9999/cart/delete/${itemId}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         }
-      });
+      );
 
-      console.log('Remove item response:', response.data);
+      console.log("Remove item response:", response.data);
     } catch (error) {
-      console.error('Error removing item:', error);
+      console.error("Error removing item:", error);
       // Revert local changes if API call fails
       fetchCartData();
       // Optionally show error message to user
@@ -168,10 +173,7 @@ const ShoppingCart = ({ userId }) => {
                 <i className="fas fa-exclamation-triangle me-2"></i>
                 Lỗi tải dữ liệu: {error}
               </div>
-              <button 
-                className="btn btn-primary"
-                
-              >
+              <button className="btn btn-primary">
                 <i className="fas fa-redo me-2"></i>
                 Thử lại
               </button>
@@ -193,7 +195,9 @@ const ShoppingCart = ({ userId }) => {
                 <i className="fas fa-shopping-cart me-3"></i>
                 Giỏ Hàng
               </h1>
-              <p className="lead text-muted">Quản lý các sản phẩm trong giỏ hàng của bạn</p>
+              <p className="lead text-muted">
+                Quản lý các sản phẩm trong giỏ hàng của bạn
+              </p>
             </div>
           </div>
         </div>
@@ -208,22 +212,32 @@ const ShoppingCart = ({ userId }) => {
                   Sản Phẩm Trong Giỏ ({items.length} sản phẩm)
                 </h4>
               </div>
-              
+
               {items.length > 0 ? (
                 <div className="card-body p-0">
                   {items.map((item, index) => (
-                    <div key={item._id} className={`p-4 ${index !== items.length - 1 ? 'border-bottom' : ''}`}>
+                    <div
+                      key={item._id}
+                      className={`p-4 ${
+                        index !== items.length - 1 ? "border-bottom" : ""
+                      }`}
+                    >
                       <div className="row align-items-center">
                         {/* Product Image */}
                         <div className="col-md-2 col-sm-3 mb-3 mb-md-0">
-                          <img 
-                            src={item.image || `https://picsum.photos/300/300?random=${index + 1}`} 
+                          <img
+                            src={
+                              item.image ||
+                              `https://picsum.photos/300/300?random=${
+                                index + 1
+                              }`
+                            }
                             alt={item.name}
                             className="img-fluid rounded shadow-sm"
-                            style={{ aspectRatio: '1/1', objectFit: 'cover' }}
+                            style={{ aspectRatio: "1/1", objectFit: "cover" }}
                           />
                         </div>
-                        
+
                         {/* Product Info */}
                         <div className="col-md-4 col-sm-5 mb-3 mb-md-0">
                           <h5 className="font-weight-bold text-dark mb-2">
@@ -231,19 +245,25 @@ const ShoppingCart = ({ userId }) => {
                           </h5>
                           <p className="text-muted mb-2">
                             <i className="fas fa-tag me-1"></i>
-                            Size: <span className="badge badge-secondary">{item.size}</span>
+                            Size:{" "}
+                            <span className="badge badge-secondary text-dark">
+                              {item.size}
+                            </span>
                           </p>
                           <h6 className="text-primary font-weight-bold">
                             {formatPrice(item.price)}
                           </h6>
                         </div>
-                        
+
                         {/* Quantity Controls */}
                         <div className="col-md-3 col-sm-4 mb-3 mb-md-0">
                           <div className="d-flex align-items-center justify-content-center">
-                            <div className="input-group" style={{ maxWidth: '140px' }}>
+                            <div
+                              className="input-group"
+                              style={{ maxWidth: "140px" }}
+                            >
                               <div className="input-group-prepend">
-                                <button 
+                                <button
                                   className="btn btn-outline-primary btn-sm"
                                   onClick={() => updateQuantity(item._id, -1)}
                                   disabled={item.quantity <= 1}
@@ -251,14 +271,14 @@ const ShoppingCart = ({ userId }) => {
                                   <i className="fas fa-minus"></i>
                                 </button>
                               </div>
-                              <input 
-                                type="text" 
-                                className="form-control text-center font-weight-bold" 
+                              <input
+                                type="text"
+                                className="form-control text-center font-weight-bold"
                                 value={item.quantity}
                                 readOnly
                               />
                               <div className="input-group-append">
-                                <button 
+                                <button
                                   className="btn btn-outline-primary btn-sm"
                                   onClick={() => updateQuantity(item._id, 1)}
                                 >
@@ -268,13 +288,13 @@ const ShoppingCart = ({ userId }) => {
                             </div>
                           </div>
                         </div>
-                        
+
                         {/* Item Total & Remove */}
                         <div className="col-md-3 text-center">
                           <h5 className="font-weight-bold text-success mb-3">
                             {formatPrice(getItemTotal(item))}
                           </h5>
-                          <button 
+                          <button
                             className="btn btn-outline-danger btn-sm"
                             onClick={() => removeItem(item._id)}
                             title="Xóa sản phẩm"
@@ -292,7 +312,9 @@ const ShoppingCart = ({ userId }) => {
                   <div className="text-muted mb-4">
                     <i className="fas fa-shopping-cart fa-4x mb-3 text-secondary"></i>
                     <h4 className="font-weight-bold">Giỏ hàng trống</h4>
-                    <p className="lead">Chưa có sản phẩm nào trong giỏ hàng của bạn</p>
+                    <p className="lead">
+                      Chưa có sản phẩm nào trong giỏ hàng của bạn
+                    </p>
                   </div>
                   <button className="btn btn-primary btn-lg">
                     <i className="fas fa-arrow-left me-2"></i>
@@ -304,41 +326,63 @@ const ShoppingCart = ({ userId }) => {
           </div>
 
           <div className="col-lg-4">
-          <div className="card shadow-sm border-0 rounded-lg overflow-hidden" style={{position: 'sticky',top: '20px',zIndex: 1000,background: 'white' }}>
+            <div
+              className="card shadow-sm border-0 rounded-lg overflow-hidden"
+              style={{
+                position: "sticky",
+                top: "20px",
+                zIndex: 1000,
+                background: "white",
+              }}
+            >
               <div className="card-header bg-gradient-success text-white py-3">
                 <h4 className="mb-0 font-weight-bold">
                   <i className="fas fa-calculator me-2"></i>
                   Tổng Đơn Hàng
                 </h4>
               </div>
-              
+
               <div className="card-body">
                 <div className="mb-3">
                   <div className="d-flex justify-content-between align-items-center mb-2">
                     <span className="text-muted">Tạm tính:</span>
-                    <span className="font-weight-bold h6 mb-0">{formatPrice(subtotal)}</span>
+                    <span className="font-weight-bold h6 mb-0">
+                      {formatPrice(subtotal)}
+                    </span>
                   </div>
                   <div className="d-flex justify-content-between align-items-center mb-3">
                     <span className="text-muted">Phí vận chuyển:</span>
-                    <span className="font-weight-bold h6 mb-0">{formatPrice(shipping)}</span>
+                    <span className="font-weight-bold h6 mb-0">
+                      {formatPrice(shipping)}
+                    </span>
                   </div>
                   <hr className="my-3" />
                   <div className="d-flex justify-content-between align-items-center">
-                    <span className="h5 font-weight-bold text-dark">Tổng cộng:</span>
-                    <span className="h4 font-weight-bold text-success">{formatPrice(total)}</span>
+                    <span className="h5 font-weight-bold text-dark">
+                      Tổng cộng:
+                    </span>
+                    <span className="h4 font-weight-bold text-success">
+                      {formatPrice(total)}
+                    </span>
                   </div>
                 </div>
-                
-                <button 
+
+                <button
                   className={`btn btn-block py-3 font-weight-bold ${
-                    items.length === 0 
-                      ? 'btn-secondary disabled' 
-                      : 'btn-primary'
+                    items.length === 0
+                      ? "btn-secondary disabled"
+                      : "btn-primary"
                   }`}
                   disabled={items.length === 0}
                 >
-                  <i className={`fas ${items.length === 0 ? 'fa-ban' : 'fa-credit-card'} me-2`}></i>
-                  {items.length === 0 ? 'Giỏ Hàng Trống' : 'Tiến Hành Thanh Toán'}
+                  <i
+                    className={`fas ${
+                      items.length === 0 ? "fa-ban" : "fa-credit-card"
+                    } me-2`}
+                  ></i>
+                  {items.length === 0
+                    ? "Giỏ Hàng Trống"
+                    : "Tiến Hành Thanh Toán"}
                 </button>
               </div>
             </div>
@@ -393,7 +437,7 @@ const ShoppingCart = ({ userId }) => {
                   <i className="fas fa-share-alt me-1"></i>
                   Chia sẻ
                 </button>
-                <button 
+                <button
                   className="btn btn-outline-info btn-sm mb-2 ms-2"
                   onClick={fetchCartData}
                   title="Làm mới giỏ hàng"
@@ -434,12 +478,12 @@ const ShoppingCart = ({ userId }) => {
           width: 3rem;
           height: 3rem;
         }
-          .cart-summary-sticky {
-  position: -webkit-sticky;
-  position: sticky;
-  top: 20px;
-  z-index: 1020;
-}
+        .cart-summary-sticky {
+          position: -webkit-sticky;
+          position: sticky;
+          top: 20px;
+          z-index: 1020;
+        }
       `}</style>
     </div>
   );
