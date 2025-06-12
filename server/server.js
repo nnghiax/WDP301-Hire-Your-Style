@@ -9,11 +9,10 @@ const apiStore = require("./router/apiStore");
 const apiProduct = require("./router/apiProduct");
 const apiCart = require("./router/apiCart");
 const apiUser = require("./router/apiUser");
-
+const PayOS = require("@payos/node");
 const apiAdmin = require("./router/adminProductRoutes");
-
+const apiPayos = require("./router/apiPayos");
 const apiRevenue = require("./router/apiRevenue");
-
 
 const hostname = process.env.HOSTNAME;
 const port = process.env.PORT;
@@ -21,8 +20,11 @@ const url = process.env.URL;
 const dbName = process.env.DBNAME;
 
 const app = express();
+app.use(express.static("public"));
 app.use(express.json());
 app.use(cors());
+
+const payos = new PayOS("client_id", "api-key", "checksum_key");
 
 mongoose
   .connect(`${url}${dbName}`, {
@@ -53,12 +55,13 @@ app.use("/cart", apiCart);
 // USER
 app.use("/user", apiUser);
 
-
-app.use('/admin', apiAdmin); 
+app.use("/admin", apiAdmin);
 
 // REVENUE
 app.use("/revenue", apiRevenue);
 
+// PAYOS
+app.use("/payos", apiPayos);
 
 app.listen(port, () => {
   console.log(`Server is running on http://${hostname}:${port}`);

@@ -48,6 +48,36 @@ const ShoppingCart = ({ userId }) => {
     }
   };
 
+  // thanh toan bang payos
+  const handlePayment = async () => {
+    try {
+      const order = {
+        amount: 10000,
+        description: "Thanh toán đơn hàng",
+        orderCode: Date.now(), // Unique order code
+        returnUrl: "http://localhost:9999/success",
+        cancelUrl: "http://localhost:9999/cancel",
+      };
+
+      const response = await axios.post("http://localhost:9999/payos", order, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      const checkoutUrl = response.data?.checkoutUrl;
+      if (checkoutUrl) {
+        window.location.href = checkoutUrl;
+      } else {
+        throw new Error("Không nhận được URL thanh toán.");
+      }
+    } catch (error) {
+      console.error("Error processing payment:", error);
+      alert("Lỗi khi xử lý thanh toán. Vui lòng thử lại sau.");
+    }
+  };
+
   useEffect(() => {
     fetchCartData();
   }, [userId]);
@@ -374,6 +404,7 @@ const ShoppingCart = ({ userId }) => {
                       : "btn-primary"
                   }`}
                   disabled={items.length === 0}
+                  onClick={() => handlePayment()}
                 >
                   <i
                     className={`fas ${
