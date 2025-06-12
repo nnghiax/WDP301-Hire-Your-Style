@@ -13,7 +13,7 @@ import StoreOwnerProducts from "./components/store_owner/ManageProducts";
 import Revenue from "./components/store_owner/Revenue";
 import AdminDashboard from "./components/admin/AdminDashboard";
 import AdminProduct from "./components/admin/AdminProduct";
-
+import RequestStore from "./components/customer/RequestStore";
 function App() {
   return (
     <Router>
@@ -26,6 +26,7 @@ function App() {
         <Route path="/filter-product" element={<FilterProduct />} />
         <Route path="/product-detail/:productId" element={<ProductDetailPage />} />
         <Route path="/cart" element={<CartPage />} />
+        <Route path="/request" element={<RequestStore />} />
 
         {/* Route store-owner */}
         <Route path="/store-owner/dashboard" element={<StoreOwnerDashboard />} />
