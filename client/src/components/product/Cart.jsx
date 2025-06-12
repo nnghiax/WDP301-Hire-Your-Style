@@ -52,32 +52,27 @@ const ShoppingCart = ({ userId }) => {
     fetchCartData();
   }, [userId]);
 
-  // Get all items from cart
   const getAllItems = () => {
     return cartData || [];
   };
 
-  // Format price - assuming price is included in the product data
   const formatPrice = (price) => {
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat("vi-VN", {
       style: "currency",
-      currency: "USD",
+      currency: "VND",
     }).format(price || 0);
   };
 
-  // Calculate item total
   const getItemTotal = (item) => {
     return item.quantity * (item.price || 0);
   };
 
-  // Calculate subtotal
   const getSubtotal = () => {
     return getAllItems().reduce((total, item) => {
       return total + getItemTotal(item);
     }, 0);
   };
 
-  // Update quantity
   const updateQuantity = async (itemId, change) => {
     try {
       const item = cartData.find((item) => item._id === itemId);
@@ -85,17 +80,15 @@ const ShoppingCart = ({ userId }) => {
 
       const newQuantity = Math.max(1, item.quantity + change);
 
-      // Update locally first for better UX
       setCartData((prevData) =>
         prevData.map((item) =>
           item._id === itemId ? { ...item, quantity: newQuantity } : item
         )
       );
 
-      // Then sync with backend using axios
       const response = await axios.put(
         `http://localhost:9999/cart/update-quantity/${itemId}`,
-        { quantity: newQuantity }, // data object for axios
+        { quantity: newQuantity }, 
         {
           headers: {
             "Content-Type": "application/json",
@@ -107,19 +100,13 @@ const ShoppingCart = ({ userId }) => {
       console.log("Update quantity response:", response.data);
     } catch (error) {
       console.error("Error updating quantity:", error);
-      // Revert local changes if API call fails
       fetchCartData();
-      // Optionally show error message to user
     }
   };
 
-  // Remove item
   const removeItem = async (itemId) => {
     try {
-      // Update locally first
       setCartData((prevData) => prevData.filter((item) => item._id !== itemId));
-
-      // Then sync with backend using axios
       const response = await axios.delete(
         `http://localhost:9999/cart/delete/${itemId}`,
         {
@@ -133,9 +120,7 @@ const ShoppingCart = ({ userId }) => {
       console.log("Remove item response:", response.data);
     } catch (error) {
       console.error("Error removing item:", error);
-      // Revert local changes if API call fails
       fetchCartData();
-      // Optionally show error message to user
     }
   };
 
@@ -144,7 +129,6 @@ const ShoppingCart = ({ userId }) => {
   const total = subtotal + shipping;
   const items = getAllItems();
 
-  // Loading state
   if (loading) {
     return (
       <div className="container-fluid bg-light py-5">
@@ -162,7 +146,6 @@ const ShoppingCart = ({ userId }) => {
     );
   }
 
-  // Error state
   if (error) {
     return (
       <div className="container-fluid bg-light py-5">
@@ -187,7 +170,6 @@ const ShoppingCart = ({ userId }) => {
   return (
     <div className="container-fluid bg-light py-5">
       <div className="container">
-        {/* Header */}
         <div className="row mb-5">
           <div className="col-12">
             <div className="text-center">
@@ -203,7 +185,7 @@ const ShoppingCart = ({ userId }) => {
         </div>
 
         <div className="row">
-          {/* Cart Items */}
+          
           <div className="col-lg-8 mb-5">
             <div className="card shadow-sm border-0 rounded-lg overflow-hidden">
               <div className="card-header bg-gradient-primary text-white py-3">
@@ -223,7 +205,7 @@ const ShoppingCart = ({ userId }) => {
                       }`}
                     >
                       <div className="row align-items-center">
-                        {/* Product Image */}
+                      
                         <div className="col-md-2 col-sm-3 mb-3 mb-md-0">
                           <img
                             src={
@@ -238,7 +220,6 @@ const ShoppingCart = ({ userId }) => {
                           />
                         </div>
 
-                        {/* Product Info */}
                         <div className="col-md-4 col-sm-5 mb-3 mb-md-0">
                           <h5 className="font-weight-bold text-dark mb-2">
                             {item.name}
@@ -255,7 +236,6 @@ const ShoppingCart = ({ userId }) => {
                           </h6>
                         </div>
 
-                        {/* Quantity Controls */}
                         <div className="col-md-3 col-sm-4 mb-3 mb-md-0">
                           <div className="d-flex align-items-center justify-content-center">
                             <div
@@ -289,7 +269,6 @@ const ShoppingCart = ({ userId }) => {
                           </div>
                         </div>
 
-                        {/* Item Total & Remove */}
                         <div className="col-md-3 text-center">
                           <h5 className="font-weight-bold text-success mb-3">
                             {formatPrice(getItemTotal(item))}
@@ -387,7 +366,6 @@ const ShoppingCart = ({ userId }) => {
               </div>
             </div>
 
-            {/* Cart Statistics */}
             {items.length > 0 && (
               <div className="card shadow-sm border-0 rounded-lg mt-4">
                 <div className="card-header bg-light border-bottom">
@@ -426,7 +404,6 @@ const ShoppingCart = ({ userId }) => {
               </div>
             )}
 
-            {/* Additional Actions */}
             <div className="card shadow-sm border-0 rounded-lg mt-4">
               <div className="card-body text-center">
                 <button className="btn btn-outline-primary btn-sm mb-2 me-2">
