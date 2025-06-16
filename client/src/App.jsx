@@ -14,6 +14,8 @@ import Revenue from "./components/store_owner/Revenue";
 import AdminDashboard from "./components/admin/AdminDashboard";
 import AdminProduct from "./components/admin/AdminProduct";
 import RequestStore from "./components/customer/RequestStore";
+import AdminStoreRequest from "./components/admin/AdminStoreRequest";
+import AdminStoreRequestDetail from "./components/admin/AdminStoreRequestDetail";
 function App() {
   return (
     <Router>
@@ -37,7 +39,8 @@ function App() {
         {/* Route admin */}
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
         <Route path="/admin/products" element={<AdminProduct />} />
-
+        <Route path="/admin/request" element={<AdminStoreRequest />} />
+        <Route path="/admin/request/:requestId" element={<AdminStoreRequestDetail />} />
         {/* Add more*/}
         
 
