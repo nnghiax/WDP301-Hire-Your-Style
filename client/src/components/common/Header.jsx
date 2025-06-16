@@ -9,6 +9,9 @@ import {
   Form,
   Button,
   Badge,
+  Dropdown,
+  Image,
+  NavbarText,
 } from "react-bootstrap";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -22,9 +25,37 @@ export default function Header() {
   const [searchValue, setSearchValue] = useState("");
   const [activeSearchValue, setActiveSearchValue] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("token"));
+  const [user, setUser] = useState(null);
+  const [showDropdown, setShowDropdown] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await axios.get("http://localhost:9999/user/profile", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+        console.log("User data:", res.data);
+        const userData = {
+          ...res.data.data,
+          avatar: res.data.data.avatar || "https://res.cloudinary.com/dh4vnrtg5/image/upload/v1747473243/avatar_user_orcdde.jpg",
+        };
+        setUser(userData);
+        setIsLoggedIn(true);
+      } catch (error) {
+        console.error("Lỗi khi tải thông tin người dùng:", error);
+        if (error.response?.status === 401) {
+          localStorage.removeItem("token");
+          setIsLoggedIn(false);
+          setUser(null);
+          navigate("/login");
+        }
+      }
+    };
+
     const fetchCategories = async () => {
       try {
         const res = await axios.get("http://localhost:9999/cate/list", {
@@ -32,11 +63,14 @@ export default function Header() {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
-        setCategories(res.data.data);
+        console.log("Categories data:", res.data);
+        setCategories(res.data.data || []);
       } catch (error) {
         console.error("Lỗi khi tải danh mục:", error);
+        setCategories([]);
       }
     };
+
     const fetchProducts = async () => {
       try {
         const res = await axios.get("http://localhost:9999/product/list", {
@@ -44,14 +78,28 @@ export default function Header() {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
-        setProducts(res.data.data);
+        console.log("Products data:", res.data);
+        setProducts(res.data.data || []);
       } catch (error) {
         console.error("Lỗi khi tải sản phẩm:", error);
+        setProducts([]);
       }
     };
+
+    if (localStorage.getItem("token")) {
+      fetchUser();
+    }
     fetchCategories();
     fetchProducts();
   }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    setIsLoggedIn(false);
+    setUser(null);
+    setShowDropdown(false);
+    navigate("/");
+  };
 
   function removeVietnameseTones(str) {
     return str
@@ -62,8 +110,8 @@ export default function Header() {
   }
 
   const handleSearch = () => {
-    const currentSearchValue = searchValue; // Lấy giá trị hiện tại của searchValue
-    const currentSelectedCategory = selectedCategory; // Lấy giá trị hiện tại của selectedCategory
+    const currentSearchValue = searchValue;
+    const currentSelectedCategory = selectedCategory;
     setActiveSearchValue(currentSearchValue);
 
     const filterSearch = products.filter((rep) => {
@@ -89,7 +137,7 @@ export default function Header() {
           currentSearchValue
         )}&category=${encodeURIComponent(currentSelectedCategory || "")}`,
         {
-          state: { products: filterSearch }, // Truyền filterSearch trực tiếp
+          state: { products: filterSearch },
         }
       );
     }
@@ -99,8 +147,8 @@ export default function Header() {
     setSelectedCategory(categoryId);
     setOpen(false);
 
-    const currentActiveSearchValue = activeSearchValue; // Lấy giá trị hiện tại của activeSearchValue
-    const currentSelectedCategory = categoryId; // Lấy giá trị categoryId được chọn
+    const currentActiveSearchValue = activeSearchValue;
+    const currentSelectedCategory = categoryId;
 
     const filterSearch = products.filter((rep) => {
       let matchesSearch = true;
@@ -127,7 +175,7 @@ export default function Header() {
           currentActiveSearchValue
         )}&category=${encodeURIComponent(currentSelectedCategory || "")}`,
         {
-          state: { products: filterSearch }, // Truyền filterSearch trực tiếp
+          state: { products: filterSearch },
         }
       );
     }
@@ -256,9 +304,8 @@ export default function Header() {
                   <Nav.Link
                     key={0}
                     href="#"
-                    className={`text-dark ${
-                      selectedCategory === "" ? "fw-bold" : ""
-                    }`}
+                    className={`text-dark ${selectedCategory === "" ? "fw-bold" : ""
+                      }`}
                     onClick={(e) => {
                       e.preventDefault();
                       handleCategorySelect("");
@@ -270,9 +317,8 @@ export default function Header() {
                     <Nav.Link
                       key={index + 1}
                       href="#"
-                      className={`text-dark ${
-                        selectedCategory === category._id ? "fw-bold" : ""
-                      }`}
+                      className={`text-dark ${selectedCategory === category._id ? "fw-bold" : ""
+                        }`}
                       onClick={(e) => {
                         e.preventDefault();
                         handleCategorySelect(category._id);
@@ -325,18 +371,55 @@ export default function Header() {
                   </Nav.Link>
                 </Nav>
                 <Nav className="ml-auto py-0">
-                  <Nav.Link
-                    onClick={() => navigate("/login")}
-                    className="text-dark"
-                  >
-                    Đăng nhập
-                  </Nav.Link>
-                  <Nav.Link
-                    onClick={() => navigate("/register")}
-                    className="text-dark"
-                  >
-                    Đăng ký
-                  </Nav.Link>
+                  {isLoggedIn ? (
+                    <Dropdown
+                      show={showDropdown}
+                      onToggle={() => setShowDropdown(!showDropdown)}
+                    >
+                      <Dropdown.Toggle
+                        variant="link"
+                        id="avatar-dropdown"
+                        className="p-0 d-flex align-items-center"
+                        style={{ lineHeight: 0 }}
+                      >
+                        
+                        {user && (
+                          <>
+                            <Navbar.Text>Chào, {user.name}</Navbar.Text>
+                            <Image
+                              src={user.avatar || '/images/default-avatar.png'}
+                              roundedCircle
+                              width={36}
+                              height={36}
+                              alt="avatar"
+                              style={{ objectFit: 'cover' }}
+                            />
+                          </>
+                        )}
+                      </Dropdown.Toggle>
+                      <Dropdown.Menu>
+                        <Dropdown.Item href="/profile">Hồ sơ</Dropdown.Item>
+                        <Dropdown.Item onClick={handleLogout}>
+                          Đăng xuất
+                        </Dropdown.Item>
+                      </Dropdown.Menu>
+                    </Dropdown>
+                  ) : (
+                    <>
+                      <Nav.Link
+                        onClick={() => navigate("/login")}
+                        className="text-dark"
+                      >
+                        Đăng nhập
+                      </Nav.Link>
+                      <Nav.Link
+                        onClick={() => navigate("/register")}
+                        className="text-dark"
+                      >
+                        Đăng ký
+                      </Nav.Link>
+                    </>
+                  )}
                 </Nav>
               </Navbar.Collapse>
             </Navbar>

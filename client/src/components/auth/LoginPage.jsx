@@ -21,11 +21,22 @@ function Login() {
     try {
       const res = await axios.post('http://localhost:9999/auth/login', { email, password });
       if (res.status === 200) {
-        localStorage.setItem('user', JSON.stringify(res.data.user))
+        localStorage.setItem('user', JSON.stringify(res.data.user));
         localStorage.setItem('token', res.data.accessToken);
         setMessage('Đăng nhập thành công!');
         setVariant('success');
-        setTimeout(() => navigate('/'), 1500);
+        const userRole = res.data.user.role;
+        setTimeout(() => {
+          if (userRole === 'customer') {
+            navigate('/');
+          } else if (userRole === 'admin') {
+            navigate('/admin/dashboard');
+          } else if (userRole === 'store_owner') {
+            navigate('/store-owner/dashboard');
+          } else {
+            navigate('/'); 
+          }
+        }, 1500);
       }
     } catch (error) {
       const errMsg = error.response?.data?.message || 'Lỗi không xác định';
@@ -37,7 +48,6 @@ function Login() {
   return (
     <Container fluid className="min-vh-100 d-flex align-items-center justify-content-center beige-bg">
       <Row className="w-100 shadow rounded-5 overflow-hidden" style={{ maxWidth: '900px' }}>
-        {/* Left: Form */}
         <Col md={6} className="p-5 d-flex flex-column justify-content-center form-bg">
           <div>
             <h2 className="text-center mb-4 text-brown fw-bold">Hire Your Style</h2>
