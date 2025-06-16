@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { FaChartBar, FaBoxOpen, FaMoneyBill } from 'react-icons/fa';
+import { FaChartBar, FaBoxOpen, FaMoneyBill,FaStore } from 'react-icons/fa';
 
 const linkStyle = {
   color: '#ccc',
@@ -67,6 +67,7 @@ const AdminSidebar = () => {
       <div className="nav flex-column">
         <StyledNavLink to="/admin/dashboard" icon={FaChartBar}>Dashboard</StyledNavLink>
         <StyledNavLink to="/admin/products" icon={FaBoxOpen}>Quản lý sản phẩm</StyledNavLink>
+        <StyledNavLink to="/admin/request" icon={FaStore}>Quản lý đăng kí cửa hàng</StyledNavLink>
       </div>
     </div>
   );
