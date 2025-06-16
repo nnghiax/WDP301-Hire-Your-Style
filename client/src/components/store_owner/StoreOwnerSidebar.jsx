@@ -1,6 +1,6 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
-import { FaChartBar, FaBoxOpen, FaChartLine } from 'react-icons/fa';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { FaChartBar, FaBoxOpen, FaFileInvoice, FaUser, FaSignOutAlt } from 'react-icons/fa';
 
 const linkStyle = {
   color: '#ccc',
@@ -24,24 +24,46 @@ const hoverStyle = {
   color: '#fff',
 };
 
+const logoutStyle = {
+  ...linkStyle,
+  backgroundColor: '#ff4d4d', // Màu đỏ
+  color: '#fff',
+};
+
+const logoutHoverStyle = {
+  ...logoutStyle,
+  backgroundColor: '#cc0000', // Màu đỏ đậm hơn khi hover
+};
+
 const StoreOwnerSidebar = () => {
-  const StyledNavLink = ({ to, icon: Icon, children }) => (
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    console.log('Token removed:', localStorage.getItem('token'));
+    navigate('/');
+    // Fallback để đảm bảo chuyển hướng
+    window.location.href = '/';
+  };
+
+  const StyledNavLink = ({ to, icon: Icon, children, onClick, isLogout }) => (
     <NavLink
       to={to}
       style={({ isActive }) => ({
-        ...linkStyle,
-        ...(isActive ? activeLinkStyle : {}),
+        ...(isLogout ? logoutStyle : linkStyle),
+        ...(isActive && !isLogout ? activeLinkStyle : {}),
       })}
       onMouseEnter={(e) => {
         if (!e.target.classList.contains('active')) {
-          Object.assign(e.target.style, hoverStyle);
+          Object.assign(e.target.style, isLogout ? logoutHoverStyle : hoverStyle);
         }
       }}
       onMouseLeave={(e) => {
         if (!e.target.classList.contains('active')) {
-          Object.assign(e.target.style, linkStyle);
+          Object.assign(e.target.style, isLogout ? logoutStyle : linkStyle);
         }
       }}
+      onClick={onClick}
     >
       <Icon style={{ marginRight: '10px', fontSize: '18px' }} />
       {children}
@@ -64,10 +86,14 @@ const StoreOwnerSidebar = () => {
       <h4 style={{ textAlign: 'center', color: '#00d4ff', marginBottom: '30px', fontWeight: 'bold' }}>
         🏪 Store Owner Panel
       </h4>
-      <div className="nav flex-column">
-        <StyledNavLink to="/store-owner/dashboard" icon={FaChartBar}>Dashboard</StyledNavLink>
+      <div className="nav flex-column" style={{ flex: 1 }}>
+        <StyledNavLink to="/store-owner/dashboard" icon={FaChartBar}>Doanh thu</StyledNavLink>
         <StyledNavLink to="/store-owner/products" icon={FaBoxOpen}>Sản phẩm</StyledNavLink>
-        <StyledNavLink to="/store-owner/revenue" icon={FaChartLine}>Doanh thu</StyledNavLink>
+        <StyledNavLink to="/store-owner/orders" icon={FaFileInvoice}>Đơn hàng</StyledNavLink>
+        <StyledNavLink to="/store-owner/profile" icon={FaUser}>Hồ sơ</StyledNavLink>
+      </div>
+      <div style={{ marginTop: 'auto' }}>
+        <StyledNavLink icon={FaSignOutAlt} onClick={handleLogout} isLogout>Đăng xuất</StyledNavLink>
       </div>
     </div>
   );
