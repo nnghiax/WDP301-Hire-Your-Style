@@ -94,7 +94,7 @@ const RequestStore = () => {
           'Authorization': `Bearer ${token}`
         }
       };
-      const response = await axios.post('/api/store-requests/create', formData, config);
+      const response = await axios.post('http://localhost:9999/request/create', formData, config);
       
       if (response.status === 201) {
         setSubmitStatus('success');

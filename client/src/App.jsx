@@ -16,6 +16,8 @@ import RequestStore from "./components/customer/RequestStore";
 import ProfilePage from "./components/auth/ProfilePage";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import StoreOwnerProfile from "./components/store_owner/StoreOwnerProfile";
+import AdminStoreRequest from "./components/admin/AdminStoreRequest";
+import AdminStoreRequestDetail from "./components/admin/AdminStoreRequestDetail";
 
 function App() {
   return (
@@ -40,14 +42,13 @@ function App() {
           <Route path="/store-owner/profile" element={<StoreOwnerProfile />} />
         </Route>
 
-
         {/* Route admin */}
         <Route element={<ProtectedRoute />}>
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/products" element={<AdminProduct />} />
+          <Route path="/admin/request" element={<AdminStoreRequest />} />
+          <Route path="/admin/request/:requestId" element={<AdminStoreRequestDetail />} />
         </Route>
-        {/* Add more*/}
-
 
       </Routes>
     </Router>
