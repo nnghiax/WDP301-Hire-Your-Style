@@ -11,17 +11,20 @@ const ProductDetail = () => {
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState("");
   const [addingToCart, setAddingToCart] = useState(false);
-  const {productId} = useParams();
+  const { productId } = useParams();
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const res = await axios.get(`http://localhost:9999/product/detail/${productId}`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
+        const res = await axios.get(
+          `http://localhost:9999/product/detail/${productId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
         setProduct(res.data.data);
         setSelectedImage(res.data.data.image);
         // Tự động chọn size đầu tiên nếu có
@@ -40,7 +43,7 @@ const ProductDetail = () => {
   }, [productId]);
 
   const handleQuantityChange = (change) => {
-    setQuantity(prev => Math.max(1, prev + change));
+    setQuantity((prev) => Math.max(1, prev + change));
   };
 
   const handleAddToCart = async () => {
@@ -72,13 +75,13 @@ const ProductDetail = () => {
         {
           productId: productId,
           size: selectedSize,
-          quantity: quantity
+          quantity: quantity,
         },
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json"
-          }
+            "Content-Type": "application/json",
+          },
         }
       );
 
@@ -89,10 +92,12 @@ const ProductDetail = () => {
       }
     } catch (error) {
       console.error("Lỗi khi thêm vào giỏ hàng:", error);
-      
+
       if (error.response) {
         // Server trả về lỗi
-        alert(error.response.data.message || "Có lỗi xảy ra khi thêm vào giỏ hàng!");
+        alert(
+          error.response.data.message || "Có lỗi xảy ra khi thêm vào giỏ hàng!"
+        );
       } else if (error.request) {
         // Không có phản hồi từ server
         alert("Không thể kết nối đến server!");
@@ -106,9 +111,9 @@ const ProductDetail = () => {
   };
 
   const formatPrice = (price) => {
-    return new Intl.NumberFormat('vi-VN', {
-      style: 'currency',
-      currency: 'VND'
+    return new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
     }).format(price);
   };
 
@@ -274,8 +279,14 @@ const ProductDetail = () => {
                 <img
                   src={product.image}
                   alt={product.name}
-                  className="img-fluid product-image-main w-100"
-                  style={{ height: 'auto', objectFit: 'cover' }}
+                  className="img-fluid product-image-main"
+                  style={{
+                    height: "80vh", // chiều cao lớn
+                    width: "auto", // chiều rộng tự động để giữ tỉ lệ gốc
+                    objectFit: "contain", // đảm bảo toàn bộ ảnh hiển thị
+                    display: "block",
+                    margin: "0 auto", // căn giữa nếu cần
+                  }}
                 />
               </div>
             </div>
@@ -283,7 +294,9 @@ const ProductDetail = () => {
             {/* Product Info */}
             <div className="col-lg-6">
               <div className="mb-4">
-                <h1 className="display-5 font-weight-bold text-dark mb-3">{product.name}</h1>
+                <h1 className="display-5 font-weight-bold text-dark mb-3">
+                  {product.name}
+                </h1>
                 <div className="d-flex align-items-center mb-3">
                   <div className="me-3">
                     {[...Array(4)].map((_, i) => (
@@ -300,7 +313,13 @@ const ProductDetail = () => {
                 </div>
               </div>
 
-              <div className="alert alert-info border-0" style={{ borderRadius: '12px', background: 'linear-gradient(135deg, #e3f2fd, #bbdefb)' }}>
+              <div
+                className="alert alert-info border-0"
+                style={{
+                  borderRadius: "12px",
+                  background: "linear-gradient(135deg, #e3f2fd, #bbdefb)",
+                }}
+              >
                 <p className="mb-0 text-dark">{product.description}</p>
               </div>
 
@@ -311,17 +330,18 @@ const ProductDetail = () => {
                   <span className="text-danger">*</span>
                 </h5>
                 <div className="d-flex gap-3">
-                  {product.sizes && product.sizes.map((size) => (
-                    <button
-                      key={size}
-                      onClick={() => setSelectedSize(size)}
-                      className={`btn size-option px-4 py-2 font-weight-bold ${
-                        selectedSize === size ? 'active' : ''
-                      }`}
-                    >
-                      {size}
-                    </button>
-                  ))}
+                  {product.sizes &&
+                    product.sizes.map((size) => (
+                      <button
+                        key={size}
+                        onClick={() => setSelectedSize(size)}
+                        className={`btn size-option px-4 py-2 font-weight-bold ${
+                          selectedSize === size ? "active" : ""
+                        }`}
+                      >
+                        {size}
+                      </button>
+                    ))}
                 </div>
               </div>
 
@@ -331,9 +351,13 @@ const ProductDetail = () => {
                   <i className="fas fa-palette me-2 text-primary"></i>Màu sắc
                 </h5>
                 <div className="d-flex align-items-center">
-                  <div 
-                    className="rounded-circle me-3 border" 
-                    style={{ width: '35px', height: '35px', background: product.color === 'Trắng' ? 'white' : 'black' }}
+                  <div
+                    className="rounded-circle me-3 border"
+                    style={{
+                      width: "35px",
+                      height: "35px",
+                      background: product.color === "Trắng" ? "white" : "black",
+                    }}
                   ></div>
                   <span className="font-weight-semibold">{product.color}</span>
                 </div>
@@ -342,10 +366,11 @@ const ProductDetail = () => {
               {/* Quantity & Add to Cart */}
               <div className="mb-4">
                 <h5 className="font-weight-bold text-dark mb-3">
-                  <i className="fas fa-shopping-basket me-2 text-primary"></i>Số lượng
+                  <i className="fas fa-shopping-basket me-2 text-primary"></i>Số
+                  lượng
                 </h5>
                 <div className="d-flex align-items-center mb-3">
-                  <div className="input-group me-4" style={{ width: '150px' }}>
+                  <div className="input-group me-4" style={{ width: "150px" }}>
                     <button
                       className="btn btn-primary quantity-btn"
                       onClick={() => handleQuantityChange(-1)}
@@ -367,18 +392,27 @@ const ProductDetail = () => {
                       <i className="fas fa-plus"></i>
                     </button>
                   </div>
-                  <small className="text-muted">Còn lại: <strong>{product.quantity}</strong> sản phẩm</small>
+                  <small className="text-muted">
+                    Còn lại: <strong>{product.quantity}</strong> sản phẩm
+                  </small>
                 </div>
 
                 <div className="d-flex gap-3">
-                  <button 
+                  <button
                     className="btn btn-primary btn-lg add-to-cart-btn flex-fill py-3"
                     onClick={handleAddToCart}
-                    disabled={addingToCart || !product.isAvailable || product.quantity <= 0}
+                    disabled={
+                      addingToCart ||
+                      !product.isAvailable ||
+                      product.quantity <= 0
+                    }
                   >
                     {addingToCart ? (
                       <>
-                        <div className="spinner-border spinner-border-sm me-2" role="status">
+                        <div
+                          className="spinner-border spinner-border-sm me-2"
+                          role="status"
+                        >
                           <span className="sr-only">Loading...</span>
                         </div>
                         Đang thêm...
@@ -399,7 +433,7 @@ const ProductDetail = () => {
                     Sản phẩm hiện tại không có sẵn
                   </div>
                 )}
-                
+
                 {product.quantity <= 0 && (
                   <div className="alert alert-danger mt-3">
                     <i className="fas fa-times-circle me-2"></i>
@@ -414,16 +448,28 @@ const ProductDetail = () => {
                   <i className="fas fa-share-alt me-2 text-primary"></i>Chia sẻ
                 </h5>
                 <div className="d-flex gap-2">
-                  <button className="btn social-btn" style={{ background: '#3b5998' }}>
+                  <button
+                    className="btn social-btn"
+                    style={{ background: "#3b5998" }}
+                  >
                     <i className="fab fa-facebook-f"></i>
                   </button>
-                  <button className="btn social-btn" style={{ background: '#1da1f2' }}>
+                  <button
+                    className="btn social-btn"
+                    style={{ background: "#1da1f2" }}
+                  >
                     <i className="fab fa-twitter"></i>
                   </button>
-                  <button className="btn social-btn" style={{ background: '#0077b5' }}>
+                  <button
+                    className="btn social-btn"
+                    style={{ background: "#0077b5" }}
+                  >
                     <i className="fab fa-linkedin-in"></i>
                   </button>
-                  <button className="btn social-btn" style={{ background: '#bd081c' }}>
+                  <button
+                    className="btn social-btn"
+                    style={{ background: "#bd081c" }}
+                  >
                     <i className="fab fa-pinterest-p"></i>
                   </button>
                 </div>
@@ -436,17 +482,28 @@ const ProductDetail = () => {
             <div className="col-12">
               <div className="tab-content-section p-0">
                 <nav>
-                  <div className="nav nav-tabs border-0 bg-light" style={{ borderRadius: '15px 15px 0 0' }}>
+                  <div
+                    className="nav nav-tabs border-0 bg-light"
+                    style={{ borderRadius: "15px 15px 0 0" }}
+                  >
                     {[
-                      { id: 'description', label: 'Mô tả', icon: 'fas fa-align-left' },
-                      { id: 'info', label: 'Thông tin', icon: 'fas fa-info-circle' },
-                      { id: 'review', label: 'Đánh giá', icon: 'fas fa-star' }
+                      {
+                        id: "description",
+                        label: "Mô tả",
+                        icon: "fas fa-align-left",
+                      },
+                      {
+                        id: "info",
+                        label: "Thông tin",
+                        icon: "fas fa-info-circle",
+                      },
+                      { id: "review", label: "Đánh giá", icon: "fas fa-star" },
                     ].map((tab) => (
                       <button
                         key={tab.id}
                         onClick={() => setActiveTab(tab.id)}
                         className={`nav-link tab-button px-4 py-3 ${
-                          activeTab === tab.id ? 'active' : ''
+                          activeTab === tab.id ? "active" : ""
                         }`}
                       >
                         <i className={`${tab.icon} me-2`}></i>
@@ -464,7 +521,9 @@ const ProductDetail = () => {
                         Chi tiết sản phẩm
                       </h3>
                       <div className="feature-list p-4 mb-4">
-                        <p className="text-dark mb-4 lead">{product.description}</p>
+                        <p className="text-dark mb-4 lead">
+                          {product.description}
+                        </p>
                         <div className="row">
                           <div className="col-md-6">
                             <h5 className="font-weight-bold text-success mb-3">
@@ -527,18 +586,52 @@ const ProductDetail = () => {
                       </h3>
                       <div className="row">
                         {[
-                          { label: "Số lượng còn lại", value: product.quantity, color: "success", icon: "fas fa-boxes" },
-                          { label: "Tình trạng", value: product.isAvailable ? "Còn hàng" : "Hết hàng", color: product.isAvailable ? "success" : "danger", icon: "fas fa-check-circle" },
-                          { label: "Ngày thêm", value: new Date(product.createdAt).toLocaleDateString('vi-VN'), color: "info", icon: "fas fa-calendar-plus" },
-                          { label: "Cập nhật lần cuối", value: new Date(product.updatedAt).toLocaleDateString('vi-VN'), color: "secondary", icon: "fas fa-sync-alt" }
+                          {
+                            label: "Số lượng còn lại",
+                            value: product.quantity,
+                            color: "success",
+                            icon: "fas fa-boxes",
+                          },
+                          {
+                            label: "Tình trạng",
+                            value: product.isAvailable
+                              ? "Còn hàng"
+                              : "Hết hàng",
+                            color: product.isAvailable ? "success" : "danger",
+                            icon: "fas fa-check-circle",
+                          },
+                          {
+                            label: "Ngày thêm",
+                            value: new Date(
+                              product.createdAt
+                            ).toLocaleDateString("vi-VN"),
+                            color: "info",
+                            icon: "fas fa-calendar-plus",
+                          },
+                          {
+                            label: "Cập nhật lần cuối",
+                            value: new Date(
+                              product.updatedAt
+                            ).toLocaleDateString("vi-VN"),
+                            color: "secondary",
+                            icon: "fas fa-sync-alt",
+                          },
                         ].map((item, index) => (
                           <div key={index} className="col-md-6 mb-4">
                             <div className="info-card p-4 h-100">
                               <div className="d-flex align-items-center mb-2">
-                                <i className={`${item.icon} text-${item.color} me-2`}></i>
-                                <small className="text-muted text-uppercase font-weight-bold">{item.label}</small>
+                                <i
+                                  className={`${item.icon} text-${item.color} me-2`}
+                                ></i>
+                                <small className="text-muted text-uppercase font-weight-bold">
+                                  {item.label}
+                                </small>
                               </div>
-                              <h4 className={`text-${item.color} font-weight-bold mb-0`}>{item.value}</h4>
+                              <h4
+                                className={`text-${item.color} font-weight-bold mb-0`}
+                              >
+                                {item.value}
+                              </h4>
                             </div>
                           </div>
                         ))}
@@ -550,10 +643,18 @@ const ProductDetail = () => {
                     <div className="text-center py-5">
                       <div className="mb-4">
                         <i className="fas fa-comments fa-4x text-muted mb-3"></i>
-                        <h3 className="font-weight-bold text-dark">Chưa có đánh giá nào</h3>
-                        <p className="text-muted lead">Hãy là người đầu tiên đánh giá sản phẩm này và chia sẻ trải nghiệm của bạn.</p>
+                        <h3 className="font-weight-bold text-dark">
+                          Chưa có đánh giá nào
+                        </h3>
+                        <p className="text-muted lead">
+                          Hãy là người đầu tiên đánh giá sản phẩm này và chia sẻ
+                          trải nghiệm của bạn.
+                        </p>
                       </div>
-                      <button className="btn btn-primary btn-lg px-5 py-3" style={{ borderRadius: '12px' }}>
+                      <button
+                        className="btn btn-primary btn-lg px-5 py-3"
+                        style={{ borderRadius: "12px" }}
+                      >
                         <i className="fas fa-edit me-2"></i>
                         Viết đánh giá đầu tiên
                       </button>
