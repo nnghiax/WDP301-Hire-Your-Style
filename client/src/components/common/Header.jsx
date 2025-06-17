@@ -213,7 +213,11 @@ export default function Header() {
                 0
               </Badge>
             </Button>
-            <Button variant="light" className="border">
+            <Button
+              variant="light"
+              className="border"
+              onClick={() => navigate(`/cart`)}
+            >
               <i className="fas fa-shopping-cart text-primary"></i>
               <Badge variant="danger" className="ml-1">
                 0
