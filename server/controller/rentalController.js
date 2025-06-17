@@ -1,9 +1,5 @@
-const Rental = require('../model/Rental')
+const Rental = require("../model/Rental");
 
+const rentalController = {};
 
-const rentalController = {
-
-}
-
-
-module.exports = rentalController
+module.exports = rentalController;
