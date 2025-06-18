@@ -22,19 +22,19 @@ router.get(
 router.get(
   "/daily",
   verifyToken,
-  [verifyAdmin, verifyOwner],
+  verifyOwner,
   revenueController.getDailyRevenue
 );
 router.get(
   "/monthly",
   verifyToken,
-  [verifyAdmin, verifyOwner],
+  verifyOwner,
   revenueController.getMonthlyRevenue
 );
 router.get(
   "/yearly",
   verifyToken,
-  [verifyAdmin, verifyOwner],
+  verifyOwner,
   revenueController.getYearlyRevenue
 );
 router.get(
