@@ -53,88 +53,67 @@ const revenueController = {
     }
   },
 
-getRevenueDetails: async (req, res) => {
-  try {
-    const userId = req.user._id;
-    console.log('User ID:', userId);
-    const store = await Store.findOne({ userId, isActive: true });
-    console.log('Found Store:', store);
+  getRevenueDetails: async (req, res) => {
+    try {
+      const userId = req.user._id;
+      const store = await Store.findOne({ userId, isActive: true });
 
-    if (!store) {
-      return res.status(403).json({
+      if (!store) {
+        return res.status(403).json({
+          success: false,
+          message: "You don't own any store or the store is inactive",
+        });
+      }
+
+      const query = {
+        storeId: store._id,
+        status: "completed",
+      };
+      if (req.query.startDate) {
+        query.rentalDate = { $gte: new Date(req.query.startDate) };
+      }
+      if (req.query.endDate) {
+        query.rentalDate = {
+          ...query.rentalDate,
+          $lte: new Date(req.query.endDate),
+        };
+      }
+
+      const rentals = await Rental.find(query)
+        .populate("items.productId", "name price")
+        .populate("userId", "name email");
+
+      const revenueDetails = rentals.map((rental) => ({
+        rentalId: rental._id,
+        user: {
+          name: rental.userId.name,
+          email: rental.userId.email,
+        },
+        items: rental.items.map((item) => ({
+          productName: item.productId.name,
+          size: item.size,
+          quantity: item.quantity,
+          price: item.productId.price,
+          subtotal: item.quantity * item.productId.price,
+        })),
+        totalAmount: rental.totalAmount,
+        rentalDate: rental.rentalDate,
+        returnDate: rental.returnDate,
+      }));
+
+      return res.status(200).json({
+        success: true,
+        message: "Get revenue details successfully",
+        data: revenueDetails,
+      });
+    } catch (error) {
+      return res.status(500).json({
         success: false,
-        message: "You don't own any store or the store is inactive",
+        message: "Server error",
+        error: error.message,
       });
     }
-
-    const query = {
-      storeId: store._id,
-      status: "completed",
-    };
-    if (req.query.startDate) {
-      const start = new Date(req.query.startDate);
-      if (isNaN(start.getTime())) {
-        return res.status(400).json({
-          success: false,
-          message: "Invalid startDate format. Use YYYY-MM-DD",
-        });
-      }
-      query.rentalDate = { $gte: start };
-    }
-    if (req.query.endDate) {
-      const end = new Date(req.query.endDate);
-      if (isNaN(end.getTime())) {
-        return res.status(400).json({
-          success: false,
-          message: "Invalid endDate format. Use YYYY-MM-DD",
-        });
-      }
-      query.rentalDate = {
-        ...query.rentalDate,
-        $lte: end,
-      };
-    }
-
-    console.log('Query:', query);
-    const rentals = await Rental.find(query)
-      .populate("items.productId", "name price")
-      .populate("userId", "name email");
-
-    console.log('Rentals found:', rentals.length);
-    console.log('Rentals data:', rentals);
-
-    const revenueDetails = rentals.map((rental) => ({
-      rentalId: rental._id,
-      user: {
-        name: rental.userId?.name || 'Unknown',
-        email: rental.userId?.email || 'N/A',
-      },
-      items: rental.items?.map((item) => ({
-        productName: item.productId?.name || 'Unknown',
-        size: item.size || 'N/A',
-        quantity: item.quantity || 0,
-        price: item.productId?.price || 0,
-        subtotal: (item.quantity || 0) * (item.productId?.price || 0),
-      })) || [],
-      totalAmount: rental.totalAmount || 0,
-      rentalDate: rental.rentalDate,
-      returnDate: rental.returnDate,
-    }));
-
-    return res.status(200).json({
-      success: true,
-      message: "Get revenue details successfully",
-      data: revenueDetails,
-    });
-  } catch (error) {
-    console.error('Server error:', error);
-    return res.status(500).json({
-      success: false,
-      message: "Server error",
-      error: error.message,
-    });
-  }
-},
+  },
   getDailyRevenue: async (req, res) => {
     try {
       const userId = req.user._id;
@@ -192,28 +171,17 @@ getRevenueDetails: async (req, res) => {
   getMonthlyRevenue: async (req, res) => {
     try {
       const userId = req.user._id;
-      const isAdmin = req.user.role === "admin";
+      const store = await Store.findOne({ userId, isActive: true });
 
-      const stores = isAdmin
-        ? await Store.find({ isActive: true })
-        : await Store.findOne({ userId, isActive: true });
-      if (!stores) {
+      if (!store) {
         return res.status(403).json({
           success: false,
-          message: "No active stores found",
+          message: "You don't own any store or the store is inactive",
         });
       }
 
-
-      const storeIds = Array.isArray(stores)
-        ? stores.map((s) => s._id)
-        : [stores._id];
-      const rentals = await Rental.find({
-        storeId: { $in: storeIds },
-
       const query = {
         storeId: store._id,
-
         status: "completed",
       };
       if (req.query.startDate) {
@@ -257,28 +225,17 @@ getRevenueDetails: async (req, res) => {
   getQuarterlyRevenue: async (req, res) => {
     try {
       const userId = req.user._id;
-      const isAdmin = req.user.role === "admin";
+      const store = await Store.findOne({ userId, isActive: true });
 
-      const stores = isAdmin
-        ? await Store.find({ isActive: true })
-        : await Store.findOne({ userId, isActive: true });
-      if (!stores) {
+      if (!store) {
         return res.status(403).json({
           success: false,
-          message: "No active stores found",
+          message: "You don't own any store or the store is inactive",
         });
       }
 
-
-      const storeIds = Array.isArray(stores)
-        ? stores.map((s) => s._id)
-        : [stores._id];
-      const rentals = await Rental.find({
-        storeId: { $in: storeIds },
-
       const query = {
         storeId: store._id,
-
         status: "completed",
       };
       if (req.query.startDate) {
@@ -325,28 +282,17 @@ getRevenueDetails: async (req, res) => {
   getYearlyRevenue: async (req, res) => {
     try {
       const userId = req.user._id;
-      const isAdmin = req.user.role === "admin";
+      const store = await Store.findOne({ userId, isActive: true });
 
-      const stores = isAdmin
-        ? await Store.find({ isActive: true })
-        : await Store.findOne({ userId, isActive: true });
-      if (!stores) {
+      if (!store) {
         return res.status(403).json({
           success: false,
-          message: "No active stores found",
+          message: "You don't own any store or the store is inactive",
         });
       }
 
-
-      const storeIds = Array.isArray(stores)
-        ? stores.map((s) => s._id)
-        : [stores._id];
-      const rentals = await Rental.find({
-        storeId: { $in: storeIds },
-
       const query = {
         storeId: store._id,
-
         status: "completed",
       };
       if (req.query.startDate) {
@@ -404,7 +350,10 @@ getRevenueDetails: async (req, res) => {
         status: "completed",
       };
       if (req.query.startDate) {
-        query.rentalDate = { $gte: new Date(req.query.startDate) };
+        query.rentalDate = {
+          ...query.rentalDate,
+          $gte: new Date(req.query.startDate),
+        };
       }
       if (req.query.endDate) {
         query.rentalDate = {
@@ -472,7 +421,10 @@ getRevenueDetails: async (req, res) => {
         status: "completed",
       };
       if (req.query.startDate) {
-        query.rentalDate = { $gte: new Date(req.query.startDate) };
+        query.rentalDate = {
+          ...query.rentalDate,
+          $gte: new Date(req.query.startDate),
+        };
       }
       if (req.query.endDate) {
         query.rentalDate = {
@@ -529,10 +481,23 @@ getRevenueDetails: async (req, res) => {
       }
 
       const stores = await Store.find({ isActive: true }).select("name _id");
-      const rentals = await Rental.find({ status: "completed" }).populate(
-        "storeId",
-        "name"
-      );
+      const query = {
+        status: "completed",
+      };
+      if (req.query.startDate) {
+        query.rentalDate = {
+          ...query.rentalDate,
+          $gte: new Date(req.query.startDate),
+        };
+      }
+      if (req.query.endDate) {
+        query.rentalDate = {
+          ...query.rentalDate,
+          $lte: new Date(req.query.endDate),
+        };
+      }
+
+      const rentals = await Rental.find(query).populate("storeId", "name");
 
       const result = {};
       rentals.forEach((rental) => {
@@ -590,10 +555,23 @@ getRevenueDetails: async (req, res) => {
       }
 
       const stores = await Store.find({ isActive: true }).select("name _id");
-      const rentals = await Rental.find({ status: "completed" }).populate(
-        "storeId",
-        "name"
-      );
+      const query = {
+        status: "completed",
+      };
+      if (req.query.startDate) {
+        query.rentalDate = {
+          ...query.rentalDate,
+          $gte: new Date(req.query.startDate),
+        };
+      }
+      if (req.query.endDate) {
+        query.rentalDate = {
+          ...query.rentalDate,
+          $lte: new Date(req.query.endDate),
+        };
+      }
+
+      const rentals = await Rental.find(query).populate("storeId", "name");
 
       const result = {};
       rentals.forEach((rental) => {
@@ -654,10 +632,23 @@ getRevenueDetails: async (req, res) => {
       }
 
       const stores = await Store.find({ isActive: true }).select("name _id");
-      const rentals = await Rental.find({ status: "completed" }).populate(
-        "storeId",
-        "name"
-      );
+      const query = {
+        status: "completed",
+      };
+      if (req.query.startDate) {
+        query.rentalDate = {
+          ...query.rentalDate,
+          $gte: new Date(req.query.startDate),
+        };
+      }
+      if (req.query.endDate) {
+        query.rentalDate = {
+          ...query.rentalDate,
+          $lte: new Date(req.query.endDate),
+        };
+      }
+
+      const rentals = await Rental.find(query).populate("storeId", "name");
 
       const result = {};
       rentals.forEach((rental) => {
@@ -712,7 +703,4 @@ function getWeekNumber(date) {
   return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
 }
 
-
 module.exports = revenueController;
-
-
