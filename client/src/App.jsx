@@ -18,6 +18,7 @@ import ProtectedRoute from "./components/auth/ProtectedRoute";
 import StoreOwnerProfile from "./components/store_owner/StoreOwnerProfile";
 import AdminStoreRequest from "./components/admin/AdminStoreRequest";
 import AdminStoreRequestDetail from "./components/admin/AdminStoreRequestDetail";
+import AdminUsers from "./components/admin/AdminUsers";
 
 function App() {
   return (
