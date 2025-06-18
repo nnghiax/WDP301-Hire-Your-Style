@@ -152,7 +152,7 @@ function TopbarNavbar() {
                       objectFit: "cover",
                     }}
                   />
-                  <div
+                  {/* <div
                     style={{
                       position: "absolute",
                       top: "50%",
@@ -168,7 +168,7 @@ function TopbarNavbar() {
                     <h3>Tiêu đề slide 1</h3>
                     <p>Mô tả cho slide 1</p>
                     <Button variant="primary">Mua ngay</Button>
-                  </div>
+                  </div> */}
                 </div>
               </div>
 
@@ -184,7 +184,7 @@ function TopbarNavbar() {
                       objectFit: "cover",
                     }}
                   />
-                  <div
+                  {/* <div
                     style={{
                       position: "absolute",
                       top: "50%",
@@ -200,7 +200,7 @@ function TopbarNavbar() {
                     <h3>Tiêu đề slide 2</h3>
                     <p>Mô tả cho slide 2</p>
                     <Button variant="primary">Mua ngay</Button>
-                  </div>
+                  </div> */}
                 </div>
               </div>
             </Slider>

@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-
+import "../css/Cart.css"; // Import your custom CSS for styling
 const ShoppingCart = ({ userId }) => {
   const [cartData, setCartData] = useState([]);
+  const [selectedItems, setSelectedItems] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -12,11 +13,7 @@ const ShoppingCart = ({ userId }) => {
       setError(null);
 
       const token = localStorage.getItem("token");
-      console.log("Token:", token);
-
-      if (!token) {
-        throw new Error("Không tìm thấy token xác thực");
-      }
+      if (!token) throw new Error("Không tìm thấy token xác thực");
 
       const response = await axios.get("http://localhost:9999/cart/list", {
         headers: {
@@ -25,38 +22,55 @@ const ShoppingCart = ({ userId }) => {
         },
       });
 
-      console.log("Response:", response.data);
-      setCartData(response.data.data || response.data || []);
+      const data = response.data.data || response.data || [];
+      setCartData(data);
+      setSelectedItems(data.map((item) => item._id)); // chọn tất cả mặc định
     } catch (err) {
-      console.error("Error fetching cart data:", err);
-      if (err.response) {
-        setError(
-          `Lỗi server: ${err.response.status} - ${
-            err.response.data.message || err.response.statusText
-          }`
-        );
-      } else if (err.request) {
-        setError(
-          "Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng."
-        );
-      } else {
-        setError(err.message);
-      }
+      setError(err.response?.data?.message || err.message);
       setCartData([]);
     } finally {
       setLoading(false);
     }
   };
 
-  // thanh toan bang payos
+  const handleCheckboxChange = (itemId) => {
+    setSelectedItems((prev) =>
+      prev.includes(itemId)
+        ? prev.filter((id) => id !== itemId)
+        : [...prev, itemId]
+    );
+  };
+
+  const handleSelectAll = () => {
+    if (selectedItems.length === cartData.length) {
+      setSelectedItems([]);
+    } else {
+      setSelectedItems(cartData.map((item) => item._id));
+    }
+  };
+
+  const getItemTotal = (item) => item.quantity * (item.price || 0);
+
+  const getSubtotal = () => {
+    return cartData.reduce((total, item) => {
+      return selectedItems.includes(item._id)
+        ? total + getItemTotal(item)
+        : total;
+    }, 0);
+  };
+
+  const subtotal = getSubtotal();
+  const shipping = selectedItems.length > 0 ? 30000 : 0;
+  const total = subtotal + shipping;
+
   const handlePayment = async () => {
     try {
       const order = {
-        amount: 10000,
-        description: "Thanh toán đơn hàng",
-        orderCode: Date.now(), // Unique order code
-        returnUrl: "http://localhost:9999/success",
-        cancelUrl: "http://localhost:9999/cancel",
+        amount: total,
+        description: "Hire Your Style",
+        orderCode: Date.now(),
+        returnUrl: "http://localhost:5173/cart?success=true",
+        cancelUrl: "http://localhost:5173/cart?success=false",
       };
 
       const response = await axios.post("http://localhost:9999/payos", order, {
@@ -67,13 +81,9 @@ const ShoppingCart = ({ userId }) => {
       });
 
       const checkoutUrl = response.data?.checkoutUrl;
-      if (checkoutUrl) {
-        window.location.href = checkoutUrl;
-      } else {
-        throw new Error("Không nhận được URL thanh toán.");
-      }
+      if (checkoutUrl) window.location.href = checkoutUrl;
+      else throw new Error("Không nhận được URL thanh toán.");
     } catch (error) {
-      console.error("Error processing payment:", error);
       alert("Lỗi khi xử lý thanh toán. Vui lòng thử lại sau.");
     }
   };
@@ -82,417 +92,202 @@ const ShoppingCart = ({ userId }) => {
     fetchCartData();
   }, [userId]);
 
-  const getAllItems = () => {
-    return cartData || [];
-  };
-
-  const formatPrice = (price) => {
-    return new Intl.NumberFormat("vi-VN", {
-      style: "currency",
-      currency: "VND",
-    }).format(price || 0);
-  };
-
-  const getItemTotal = (item) => {
-    return item.quantity * (item.price || 0);
-  };
-
-  const getSubtotal = () => {
-    return getAllItems().reduce((total, item) => {
-      return total + getItemTotal(item);
-    }, 0);
-  };
-
   const updateQuantity = async (itemId, change) => {
-    try {
-      const item = cartData.find((item) => item._id === itemId);
-      if (!item) return;
+    const item = cartData.find((item) => item._id === itemId);
+    if (!item) return;
+    const newQuantity = Math.max(1, item.quantity + change);
 
-      const newQuantity = Math.max(1, item.quantity + change);
+    setCartData((prev) =>
+      prev.map((item) =>
+        item._id === itemId ? { ...item, quantity: newQuantity } : item
+      )
+    );
 
-      setCartData((prevData) =>
-        prevData.map((item) =>
-          item._id === itemId ? { ...item, quantity: newQuantity } : item
-        )
-      );
-
-      const response = await axios.put(
-        `http://localhost:9999/cart/update-quantity/${itemId}`,
-        { quantity: newQuantity }, 
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-
-      console.log("Update quantity response:", response.data);
-    } catch (error) {
-      console.error("Error updating quantity:", error);
-      fetchCartData();
-    }
+    await axios.put(
+      `http://localhost:9999/cart/update-quantity/${itemId}`,
+      { quantity: newQuantity },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
   };
 
   const removeItem = async (itemId) => {
-    try {
-      setCartData((prevData) => prevData.filter((item) => item._id !== itemId));
-      const response = await axios.delete(
-        `http://localhost:9999/cart/delete/${itemId}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
+    setCartData((prev) => prev.filter((item) => item._id !== itemId));
+    setSelectedItems((prev) => prev.filter((id) => id !== itemId));
 
-      console.log("Remove item response:", response.data);
-    } catch (error) {
-      console.error("Error removing item:", error);
-      fetchCartData();
-    }
+    await axios.delete(`http://localhost:9999/cart/delete/${itemId}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
   };
 
-  const subtotal = getSubtotal();
-  const shipping = 1;
-  const total = subtotal + shipping;
-  const items = getAllItems();
+  const formatPrice = (price) =>
+    new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    }).format(price || 0);
 
   if (loading) {
-    return (
-      <div className="container-fluid bg-light py-5">
-        <div className="container">
-          <div className="row justify-content-center">
-            <div className="col-md-6 text-center">
-              <div className="spinner-border text-primary mb-3" role="status">
-                <span className="sr-only">Loading...</span>
-              </div>
-              <h5>Đang tải giỏ hàng...</h5>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="container-fluid bg-light py-5">
-        <div className="container">
-          <div className="row justify-content-center">
-            <div className="col-md-6 text-center">
-              <div className="alert alert-danger">
-                <i className="fas fa-exclamation-triangle me-2"></i>
-                Lỗi tải dữ liệu: {error}
-              </div>
-              <button className="btn btn-primary">
-                <i className="fas fa-redo me-2"></i>
-                Thử lại
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+    return <div className="text-center">Đang tải giỏ hàng...</div>;
   }
 
   return (
     <div className="container-fluid bg-light py-5">
       <div className="container">
-        <div className="row mb-5">
-          <div className="col-12">
-            <div className="text-center">
-              <h1 className="display-4 font-weight-bold text-primary mb-3">
-                <i className="fas fa-shopping-cart me-3"></i>
-                Giỏ Hàng
-              </h1>
-              <p className="lead text-muted">
-                Quản lý các sản phẩm trong giỏ hàng của bạn
-              </p>
-            </div>
-          </div>
-        </div>
+        <h1 className="text-center mb-4">Giỏ Hàng</h1>
 
         <div className="row">
-          
-          <div className="col-lg-8 mb-5">
-            <div className="card shadow-sm border-0 rounded-lg overflow-hidden">
-              <div className="card-header bg-gradient-primary text-white py-3">
-                <h4 className="mb-0 font-weight-bold">
-                  <i className="fas fa-list me-2"></i>
-                  Sản Phẩm Trong Giỏ ({items.length} sản phẩm)
-                </h4>
+          {/* DANH SÁCH SẢN PHẨM */}
+          <div className="col-lg-8 mb-4">
+            <div className="card">
+              <div className="card-header d-flex justify-content-between align-items-center">
+                <h5 className="mb-0">Sản phẩm ({cartData.length})</h5>
+                <button
+                  className="btn btn-sm btn-outline-secondary"
+                  onClick={handleSelectAll}
+                >
+                  {selectedItems.length === cartData.length
+                    ? "Bỏ chọn tất cả"
+                    : "Chọn tất cả"}
+                </button>
               </div>
 
-              {items.length > 0 ? (
+              {cartData.length > 0 ? (
                 <div className="card-body p-0">
-                  {items.map((item, index) => (
+                  {cartData.map((item, index) => (
                     <div
                       key={item._id}
-                      className={`p-4 ${
-                        index !== items.length - 1 ? "border-bottom" : ""
+                      className={`p-3 ${
+                        index < cartData.length - 1 ? "border-bottom" : ""
                       }`}
                     >
-                      <div className="row align-items-center">
-                      
-                        <div className="col-md-2 col-sm-3 mb-3 mb-md-0">
-                          <img
-                            src={
-                              item.image ||
-                              `https://picsum.photos/300/300?random=${
-                                index + 1
-                              }`
-                            }
-                            alt={item.name}
-                            className="img-fluid rounded shadow-sm"
-                            style={{ aspectRatio: "1/1", objectFit: "cover" }}
-                          />
+                      <div className="d-flex align-items-center">
+                        <input
+                          type="checkbox"
+                          className="form-check-input me-3"
+                          checked={selectedItems.includes(item._id)}
+                          onChange={() => handleCheckboxChange(item._id)}
+                        />
+                        <img
+                          src={
+                            item.image ||
+                            `https://picsum.photos/100?random=${index}`
+                          }
+                          alt={item.name}
+                          className="img-thumbnail me-3"
+                          style={{ width: "100px", height: "120px" }}
+                        />
+                        <div className="flex-grow-1">
+                          <h6>{item.name}</h6>
+                          <p className="mb-1 text-muted">Size: {item.size}</p>
+                          <strong>{formatPrice(item.price)}</strong>
                         </div>
-
-                        <div className="col-md-4 col-sm-5 mb-3 mb-md-0">
-                          <h5 className="font-weight-bold text-dark mb-2">
-                            {item.name}
-                          </h5>
-                          <p className="text-muted mb-2">
-                            <i className="fas fa-tag me-1"></i>
-                            Size:{" "}
-                            <span className="badge badge-secondary text-dark">
-                              {item.size}
-                            </span>
-                          </p>
-                          <h6 className="text-primary font-weight-bold">
-                            {formatPrice(item.price)}
-                          </h6>
-                        </div>
-
-                        <div className="col-md-3 col-sm-4 mb-3 mb-md-0">
-                          <div className="d-flex align-items-center justify-content-center">
-                            <div
-                              className="input-group"
-                              style={{ maxWidth: "140px" }}
-                            >
-                              <div className="input-group-prepend">
-                                <button
-                                  className="btn btn-outline-primary btn-sm"
-                                  onClick={() => updateQuantity(item._id, -1)}
-                                  disabled={item.quantity <= 1}
-                                >
-                                  <i className="fas fa-minus"></i>
-                                </button>
-                              </div>
-                              <input
-                                type="text"
-                                className="form-control text-center font-weight-bold"
-                                value={item.quantity}
-                                readOnly
-                              />
-                              <div className="input-group-append">
-                                <button
-                                  className="btn btn-outline-primary btn-sm"
-                                  onClick={() => updateQuantity(item._id, 1)}
-                                >
-                                  <i className="fas fa-plus"></i>
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="col-md-3 text-center">
-                          <h5 className="font-weight-bold text-success mb-3">
-                            {formatPrice(getItemTotal(item))}
-                          </h5>
+                        <div className="me-3 d-flex align-items-center">
                           <button
-                            className="btn btn-outline-danger btn-sm"
-                            onClick={() => removeItem(item._id)}
-                            title="Xóa sản phẩm"
+                            className="btn btn-sm btn-outline-primary"
+                            onClick={() => updateQuantity(item._id, -1)}
+                            disabled={item.quantity <= 1}
                           >
-                            <i className="fas fa-trash-alt me-1"></i>
-                            Xóa
+                            -
+                          </button>
+                          <span className="mx-2">{item.quantity}</span>
+                          <button
+                            className="btn btn-sm btn-outline-primary"
+                            onClick={() => updateQuantity(item._id, 1)}
+                          >
+                            +
                           </button>
                         </div>
+                        <button
+                          className="btn btn-sm btn-outline-danger"
+                          onClick={() => removeItem(item._id)}
+                        >
+                          Xóa
+                        </button>
                       </div>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="card-body text-center py-5">
-                  <div className="text-muted mb-4">
-                    <i className="fas fa-shopping-cart fa-4x mb-3 text-secondary"></i>
-                    <h4 className="font-weight-bold">Giỏ hàng trống</h4>
-                    <p className="lead">
-                      Chưa có sản phẩm nào trong giỏ hàng của bạn
-                    </p>
-                  </div>
-                  <button className="btn btn-primary btn-lg">
-                    <i className="fas fa-arrow-left me-2"></i>
-                    Tiếp tục mua sắm
-                  </button>
-                </div>
+                <div className="card-body text-center">Giỏ hàng trống.</div>
               )}
             </div>
           </div>
 
+          {/* TỔNG ĐƠN HÀNG + THỐNG KÊ */}
           <div className="col-lg-4">
-            <div
-              className="card shadow-sm border-0 rounded-lg overflow-hidden"
-              style={{
-                position: "sticky",
-                top: "20px",
-                zIndex: 1000,
-                background: "white",
-              }}
-            >
-              <div className="card-header bg-gradient-success text-white py-3">
-                <h4 className="mb-0 font-weight-bold">
-                  <i className="fas fa-calculator me-2"></i>
-                  Tổng Đơn Hàng
-                </h4>
-              </div>
-
+            <div className="card mb-4">
+              <div className="card-header">Tổng đơn hàng</div>
               <div className="card-body">
-                <div className="mb-3">
-                  <div className="d-flex justify-content-between align-items-center mb-2">
-                    <span className="text-muted">Tạm tính:</span>
-                    <span className="font-weight-bold h6 mb-0">
-                      {formatPrice(subtotal)}
-                    </span>
-                  </div>
-                  <div className="d-flex justify-content-between align-items-center mb-3">
-                    <span className="text-muted">Phí vận chuyển:</span>
-                    <span className="font-weight-bold h6 mb-0">
-                      {formatPrice(shipping)}
-                    </span>
-                  </div>
-                  <hr className="my-3" />
-                  <div className="d-flex justify-content-between align-items-center">
-                    <span className="h5 font-weight-bold text-dark">
-                      Tổng cộng:
-                    </span>
-                    <span className="h4 font-weight-bold text-success">
-                      {formatPrice(total)}
-                    </span>
-                  </div>
-                </div>
-
+                <p className="d-flex justify-content-between">
+                  <span>Tạm tính:</span>
+                  <strong>{formatPrice(subtotal)}</strong>
+                </p>
+                <p className="d-flex justify-content-between">
+                  <span>Phí vận chuyển:</span>
+                  <strong>{formatPrice(shipping)}</strong>
+                </p>
+                <hr />
+                <p className="d-flex justify-content-between">
+                  <span>Tổng cộng:</span>
+                  <strong className="text-success">{formatPrice(total)}</strong>
+                </p>
                 <button
-                  className={`btn btn-block py-3 font-weight-bold ${
-                    items.length === 0
+                  className={`btn btn-block ${
+                    selectedItems.length === 0
                       ? "btn-secondary disabled"
                       : "btn-primary"
                   }`}
-                  disabled={items.length === 0}
-                  onClick={() => handlePayment()}
+                  onClick={handlePayment}
+                  disabled={selectedItems.length === 0}
                 >
-                  <i
-                    className={`fas ${
-                      items.length === 0 ? "fa-ban" : "fa-credit-card"
-                    } me-2`}
-                  ></i>
-                  {items.length === 0
-                    ? "Giỏ Hàng Trống"
-                    : "Tiến Hành Thanh Toán"}
+                  Thanh toán
                 </button>
               </div>
             </div>
 
-            {items.length > 0 && (
-              <div className="card shadow-sm border-0 rounded-lg mt-4">
-                <div className="card-header bg-light border-bottom">
-                  <h6 className="mb-0 font-weight-bold text-dark">
-                    <i className="fas fa-chart-bar me-2 text-info"></i>
-                    Thống Kê Giỏ Hàng
-                  </h6>
-                </div>
-                <div className="card-body">
-                  <div className="row text-center">
-                    <div className="col-4">
-                      <div className="p-2">
-                        <i className="fas fa-boxes fa-2x text-primary mb-2"></i>
-                        <h6 className="font-weight-bold">{items.length}</h6>
-                        <small className="text-muted">Loại sản phẩm</small>
-                      </div>
-                    </div>
-                    <div className="col-4">
-                      <div className="p-2">
-                        <i className="fas fa-shopping-bag fa-2x text-success mb-2"></i>
-                        <h6 className="font-weight-bold">
-                          {items.reduce((sum, item) => sum + item.quantity, 0)}
-                        </h6>
-                        <small className="text-muted">Tổng số lượng</small>
-                      </div>
-                    </div>
-                    <div className="col-4">
-                      <div className="p-2">
-                        <i className="fas fa-clock fa-2x text-warning mb-2"></i>
-                        <h6 className="font-weight-bold">Hôm nay</h6>
-                        <small className="text-muted">Cập nhật lần cuối</small>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            <div className="card shadow-sm border-0 rounded-lg mt-4">
+            {/* THỐNG KÊ */}
+            <div className="card mb-4">
+              <div className="card-header">Thống kê giỏ hàng</div>
               <div className="card-body text-center">
-                <button className="btn btn-outline-primary btn-sm mb-2 me-2">
-                  <i className="fas fa-heart me-1"></i>
-                  Lưu giỏ hàng
+                <p>
+                  <strong>{cartData.length}</strong> loại sản phẩm
+                </p>
+                <p>
+                  <strong>
+                    {cartData.reduce((sum, item) => sum + item.quantity, 0)}
+                  </strong>{" "}
+                  tổng số lượng
+                </p>
+              </div>
+            </div>
+
+            {/* HÀNH ĐỘNG */}
+            <div className="card">
+              <div className="card-body text-center">
+                <button className="btn btn-outline-primary btn-sm me-2">
+                  <i className="fas fa-heart me-1"></i> Lưu giỏ hàng
                 </button>
-                <button className="btn btn-outline-secondary btn-sm mb-2">
-                  <i className="fas fa-share-alt me-1"></i>
-                  Chia sẻ
+                <button className="btn btn-outline-secondary btn-sm me-2">
+                  <i className="fas fa-share-alt me-1"></i> Chia sẻ
                 </button>
                 <button
-                  className="btn btn-outline-info btn-sm mb-2 ms-2"
+                  className="btn btn-outline-info btn-sm"
                   onClick={fetchCartData}
-                  title="Làm mới giỏ hàng"
                 >
-                  <i className="fas fa-sync-alt me-1"></i>
-                  Làm mới
+                  <i className="fas fa-sync-alt me-1"></i> Làm mới
                 </button>
               </div>
             </div>
           </div>
         </div>
       </div>
-
-      <style jsx>{`
-        .bg-gradient-primary {
-          background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
-        }
-        .bg-gradient-success {
-          background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
-        }
-        .card {
-          transition: all 0.3s ease;
-        }
-        .card:hover {
-          transform: translateY(-2px);
-        }
-        .btn {
-          transition: all 0.3s ease;
-        }
-        .btn:hover {
-          transform: translateY(-1px);
-        }
-        .sticky-top {
-          position: sticky;
-          top: 20px;
-        }
-        .spinner-border {
-          width: 3rem;
-          height: 3rem;
-        }
-        .cart-summary-sticky {
-          position: -webkit-sticky;
-          position: sticky;
-          top: 20px;
-          z-index: 1020;
-        }
-      `}</style>
     </div>
   );
 };

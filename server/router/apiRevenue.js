@@ -38,6 +38,12 @@ router.get(
   revenueController.getYearlyRevenue
 );
 router.get(
+  "/quarterly",
+  verifyToken,
+  verifyOwner,
+  revenueController.getQuarterlyRevenue
+);
+router.get(
   "/admin/commission",
   verifyToken,
   verifyAdmin,
