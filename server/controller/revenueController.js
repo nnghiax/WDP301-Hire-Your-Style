@@ -1,6 +1,7 @@
 const Rental = require("../model/Rental");
 const Store = require("../model/Store");
 const User = require("../model/User");
+
 const revenueController = {
   getTotalRevenue: async (req, res) => {
     try {
@@ -191,17 +192,28 @@ getRevenueDetails: async (req, res) => {
   getMonthlyRevenue: async (req, res) => {
     try {
       const userId = req.user._id;
-      const store = await Store.findOne({ userId, isActive: true });
+      const isAdmin = req.user.role === "admin";
 
-      if (!store) {
+      const stores = isAdmin
+        ? await Store.find({ isActive: true })
+        : await Store.findOne({ userId, isActive: true });
+      if (!stores) {
         return res.status(403).json({
           success: false,
-          message: "You don't own any store or the store is inactive",
+          message: "No active stores found",
         });
       }
 
+
+      const storeIds = Array.isArray(stores)
+        ? stores.map((s) => s._id)
+        : [stores._id];
+      const rentals = await Rental.find({
+        storeId: { $in: storeIds },
+
       const query = {
         storeId: store._id,
+
         status: "completed",
       };
       if (req.query.startDate) {
@@ -245,17 +257,28 @@ getRevenueDetails: async (req, res) => {
   getQuarterlyRevenue: async (req, res) => {
     try {
       const userId = req.user._id;
-      const store = await Store.findOne({ userId, isActive: true });
+      const isAdmin = req.user.role === "admin";
 
-      if (!store) {
+      const stores = isAdmin
+        ? await Store.find({ isActive: true })
+        : await Store.findOne({ userId, isActive: true });
+      if (!stores) {
         return res.status(403).json({
           success: false,
-          message: "You don't own any store or the store is inactive",
+          message: "No active stores found",
         });
       }
 
+
+      const storeIds = Array.isArray(stores)
+        ? stores.map((s) => s._id)
+        : [stores._id];
+      const rentals = await Rental.find({
+        storeId: { $in: storeIds },
+
       const query = {
         storeId: store._id,
+
         status: "completed",
       };
       if (req.query.startDate) {
@@ -302,17 +325,28 @@ getRevenueDetails: async (req, res) => {
   getYearlyRevenue: async (req, res) => {
     try {
       const userId = req.user._id;
-      const store = await Store.findOne({ userId, isActive: true });
+      const isAdmin = req.user.role === "admin";
 
-      if (!store) {
+      const stores = isAdmin
+        ? await Store.find({ isActive: true })
+        : await Store.findOne({ userId, isActive: true });
+      if (!stores) {
         return res.status(403).json({
           success: false,
-          message: "You don't own any store or the store is inactive",
+          message: "No active stores found",
         });
       }
 
+
+      const storeIds = Array.isArray(stores)
+        ? stores.map((s) => s._id)
+        : [stores._id];
+      const rentals = await Rental.find({
+        storeId: { $in: storeIds },
+
       const query = {
         storeId: store._id,
+
         status: "completed",
       };
       if (req.query.startDate) {
@@ -484,6 +518,192 @@ getRevenueDetails: async (req, res) => {
       });
     }
   },
+
+  getDailyRevenueByStore: async (req, res) => {
+    try {
+      const admin = req.user;
+      if (admin.role !== "admin") {
+        return res
+          .status(403)
+          .json({ success: false, message: "Access denied. Admin only." });
+      }
+
+      const stores = await Store.find({ isActive: true }).select("name _id");
+      const rentals = await Rental.find({ status: "completed" }).populate(
+        "storeId",
+        "name"
+      );
+
+      const result = {};
+      rentals.forEach((rental) => {
+        const date = new Date(rental.rentalDate).toISOString().split("T")[0];
+        const storeId = rental.storeId._id.toString();
+        const storeName = rental.storeId.name;
+        const revenue = rental.totalAmount;
+        const commission = revenue * 0.1;
+
+        if (!result[storeId]) {
+          result[storeId] = {
+            storeName,
+            daily: {},
+          };
+        }
+
+        if (!result[storeId].daily[date]) {
+          result[storeId].daily[date] = { totalRevenue: 0, commission: 0 };
+        }
+        result[storeId].daily[date].totalRevenue += revenue;
+        result[storeId].daily[date].commission += commission;
+      });
+
+      const formattedResult = Object.values(result).map((store) => ({
+        storeName: store.storeName,
+        daily: Object.keys(store.daily).map((date) => ({
+          date,
+          totalRevenue: store.daily[date].totalRevenue,
+          commission: store.daily[date].commission,
+          currency: "VND",
+        })),
+      }));
+
+      return res.status(200).json({
+        success: true,
+        message: "Get daily revenue and commission by store successfully",
+        data: formattedResult,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        success: false,
+        message: "Server error",
+        error: error.message,
+      });
+    }
+  },
+
+  getMonthlyRevenueByStore: async (req, res) => {
+    try {
+      const admin = req.user;
+      if (admin.role !== "admin") {
+        return res
+          .status(403)
+          .json({ success: false, message: "Access denied. Admin only." });
+      }
+
+      const stores = await Store.find({ isActive: true }).select("name _id");
+      const rentals = await Rental.find({ status: "completed" }).populate(
+        "storeId",
+        "name"
+      );
+
+      const result = {};
+      rentals.forEach((rental) => {
+        const yearMonth = new Date(rental.rentalDate).toISOString().slice(0, 7);
+        const storeId = rental.storeId._id.toString();
+        const storeName = rental.storeId.name;
+        const revenue = rental.totalAmount;
+        const commission = revenue * 0.1;
+
+        if (!result[storeId]) {
+          result[storeId] = {
+            storeName,
+            monthly: {},
+          };
+        }
+
+        if (!result[storeId].monthly[yearMonth]) {
+          result[storeId].monthly[yearMonth] = {
+            totalRevenue: 0,
+            commission: 0,
+          };
+        }
+        result[storeId].monthly[yearMonth].totalRevenue += revenue;
+        result[storeId].monthly[yearMonth].commission += commission;
+      });
+
+      const formattedResult = Object.values(result).map((store) => ({
+        storeName: store.storeName,
+        monthly: Object.keys(store.monthly).map((yearMonth) => ({
+          yearMonth,
+          totalRevenue: store.monthly[yearMonth].totalRevenue,
+          commission: store.monthly[yearMonth].commission,
+          currency: "VND",
+        })),
+      }));
+
+      return res.status(200).json({
+        success: true,
+        message: "Get monthly revenue and commission by store successfully",
+        data: formattedResult,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        success: false,
+        message: "Server error",
+        error: error.message,
+      });
+    }
+  },
+
+  getYearlyRevenueByStore: async (req, res) => {
+    try {
+      const admin = req.user;
+      if (admin.role !== "admin") {
+        return res
+          .status(403)
+          .json({ success: false, message: "Access denied. Admin only." });
+      }
+
+      const stores = await Store.find({ isActive: true }).select("name _id");
+      const rentals = await Rental.find({ status: "completed" }).populate(
+        "storeId",
+        "name"
+      );
+
+      const result = {};
+      rentals.forEach((rental) => {
+        const year = new Date(rental.rentalDate).getFullYear().toString();
+        const storeId = rental.storeId._id.toString();
+        const storeName = rental.storeId.name;
+        const revenue = rental.totalAmount;
+        const commission = revenue * 0.1;
+
+        if (!result[storeId]) {
+          result[storeId] = {
+            storeName,
+            yearly: {},
+          };
+        }
+
+        if (!result[storeId].yearly[year]) {
+          result[storeId].yearly[year] = { totalRevenue: 0, commission: 0 };
+        }
+        result[storeId].yearly[year].totalRevenue += revenue;
+        result[storeId].yearly[year].commission += commission;
+      });
+
+      const formattedResult = Object.values(result).map((store) => ({
+        storeName: store.storeName,
+        yearly: Object.keys(store.yearly).map((year) => ({
+          year,
+          totalRevenue: store.yearly[year].totalRevenue,
+          commission: store.yearly[year].commission,
+          currency: "VND",
+        })),
+      }));
+
+      return res.status(200).json({
+        success: true,
+        message: "Get yearly revenue and commission by store successfully",
+        data: formattedResult,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        success: false,
+        message: "Server error",
+        error: error.message,
+      });
+    }
+  },
 };
 
 function getWeekNumber(date) {
@@ -491,4 +711,8 @@ function getWeekNumber(date) {
   const pastDaysOfYear = (date - firstDayOfYear) / 86400000;
   return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
 }
+
+
 module.exports = revenueController;
+
+

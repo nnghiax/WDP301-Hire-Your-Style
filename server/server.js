@@ -14,6 +14,7 @@ const apiAdmin = require("./router/adminProductRoutes");
 const apiPayos = require("./router/apiPayos");
 const apiRevenue = require("./router/apiRevenue");
 const apiRental = require("./router/apiRental");
+const apiAdminUser = require("./router/apiAdminUser");
 
 const hostname = process.env.HOSTNAME;
 const port = process.env.PORT;
@@ -65,6 +66,8 @@ app.use("/revenue", apiRevenue);
 app.use("/payos", apiPayos);
 
 app.use("/rental", apiRental);
+
+app.use("/admin", apiAdminUser);
 
 app.listen(port, () => {
   console.log(`Server is running on http://${hostname}:${port}`);
