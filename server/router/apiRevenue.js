@@ -22,19 +22,19 @@ router.get(
 router.get(
   "/daily",
   verifyToken,
-  verifyOwner,
+  [verifyAdmin, verifyOwner],
   revenueController.getDailyRevenue
 );
 router.get(
   "/monthly",
   verifyToken,
-  verifyOwner,
+  [verifyAdmin, verifyOwner],
   revenueController.getMonthlyRevenue
 );
 router.get(
   "/yearly",
   verifyToken,
-  verifyOwner,
+  [verifyAdmin, verifyOwner],
   revenueController.getYearlyRevenue
 );
 router.get(
@@ -43,12 +43,29 @@ router.get(
   verifyAdmin,
   revenueController.getAdminMonthlyAndYearlyCommission
 );
-
 router.get(
   "/admin/weekly-commission",
   verifyToken,
   verifyAdmin,
   revenueController.getAdminWeeklyCommission
+);
+router.get(
+  "/admin/daily-by-store",
+  verifyToken,
+  verifyAdmin,
+  revenueController.getDailyRevenueByStore
+);
+router.get(
+  "/admin/monthly-by-store",
+  verifyToken,
+  verifyAdmin,
+  revenueController.getMonthlyRevenueByStore
+);
+router.get(
+  "/admin/yearly-by-store",
+  verifyToken,
+  verifyAdmin,
+  revenueController.getYearlyRevenueByStore
 );
 
 module.exports = router;

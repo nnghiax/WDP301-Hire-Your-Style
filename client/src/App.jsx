@@ -18,6 +18,7 @@ import ProtectedRoute from "./components/auth/ProtectedRoute";
 import StoreOwnerProfile from "./components/store_owner/StoreOwnerProfile";
 import AdminStoreRequest from "./components/admin/AdminStoreRequest";
 import AdminStoreRequestDetail from "./components/admin/AdminStoreRequestDetail";
+import AdminUsers from "./components/admin/AdminUsers";
 
 function App() {
   return (
@@ -29,16 +30,25 @@ function App() {
         <Route path="/forget-password" element={<ForgetPasswordPage />} />
         <Route path="/LandingPage" element={<LandingPage />} />
         <Route path="/filter-product" element={<FilterProduct />} />
-        <Route path="/product-detail/:productId" element={<ProductDetailPage />} />
+        <Route
+          path="/product-detail/:productId"
+          element={<ProductDetailPage />}
+        />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/request" element={<RequestStore />} />
         <Route path="/profile" element={<ProfilePage />} />
 
         {/* Route store-owner */}
         <Route element={<ProtectedRoute />}>
-          <Route path="/store-owner/dashboard" element={<StoreOwnerDashboard />} />
+          <Route
+            path="/store-owner/dashboard"
+            element={<StoreOwnerDashboard />}
+          />
           <Route path="/store-owner/sidebar" element={<StoreOwnerSidebar />} />
-          <Route path="/store-owner/products" element={<StoreOwnerProducts />} />
+          <Route
+            path="/store-owner/products"
+            element={<StoreOwnerProducts />}
+          />
           <Route path="/store-owner/profile" element={<StoreOwnerProfile />} />
         </Route>
 
@@ -47,9 +57,12 @@ function App() {
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/products" element={<AdminProduct />} />
           <Route path="/admin/request" element={<AdminStoreRequest />} />
-          <Route path="/admin/request/:requestId" element={<AdminStoreRequestDetail />} />
+          <Route path="/admin/users" element={<AdminUsers />} />
+          <Route
+            path="/admin/request/:requestId"
+            element={<AdminStoreRequestDetail />}
+          />
         </Route>
-
       </Routes>
     </Router>
   );
