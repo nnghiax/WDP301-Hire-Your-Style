@@ -1,6 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import LandingPage from "./pages/LandingPage";
+import HomePage from "./pages/HomePage";
 import LoginPage from "./components/auth/LoginPage";
 import RegisterPage from "./components/auth/RegisterPage";
 import ForgetPasswordPage from "./components/auth/ForgetPasswordPage";
@@ -24,11 +24,11 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<LandingPage />} />
+        <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/forget-password" element={<ForgetPasswordPage />} />
-        <Route path="/LandingPage" element={<LandingPage />} />
+        <Route path="/homepage" element={<HomePage />} />
         <Route path="/filter-product" element={<FilterProduct />} />
         <Route
           path="/product-detail/:productId"
@@ -57,7 +57,6 @@ function App() {
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/products" element={<AdminProduct />} />
           <Route path="/admin/request" element={<AdminStoreRequest />} />
-          <Route path="/admin/users" element={<AdminUsers />} />
           <Route
             path="/admin/request/:requestId"
             element={<AdminStoreRequestDetail />}
