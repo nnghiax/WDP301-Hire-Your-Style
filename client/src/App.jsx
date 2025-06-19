@@ -61,6 +61,7 @@ function App() {
             path="/admin/request/:requestId"
             element={<AdminStoreRequestDetail />}
           />
+          <Route path="/admin/users" element={<AdminUsers />} />
         </Route>
       </Routes>
     </Router>
