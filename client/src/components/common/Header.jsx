@@ -431,15 +431,15 @@ export default function Header() {
                       show={showDropdown}
                       onToggle={() => setShowDropdown(!showDropdown)}
                     >
-                      <Dropdown.Toggle
+                   <Dropdown.Toggle
                         variant="link"
                         id="avatar-dropdown"
                         className="p-0 d-flex align-items-center"
-                        style={{ lineHeight: 0 }}
+                        style={{ lineHeight: 0, textDecoration: 'none' }}
                       >
                         {user && (
                           <>
-                            <Navbar.Text>Chào, {user.name}</Navbar.Text>
+                            <Navbar.Text style = {{ marginRight:'20px'}}>Chào, {user.name}</Navbar.Text>
                             <Image
                               src={user.avatar || "/images/default-avatar.png"}
                               roundedCircle
@@ -450,6 +450,10 @@ export default function Header() {
                             />
                           </>
                         )}
+                        <style>
+                          {`#avatar-dropdown::after {
+                          display: none;} `}
+                        </style>
                       </Dropdown.Toggle>
                       <Dropdown.Menu>
                         <Dropdown.Item href="/profile">Hồ sơ</Dropdown.Item>
@@ -482,7 +486,7 @@ export default function Header() {
         <Row
           style={{
             height: "5vh",
-            position: "relative", // cần nếu dùng position: absolute bên trong
+            position: "relative", 
             justifyContent: "center",
             alignItems: "center",
           }}
