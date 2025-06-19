@@ -26,13 +26,13 @@ const hoverStyle = {
 
 const logoutStyle = {
   ...linkStyle,
-  backgroundColor: '#ff4d4d', // Màu đỏ
+  backgroundColor: '#ff4d4d',
   color: '#fff',
 };
 
 const logoutHoverStyle = {
   ...logoutStyle,
-  backgroundColor: '#cc0000', // Màu đỏ đậm hơn khi hover
+  backgroundColor: '#cc0000',
 };
 
 const StoreOwnerSidebar = () => {
@@ -42,7 +42,6 @@ const StoreOwnerSidebar = () => {
     localStorage.removeItem('token');
     console.log('Token removed:', localStorage.getItem('token'));
     navigate('/');
-    // Fallback để đảm bảo chuyển hướng
     window.location.href = '/';
   };
 
