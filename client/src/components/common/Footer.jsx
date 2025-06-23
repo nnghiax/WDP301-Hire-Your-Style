@@ -15,13 +15,7 @@ const Footer = () => {
                 className="mb-4 display-5 font-weight-semi-bold"
                 style={{ color: "#B6B09F" }}
               >
-                <span
-                  className="font-weight-bold border border-white px-3 mr-1"
-                  style={{ color: "#B6B09F" }}
-                >
-                  Hire
-                </span>
-                Your Style
+                Hire Your Style
               </h1>
             </a>
             <p>

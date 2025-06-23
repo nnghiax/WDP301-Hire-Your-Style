@@ -26,8 +26,40 @@ router.post("/", async (req, res) => {
 });
 
 router.post("/receive-hook", async (req, res) => {
-  console.log("Received webhook:", req.body);
-  res.sendStatus(200);
+  try {
+    const { orderCode, status } = req.body;
+
+    if (status === "PAID") {
+      // Tìm thông tin đơn hàng tạm
+      const order = await OrderTemp.findOne({ orderCode });
+      if (!order)
+        return res.status(404).json({ message: "Không tìm thấy order tạm" });
+
+      // Tạo bản ghi rental
+      const rental = new Rental({
+        userId: order.userId,
+        storeId: order.storeId,
+        items: order.items,
+        rentalDate: order.rentalDate,
+        returnDate: order.returnDate,
+        totalAmount: order.totalAmount,
+        depositAmount: order.depositAmount,
+        status: "confirmed",
+      });
+
+      await rental.save();
+
+      // Xóa đơn tạm (nếu muốn)
+      await OrderTemp.deleteOne({ orderCode });
+
+      console.log("Rental đã được tạo sau thanh toán thành công:", rental);
+    }
+
+    res.sendStatus(200);
+  } catch (err) {
+    console.error("Lỗi khi xử lý webhook PayOS:", err);
+    res.sendStatus(500);
+  }
 });
 
 module.exports = router;

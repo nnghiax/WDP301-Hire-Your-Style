@@ -386,14 +386,14 @@ function ProductFilter({ headerProducts }) {
                     <Button
                       variant="link"
                       className="text-dark p-0 btn-sm"
-                      onClick={() => navigate(`/product-detail/${product._id}`)}
+                      onClick={() =>
+                        navigate(
+                          `/product-detail/${product._id}/${product.storeId}`
+                        )
+                      }
                     >
                       <FaEye style={{ color: "#8A784E" }} />
-                      View Detail
-                    </Button>
-                    <Button variant="link" className="text-dark p-0 btn-sm">
-                      <FaShoppingCart style={{ color: "#8A784E" }} />
-                      Add To Cart
+                      Xem chi tiết
                     </Button>
                   </Card.Footer>
                 </Card>
