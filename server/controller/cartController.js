@@ -4,7 +4,7 @@ const Product = require("../model/Product");
 const cartController = {
   addToCart: async (req, res) => {
     try {
-      const { productId, size, quantity } = req.body;
+      const { productId, storeId, size, quantity } = req.body;
 
       const product = await Product.findById(productId);
       if (!product) {
@@ -48,7 +48,7 @@ const cartController = {
           }
           existingItem.quantity += quantity;
         } else {
-          cart.items.push({ productId, size, quantity });
+          cart.items.push({ productId, storeId, size, quantity });
         }
       }
 

@@ -383,7 +383,11 @@ const ListProducts = () => {
                       variant="link"
                       size="sm"
                       className=" text-decoration-none p-0 mt-1 text-start"
-                      onClick={() => navigate(`/product-detail/${product._id}`)}
+                      onClick={() =>
+                        navigate(
+                          `/product-detail/${product._id}/${product.storeId}`
+                        )
+                      }
                       style={{ color: "#8A784E" }}
                     >
                       Xem chi tiết

@@ -233,6 +233,89 @@ const ShoppingCart = ({ userId }) => {
                   <span>Phí vận chuyển:</span>
                   <strong>{formatPrice(shipping)}</strong>
                 </p>
+                <div
+                  style={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    marginRight: "-0.75rem",
+                    marginLeft: "-0.75rem",
+                  }}
+                >
+                  <div
+                    style={{
+                      flex: "0 0 50%",
+                      maxWidth: "50%",
+                      paddingRight: "0.75rem",
+                      paddingLeft: "0.75rem",
+                      marginBottom: "0.75rem",
+                    }}
+                  >
+                    <label
+                      style={{ display: "block", marginBottom: "0.25rem" }}
+                    >
+                      Ngày thuê:
+                    </label>
+                    <input
+                      type="date"
+                      style={{
+                        width: "100%",
+                        padding: "0.5rem",
+                        border: "1px solid #dee2e6",
+                        borderRadius: "0.5rem",
+                        fontSize: "1rem",
+                        marginTop: "0.25rem",
+                        transition: "border-color 0.3s ease",
+                        outline: "none",
+                      }}
+                      onFocus={(e) => {
+                        e.target.style.borderColor = "#007bff";
+                        e.target.style.boxShadow =
+                          "0 0 5px rgba(0, 123, 255, 0.3)";
+                      }}
+                      onBlur={(e) => {
+                        e.target.style.borderColor = "#dee2e6";
+                        e.target.style.boxShadow = "none";
+                      }}
+                    />
+                  </div>
+                  <div
+                    style={{
+                      flex: "0 0 50%",
+                      maxWidth: "50%",
+                      paddingRight: "0.75rem",
+                      paddingLeft: "0.75rem",
+                      marginBottom: "0.75rem",
+                    }}
+                  >
+                    <label
+                      style={{ display: "block", marginBottom: "0.25rem" }}
+                    >
+                      Ngày trả:
+                    </label>
+                    <input
+                      type="date"
+                      style={{
+                        width: "100%",
+                        padding: "0.5rem",
+                        border: "1px solid #dee2e6",
+                        borderRadius: "0.5rem",
+                        fontSize: "1rem",
+                        marginTop: "0.25rem",
+                        transition: "border-color 0.3s ease",
+                        outline: "none",
+                      }}
+                      onFocus={(e) => {
+                        e.target.style.borderColor = "#007bff";
+                        e.target.style.boxShadow =
+                          "0 0 5px rgba(0, 123, 255, 0.3)";
+                      }}
+                      onBlur={(e) => {
+                        e.target.style.borderColor = "#dee2e6";
+                        e.target.style.boxShadow = "none";
+                      }}
+                    />
+                  </div>
+                </div>
                 <hr />
                 <p className="d-flex justify-content-between">
                   <span>Tổng cộng:</span>
