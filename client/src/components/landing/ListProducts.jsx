@@ -202,6 +202,22 @@ const ListProducts = () => {
 
   const navigate = useNavigate();
 
+  const handleViewAll = (categoryId) => {
+    const filteredProducts = products.filter(
+      (p) => p.categoryId === categoryId
+    );
+    const category = categories.find((c) => c._id === categoryId);
+
+    navigate(
+      `/filter-product?search=&category=${encodeURIComponent(
+        category?.name || ""
+      )}`,
+      {
+        state: { products: filteredProducts },
+      }
+    );
+  };
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -328,6 +344,7 @@ const ListProducts = () => {
             variant="link"
             className="text-decoration-none p-0"
             style={{ color: "#8A784E" }}
+            onClick={() => handleViewAll("682835c1b3ac70579bc4ccf6")} // ID danh mục Áo Dài
           >
             Xem tất cả sản phẩm
           </Button>
@@ -406,6 +423,7 @@ const ListProducts = () => {
             variant="link"
             className="text-decoration-none p-0"
             style={{ color: "#8A784E" }}
+            onClick={() => handleViewAll("6839b61a5c80c624e38683ab")} // ID danh mục Vest
           >
             Xem tất cả sản phẩm
           </Button>
@@ -461,8 +479,12 @@ const ListProducts = () => {
                       variant="link"
                       size="sm"
                       className=" text-decoration-none p-0 mt-1 text-start"
+                      onClick={() =>
+                        navigate(
+                          `/product-detail/${product._id}/${product.storeId}`
+                        )
+                      }
                       style={{ color: "#8A784E" }}
-                      onClick={() => navigate(`/product-detail/${product._id}`)}
                     >
                       Xem chi tiết
                     </Button>

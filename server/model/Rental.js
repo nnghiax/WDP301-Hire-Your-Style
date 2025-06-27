@@ -16,7 +16,7 @@ const rentalSchema = new mongoose.Schema(
         },
         storeId: {
           type: mongoose.Schema.Types.ObjectId,
-          ref: "stores",
+          ref: "users",
           required: true,
         },
         size: {
