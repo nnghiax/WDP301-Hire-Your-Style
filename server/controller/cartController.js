@@ -33,7 +33,7 @@ const cartController = {
       if (!cart) {
         cart = new Cart({
           userId: req.userId,
-          items: [{ productId, size, quantity }],
+          items: [{ productId, storeId, size, quantity }],
         });
       } else {
         const existingItem = cart.items.find(
@@ -76,6 +76,7 @@ const cartController = {
         return {
           _id: item._id,
           name: p.name,
+          storeId: item.storeId,
           image: p.image,
           price: p.price,
           size: item.size,
@@ -106,7 +107,6 @@ const cartController = {
       if (!cart) {
         return res.status(404).json({ message: "Cart not found" });
       }
-
       const item = cart.items.find((item) => item._id.toString() === itemId);
       if (!item) {
         return res.status(404).json({ message: "Item not found in cart" });

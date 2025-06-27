@@ -1,6 +1,15 @@
 const Store = require("../model/Store");
 
 const storeController = {
+  listAllStores: async (req, res) => {
+    try {
+      const stores = await Store.find();
+      return res.status(200).json({ data: stores });
+    } catch (error) {
+      return res.status(500).json(error.message);
+    }
+  },
+
   listStores: async (req, res) => {
     try {
       const userId = req.userId; // Lấy userId từ middleware verifyToken

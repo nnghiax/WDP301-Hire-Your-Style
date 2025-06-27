@@ -3,7 +3,7 @@ const storeController = require("../controller/storeController");
 const middleware = require("../controller/middleware");
 const { uploadCloud } = require("../controller/imageUpload");
 router.get("/list", middleware.verifyToken, storeController.listStores);
-
+router.get("/listall", middleware.verifyToken, storeController.listAllStores);
 router.get("/detail/:storeId", storeController.detailStore);
 
 router.put(
