@@ -173,52 +173,6 @@ const ShoppingCart = ({ userId }) => {
     }
   };
 
-  // Kiểm tra payment success từ URL
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const success = urlParams.get("success");
-    const rentalDataParam = urlParams.get("rentalData");
-
-    if (success === "true" && rentalDataParam) {
-      try {
-        const rentalData = JSON.parse(decodeURIComponent(rentalDataParam));
-        handlePaymentSuccess(rentalData);
-      } catch (error) {
-        console.error("Error parsing rental data:", error);
-      }
-    }
-  }, []);
-
-  const handlePaymentSuccess = async (rentalData) => {
-    try {
-      // Tạo rental record
-      await axios.post("http://localhost:9999/rental/create", rentalData, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-
-      // Xóa items đã thanh toán khỏi cart
-      for (const itemId of rentalData.cartItemIds) {
-        await axios.delete(`http://localhost:9999/cart/delete/${itemId}`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
-      }
-
-      alert("Thanh toán thành công! Đơn thuê của bạn đã được tạo.");
-      fetchCartData(); // Refresh cart
-
-      // Clear URL parameters
-      window.history.replaceState({}, document.title, window.location.pathname);
-    } catch (error) {
-      console.error("Error creating rental:", error);
-      alert("Có lỗi xảy ra khi tạo đơn thuê. Vui lòng liên hệ hỗ trợ.");
-    }
-  };
-
   useEffect(() => {
     fetchCartData();
     fetchStoreData();
