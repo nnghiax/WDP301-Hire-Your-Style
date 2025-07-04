@@ -49,6 +49,8 @@ const ProductDetail = () => {
     setSize(result);
   };
 
+  console.log("Store ID:", storeId);
+
   useEffect(() => {
     const fetchProduct = async () => {
       try {

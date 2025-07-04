@@ -32,6 +32,7 @@ function ProductFilter({ headerProducts }) {
   const itemsPerPage = 12;
   const navigate = useNavigate();
 
+  // Initial loading of products
   // Updated price options for VND
   const priceOptions = [
     { id: "all", label: "Tất cả giá", count: 1000, checked: true },
