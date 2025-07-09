@@ -96,6 +96,7 @@ router.get("/list/by-user", middleware.verifyToken, async (req, res) => {
       query.status = status;
     }
 
+
     const rentals = await Rental.find(query)
       .populate("items.productId", "name image price")
       .populate("items.storeId", "name address")
