@@ -4,11 +4,11 @@ import "../css/Cart.css"; // Import your custom CSS for styling
 
 const ShoppingCart = ({ userId }) => {
   const [cartData, setCartData] = useState([]);
-  const [selectedItems, setSelectedItems] = useState([]); // Lưu toàn bộ item object
+  const [selectedItems, setSelectedItems] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [storeData, setStoreData] = useState([]);
-  const user = JSON.parse(localStorage.getItem("user")) || userId;
+
   // Thêm state cho rental dates
   const [rentalDate, setRentalDate] = useState("");
   const [returnDate, setReturnDate] = useState("");
@@ -40,7 +40,7 @@ const ShoppingCart = ({ userId }) => {
 
       const data = response.data.data || response.data || [];
       setCartData(data);
-      setSelectedItems(data); // chọn tất cả items (toàn bộ object) mặc định
+      setSelectedItems(data.map((item) => item._id)); // chọn tất cả mặc định
     } catch (err) {
       setError(err.response?.data?.message || err.message);
       setCartData([]);
@@ -77,24 +77,19 @@ const ShoppingCart = ({ userId }) => {
   console.log("Cart Data:", cartData);
   console.log("selectedItems:", selectedItems);
 
-  const handleCheckboxChange = (item) => {
-    setSelectedItems((prev) => {
-      const isSelected = prev.some(
-        (selectedItem) => selectedItem._id === item._id
-      );
-      if (isSelected) {
-        return prev.filter((selectedItem) => selectedItem._id !== item._id);
-      } else {
-        return [...prev, item];
-      }
-    });
+  const handleCheckboxChange = (itemId) => {
+    setSelectedItems((prev) =>
+      prev.includes(itemId)
+        ? prev.filter((id) => id !== itemId)
+        : [...prev, itemId]
+    );
   };
 
   const handleSelectAll = () => {
     if (selectedItems.length === cartData.length) {
       setSelectedItems([]);
     } else {
-      setSelectedItems([...cartData]); // Lưu toàn bộ items object
+      setSelectedItems(cartData.map((item) => item._id));
     }
   };
 
@@ -106,8 +101,10 @@ const ShoppingCart = ({ userId }) => {
   };
 
   const getSubtotal = () => {
-    return selectedItems.reduce((total, item) => {
-      return total + getItemTotal(item);
+    return cartData.reduce((total, item) => {
+      return selectedItems.includes(item._id)
+        ? total + getItemTotal(item)
+        : total;
     }, 0);
   };
 
@@ -115,26 +112,11 @@ const ShoppingCart = ({ userId }) => {
   const shipping = 0;
   const total = subtotal + shipping;
 
-  console.log("user:", user._id);
-
-  console.log("tempRental:", tempRental.toString());
-
   const handlePayment = async () => {
     if (selectedItems.length === 0 || !rentalDate || !returnDate) {
       alert("Vui lòng chọn sản phẩm và nhập ngày thuê/trả.");
       return;
     }
-
-    const tempRental = new URLSearchParams({
-      userId: user._id,
-      items: JSON.stringify(selectedItems), // ✅ Chuyển mảng thành chuỗi
-      rentalDate: rentalDate,
-      returnDate: returnDate,
-      totalAmount: total.toString(),
-      depositAmount: Math.round(total * 0.5).toString(),
-      paymentId: "", // null không được hỗ trợ trong URLSearchParams
-      status: "pending",
-    });
 
     try {
       const token = localStorage.getItem("token");
@@ -144,12 +126,8 @@ const ShoppingCart = ({ userId }) => {
         amount: Math.round(total),
         description: `HireYourStyle Thuê ${rentalDays} ngày`,
         orderCode: Date.now(),
-        returnUrl: `http://localhost:5173/payment/success?${tempRental.toString()}`,
+        returnUrl: "http://localhost:3000/payment/success",
         cancelUrl: "http://localhost:3000/payment/cancel",
-        selectedItems: selectedItems, // Gửi toàn bộ thông tin items đã chọn
-        rentalDate,
-        returnDate,
-        rentalDays,
       };
 
       const response = await axios.post(
@@ -181,15 +159,7 @@ const ShoppingCart = ({ userId }) => {
     if (!item) return;
     const newQuantity = Math.max(1, item.quantity + change);
 
-    // Cập nhật cartData
     setCartData((prev) =>
-      prev.map((item) =>
-        item._id === itemId ? { ...item, quantity: newQuantity } : item
-      )
-    );
-
-    // Cập nhật selectedItems nếu item đó đã được chọn
-    setSelectedItems((prev) =>
       prev.map((item) =>
         item._id === itemId ? { ...item, quantity: newQuantity } : item
       )
@@ -212,15 +182,7 @@ const ShoppingCart = ({ userId }) => {
     const quantity = parseInt(value) || 1;
     const finalQuantity = Math.max(1, quantity);
 
-    // Cập nhật cartData
     setCartData((prev) =>
-      prev.map((item) =>
-        item._id === itemId ? { ...item, quantity: finalQuantity } : item
-      )
-    );
-
-    // Cập nhật selectedItems nếu item đó đã được chọn
-    setSelectedItems((prev) =>
       prev.map((item) =>
         item._id === itemId ? { ...item, quantity: finalQuantity } : item
       )
@@ -244,7 +206,7 @@ const ShoppingCart = ({ userId }) => {
 
   const removeItem = async (itemId) => {
     setCartData((prev) => prev.filter((item) => item._id !== itemId));
-    setSelectedItems((prev) => prev.filter((item) => item._id !== itemId));
+    setSelectedItems((prev) => prev.filter((id) => id !== itemId));
 
     await axios.delete(`http://localhost:9999/cart/delete/${itemId}`, {
       headers: {
@@ -307,10 +269,8 @@ const ShoppingCart = ({ userId }) => {
                         <input
                           type="checkbox"
                           className="form-check-input me-3"
-                          checked={selectedItems.some(
-                            (selectedItem) => selectedItem._id === item._id
-                          )}
-                          onChange={() => handleCheckboxChange(item)}
+                          checked={selectedItems.includes(item._id)}
+                          onChange={() => handleCheckboxChange(item._id)}
                         />
                         <img
                           src={
@@ -539,18 +499,6 @@ const ShoppingCart = ({ userId }) => {
                     {cartData.reduce((sum, item) => sum + item.quantity, 0)}
                   </strong>{" "}
                   tổng số lượng
-                </p>
-                <p>
-                  <strong>{selectedItems.length}</strong> sản phẩm đã chọn
-                </p>
-                <p>
-                  <strong>
-                    {selectedItems.reduce(
-                      (sum, item) => sum + item.quantity,
-                      0
-                    )}
-                  </strong>{" "}
-                  số lượng đã chọn
                 </p>
                 {rentalDays > 0 && (
                   <p>
