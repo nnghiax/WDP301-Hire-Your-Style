@@ -4,11 +4,11 @@ import "../css/Cart.css"; // Import your custom CSS for styling
 
 const ShoppingCart = ({ userId }) => {
   const [cartData, setCartData] = useState([]);
-  const [selectedItems, setSelectedItems] = useState([]);
+  const [selectedItems, setSelectedItems] = useState([]); // Lưu toàn bộ item object
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [storeData, setStoreData] = useState([]);
-
+  const user = JSON.parse(localStorage.getItem("user")) || userId;
   // Thêm state cho rental dates
   const [rentalDate, setRentalDate] = useState("");
   const [returnDate, setReturnDate] = useState("");
@@ -40,7 +40,7 @@ const ShoppingCart = ({ userId }) => {
 
       const data = response.data.data || response.data || [];
       setCartData(data);
-      setSelectedItems(data.map((item) => item._id)); // chọn tất cả mặc định
+      setSelectedItems(data); // chọn tất cả items (toàn bộ object) mặc định
     } catch (err) {
       setError(err.response?.data?.message || err.message);
       setCartData([]);
@@ -75,20 +75,26 @@ const ShoppingCart = ({ userId }) => {
   };
 
   console.log("Cart Data:", cartData);
+  console.log("selectedItems:", selectedItems);
 
-  const handleCheckboxChange = (itemId) => {
-    setSelectedItems((prev) =>
-      prev.includes(itemId)
-        ? prev.filter((id) => id !== itemId)
-        : [...prev, itemId]
-    );
+  const handleCheckboxChange = (item) => {
+    setSelectedItems((prev) => {
+      const isSelected = prev.some(
+        (selectedItem) => selectedItem._id === item._id
+      );
+      if (isSelected) {
+        return prev.filter((selectedItem) => selectedItem._id !== item._id);
+      } else {
+        return [...prev, item];
+      }
+    });
   };
 
   const handleSelectAll = () => {
     if (selectedItems.length === cartData.length) {
       setSelectedItems([]);
     } else {
-      setSelectedItems(cartData.map((item) => item._id));
+      setSelectedItems([...cartData]); // Lưu toàn bộ items object
     }
   };
 
@@ -100,10 +106,8 @@ const ShoppingCart = ({ userId }) => {
   };
 
   const getSubtotal = () => {
-    return cartData.reduce((total, item) => {
-      return selectedItems.includes(item._id)
-        ? total + getItemTotal(item)
-        : total;
+    return selectedItems.reduce((total, item) => {
+      return total + getItemTotal(item);
     }, 0);
   };
 
@@ -111,65 +115,59 @@ const ShoppingCart = ({ userId }) => {
   const shipping = 0;
   const total = subtotal + shipping;
 
+  const tempRental = new URLSearchParams({
+    userId: user._id,
+    items: JSON.stringify(selectedItems), // ✅ Chuyển mảng thành chuỗi
+    rentalDate: rentalDate,
+    returnDate: returnDate,
+    totalAmount: total.toString(),
+    depositAmount: Math.round(total * 0.5).toString(),
+    paymentId: "", // null không được hỗ trợ trong URLSearchParams
+    status: "pending",
+  });
+
+  console.log("user:", user._id);
+
+  console.log("tempRental:", tempRental.toString());
+
   const handlePayment = async () => {
+    if (selectedItems.length === 0 || !rentalDate || !returnDate) {
+      alert("Vui lòng chọn sản phẩm và nhập ngày thuê/trả.");
+      return;
+    }
+
     try {
-      // Validate rental dates
-      if (!rentalDate || !returnDate) {
-        alert("Vui lòng chọn ngày thuê và ngày trả");
-        return;
-      }
+      const token = localStorage.getItem("token");
+      if (!token) throw new Error("Không tìm thấy token xác thực");
 
-      if (new Date(rentalDate) >= new Date(returnDate)) {
-        alert("Ngày trả phải sau ngày thuê");
-        return;
-      }
+      const orderData = {
+        amount: Math.round(total),
+        description: `HireYourStyle Thuê ${rentalDays} ngày`,
+        orderCode: Date.now(),
+        returnUrl: `http://localhost:5173/payment/success?${tempRental.toString()}`,
+        cancelUrl: "http://localhost:3000/payment/cancel",
+        selectedItems: selectedItems, // Gửi toàn bộ thông tin items đã chọn
+        rentalDate,
+        returnDate,
+        rentalDays,
+      };
 
-      // Chuẩn bị dữ liệu rental
-      const selectedCartItems = cartData.filter((item) =>
-        selectedItems.includes(item._id)
+      const response = await axios.post(
+        "http://localhost:9999/payos",
+        orderData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
       );
 
-      const rentalData = {
-        items: selectedCartItems.map((item) => ({
-          productId: item.productId || item._id,
-          storeId: item.storeId,
-          size: item.size,
-          quantity: item.quantity,
-        })),
-        rentalDate: new Date(rentalDate),
-        returnDate: new Date(returnDate),
-        totalAmount: total,
-        depositAmount: Math.round(total * 0.5), // 30% deposit
-        cartItemIds: selectedItems, // Để xóa khỏi cart sau khi thành công
-      };
-
-      const order = {
-        amount: total,
-        description: "Hire Your Style - Rental Payment",
-        orderCode: Date.now(),
-        returnUrl: `http://localhost:5173/cart?success=true&rentalData=${encodeURIComponent(
-          JSON.stringify(rentalData)
-        )}`,
-        cancelUrl: "http://localhost:5173/cart?success=false",
-        rentalData: rentalData, // Gửi kèm dữ liệu rental
-      };
-
-      const response = await axios.post("http://localhost:9999/payos", order, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-
-      const checkoutUrl = response.data?.checkoutUrl;
-      if (checkoutUrl) {
-        window.location.href = checkoutUrl;
-      } else {
-        throw new Error("Không nhận được URL thanh toán.");
-      }
-    } catch (error) {
-      console.error("Payment error:", error);
-      alert("Lỗi khi xử lý thanh toán. Vui lòng thử lại sau.");
+      // Nếu tạo thành công, chuyển hướng đến trang thanh toán
+      window.location.href = response.data.checkoutUrl;
+    } catch (err) {
+      console.error("Lỗi khi tạo link thanh toán:", err);
+      setError(err.response?.data?.error || "Tạo link thanh toán thất bại");
     }
   };
 
@@ -183,7 +181,15 @@ const ShoppingCart = ({ userId }) => {
     if (!item) return;
     const newQuantity = Math.max(1, item.quantity + change);
 
+    // Cập nhật cartData
     setCartData((prev) =>
+      prev.map((item) =>
+        item._id === itemId ? { ...item, quantity: newQuantity } : item
+      )
+    );
+
+    // Cập nhật selectedItems nếu item đó đã được chọn
+    setSelectedItems((prev) =>
       prev.map((item) =>
         item._id === itemId ? { ...item, quantity: newQuantity } : item
       )
@@ -206,7 +212,15 @@ const ShoppingCart = ({ userId }) => {
     const quantity = parseInt(value) || 1;
     const finalQuantity = Math.max(1, quantity);
 
+    // Cập nhật cartData
     setCartData((prev) =>
+      prev.map((item) =>
+        item._id === itemId ? { ...item, quantity: finalQuantity } : item
+      )
+    );
+
+    // Cập nhật selectedItems nếu item đó đã được chọn
+    setSelectedItems((prev) =>
       prev.map((item) =>
         item._id === itemId ? { ...item, quantity: finalQuantity } : item
       )
@@ -230,7 +244,7 @@ const ShoppingCart = ({ userId }) => {
 
   const removeItem = async (itemId) => {
     setCartData((prev) => prev.filter((item) => item._id !== itemId));
-    setSelectedItems((prev) => prev.filter((id) => id !== itemId));
+    setSelectedItems((prev) => prev.filter((item) => item._id !== itemId));
 
     await axios.delete(`http://localhost:9999/cart/delete/${itemId}`, {
       headers: {
@@ -293,8 +307,10 @@ const ShoppingCart = ({ userId }) => {
                         <input
                           type="checkbox"
                           className="form-check-input me-3"
-                          checked={selectedItems.includes(item._id)}
-                          onChange={() => handleCheckboxChange(item._id)}
+                          checked={selectedItems.some(
+                            (selectedItem) => selectedItem._id === item._id
+                          )}
+                          onChange={() => handleCheckboxChange(item)}
                         />
                         <img
                           src={
@@ -523,6 +539,18 @@ const ShoppingCart = ({ userId }) => {
                     {cartData.reduce((sum, item) => sum + item.quantity, 0)}
                   </strong>{" "}
                   tổng số lượng
+                </p>
+                <p>
+                  <strong>{selectedItems.length}</strong> sản phẩm đã chọn
+                </p>
+                <p>
+                  <strong>
+                    {selectedItems.reduce(
+                      (sum, item) => sum + item.quantity,
+                      0
+                    )}
+                  </strong>{" "}
+                  số lượng đã chọn
                 </p>
                 {rentalDays > 0 && (
                   <p>

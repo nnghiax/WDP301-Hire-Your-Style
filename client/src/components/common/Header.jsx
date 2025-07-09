@@ -38,7 +38,7 @@ export default function Header() {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
-        console.log("User data:", res.data);
+        // console.log("User data:", res.data);
         const userData = {
           ...res.data.data,
           avatar:
@@ -65,7 +65,7 @@ export default function Header() {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
-        console.log("Categories data:", res.data);
+        // console.log("Categories data:", res.data);
         setCategories(res.data.data || []);
       } catch (error) {
         console.error("Lỗi khi tải danh mục:", error);
@@ -80,7 +80,7 @@ export default function Header() {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
-        console.log("Products data:", res.data);
+        // console.log("Products data:", res.data);
         setProducts(res.data.data || []);
       } catch (error) {
         console.error("Lỗi khi tải sản phẩm:", error);
@@ -431,15 +431,17 @@ export default function Header() {
                       show={showDropdown}
                       onToggle={() => setShowDropdown(!showDropdown)}
                     >
-                   <Dropdown.Toggle
+                      <Dropdown.Toggle
                         variant="link"
                         id="avatar-dropdown"
                         className="p-0 d-flex align-items-center"
-                        style={{ lineHeight: 0, textDecoration: 'none' }}
+                        style={{ lineHeight: 0, textDecoration: "none" }}
                       >
                         {user && (
                           <>
-                            <Navbar.Text style = {{ marginRight:'20px'}}>Chào, {user.name}</Navbar.Text>
+                            <Navbar.Text style={{ marginRight: "20px" }}>
+                              Chào, {user.name}
+                            </Navbar.Text>
                             <Image
                               src={user.avatar || "/images/default-avatar.png"}
                               roundedCircle
@@ -457,7 +459,9 @@ export default function Header() {
                       </Dropdown.Toggle>
                       <Dropdown.Menu>
                         <Dropdown.Item href="/profile">Hồ sơ</Dropdown.Item>
-                        <Dropdown.Item href="/request">Đăng kí kinh doanh</Dropdown.Item>
+                        <Dropdown.Item href="/request">
+                          Đăng kí kinh doanh
+                        </Dropdown.Item>
                         <Dropdown.Item onClick={handleLogout}>
                           Đăng xuất
                         </Dropdown.Item>
@@ -487,7 +491,7 @@ export default function Header() {
         <Row
           style={{
             height: "5vh",
-            position: "relative", 
+            position: "relative",
             justifyContent: "center",
             alignItems: "center",
           }}
