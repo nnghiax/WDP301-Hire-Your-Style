@@ -115,6 +115,17 @@ const ShoppingCart = ({ userId }) => {
   const shipping = 0;
   const total = subtotal + shipping;
 
+  const tempRental = new URLSearchParams({
+    userId: user._id,
+    items: JSON.stringify(selectedItems), // ✅ Chuyển mảng thành chuỗi
+    rentalDate: rentalDate,
+    returnDate: returnDate,
+    totalAmount: total.toString(),
+    depositAmount: Math.round(total * 0.5).toString(),
+    paymentId: "", // null không được hỗ trợ trong URLSearchParams
+    status: "pending",
+  });
+
   console.log("user:", user._id);
 
   console.log("tempRental:", tempRental.toString());
@@ -124,17 +135,6 @@ const ShoppingCart = ({ userId }) => {
       alert("Vui lòng chọn sản phẩm và nhập ngày thuê/trả.");
       return;
     }
-
-    const tempRental = new URLSearchParams({
-      userId: user._id,
-      items: JSON.stringify(selectedItems), // ✅ Chuyển mảng thành chuỗi
-      rentalDate: rentalDate,
-      returnDate: returnDate,
-      totalAmount: total.toString(),
-      depositAmount: Math.round(total * 0.5).toString(),
-      paymentId: "", // null không được hỗ trợ trong URLSearchParams
-      status: "pending",
-    });
 
     try {
       const token = localStorage.getItem("token");
