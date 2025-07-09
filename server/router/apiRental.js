@@ -87,92 +87,82 @@ router.post(
 );
 
 // Lấy danh sách rental của user
-router.get(
-  "/list/by-user",
-  middleware.verifyToken,
-  middleware.verifyAdmin,
-  async (req, res) => {
-    try {
-      const { page = 1, limit = 10, status } = req.query;
+router.get("/list/by-user", middleware.verifyToken, async (req, res) => {
+  try {
+    const { page = 1, limit = 10, status } = req.query;
 
-      const query = { userId: req.user.id };
-      if (status) {
-        query.status = status;
-      }
-
-      const rentals = await Rental.find(query)
-        .populate("items.productId", "name image price")
-        .populate("items.storeId", "name address")
-        .sort({ createdAt: -1 })
-        .skip((page - 1) * limit)
-        .limit(limit * 1);
-
-      const total = await Rental.countDocuments(query);
-
-      res.status(200).json({
-        success: true,
-        data: rentals,
-        pagination: {
-          total,
-          page: parseInt(page),
-          limit: parseInt(limit),
-          totalPages: Math.ceil(total / limit),
-        },
-      });
-    } catch (error) {
-      console.error("Get rentals error:", error);
-      res.status(500).json({
-        success: false,
-        message: "Failed to fetch rentals",
-        error: error.message,
-      });
+    const query = { userId: req.user.id };
+    if (status) {
+      query.status = status;
     }
+
+    const rentals = await Rental.find(query)
+      .populate("items.productId", "name image price")
+      .populate("items.storeId", "name address")
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit * 1);
+
+    const total = await Rental.countDocuments(query);
+
+    res.status(200).json({
+      success: true,
+      data: rentals,
+      pagination: {
+        total,
+        page: parseInt(page),
+        limit: parseInt(limit),
+        totalPages: Math.ceil(total / limit),
+      },
+    });
+  } catch (error) {
+    console.error("Get rentals error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch rentals",
+      error: error.message,
+    });
   }
-);
+});
 
-router.get(
-  "/list",
-  middleware.verifyToken,
-  middleware.verifyAdmin,
-  async (req, res) => {
-    try {
-      const { page = 1, limit = 10, status } = req.query;
+router.get("/list", middleware.verifyToken, async (req, res) => {
+  try {
+    const { page = 1, limit = 10, status } = req.query;
 
-      const query = { userId: req.user.id };
-      if (status) {
-        query.status = status;
-      }
-
-      const rentals = await Rental.find()
-        .populate("userId", "name email") // Thêm thông tin người dùng
-        .populate("items.productId", "name image price")
-        .populate("items.storeId", "name address")
-        .sort({ createdAt: -1 })
-        .skip((page - 1) * limit)
-        .limit(limit * 1);
-
-      const total = await Rental.countDocuments(query);
-
-      res.status(200).json({
-        success: true,
-        data: rentals,
-        pagination: {
-          total,
-          page: parseInt(page),
-          limit: parseInt(limit),
-          totalPages: Math.ceil(total / limit),
-        },
-      });
-    } catch (error) {
-      console.error("Get rentals error:", error);
-      res.status(500).json({
-        success: false,
-        message: "Failed to fetch rentals",
-        error: error.message,
-      });
+    const query = { userId: req.user.id };
+    if (status) {
+      query.status = status;
     }
+
+    const rentals = await Rental.find()
+      .populate("userId", "name email") // Thêm thông tin người dùng
+      .populate("items.productId", "name image price")
+      .populate("items.storeId", "name address")
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit * 1);
+
+    const total = await Rental.countDocuments(query);
+
+    res.status(200).json({
+      success: true,
+      data: rentals,
+      pagination: {
+        total,
+        page: parseInt(page),
+        limit: parseInt(limit),
+        totalPages: Math.ceil(total / limit),
+      },
+    });
+  } catch (error) {
+    console.error("Get rentals error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch rentals",
+      error: error.message,
+    });
   }
-);
+});
 
 // Lấy chi tiết rental theo ID
 router.get(
