@@ -133,7 +133,7 @@ router.get(
 router.get(
   "/list",
   middleware.verifyToken,
-  middleware.verifyAdmin,
+
   async (req, res) => {
     try {
       const { page = 1, limit = 10, status } = req.query;
