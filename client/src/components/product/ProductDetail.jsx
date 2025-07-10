@@ -1,5 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Container, Row, Col, Card, Button, Tabs, Tab, Form, Alert } from "react-bootstrap";
+import {
+  Container,
+  Row,
+  Col,
+  Card,
+  Button,
+  Tabs,
+  Tab,
+  Form,
+  Alert,
+} from "react-bootstrap";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
@@ -20,6 +30,7 @@ const ProductDetail = () => {
   const [weight, setWeight] = useState("");
   const [gender, setGender] = useState("male");
   const [size, setSize] = useState("");
+  const [store, setStore] = useState({});
 
   const calculateSize = () => {
     const h = parseFloat(height) / 100;
@@ -74,15 +85,28 @@ const ProductDetail = () => {
 
     const fetchReviews = async () => {
       try {
-        const res = await axios.get(`http://localhost:9999/review/product/${productId}`);
+        const res = await axios.get(
+          `http://localhost:9999/review/product/${productId}`
+        );
         setReviews(res.data.data || []);
       } catch (error) {
         console.error("Lỗi khi tải đánh giá:", error);
       }
     };
 
+    const fetchStore = async () => {
+      try {
+        const res = await axios.get(
+          `http://localhost:9999/store/detail/${storeId}`
+        );
+        setStore(res.data.data);
+      } catch (error) {
+        console.error("Lỗi khi tải thông tin cửa hàng:", error);
+      }
+    };
+
     const loadData = async () => {
-      await Promise.all([fetchProduct(), fetchReviews()]);
+      await Promise.all([fetchProduct(), fetchReviews(), fetchStore()]);
       setLoading(false);
     };
 
@@ -159,13 +183,19 @@ const ProductDetail = () => {
     });
 
   const averageRating = reviews.length
-    ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)
+    ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(
+        1
+      )
     : 0;
 
   if (loading) {
     return (
       <Container className="d-flex justify-content-center align-items-center min-vh-100">
-        <div className="spinner-border" style={{ color: "#8A784E" }} role="status">
+        <div
+          className="spinner-border"
+          style={{ color: "#8A784E" }}
+          role="status"
+        >
           <span className="visually-hidden">Đang tải...</span>
         </div>
       </Container>
@@ -195,14 +225,26 @@ const ProductDetail = () => {
           <Col lg={6}>
             <Card className="border-0 shadow-sm rounded-4 p-4">
               <Card.Body>
-                <Card.Title className="text-uppercase fs-4 fw-semibold mb-3" style={{ color: "#8A784E" }}>
+                <Card.Title
+                  className="text-uppercase fs-4 fw-semibold mb-3"
+                  style={{ color: "#8A784E" }}
+                >
                   {product.name}
                 </Card.Title>
+                <Card.Title className="text-uppercase fs-6 fw-semibold mb-3">
+                  <span style={{ color: "#6c757d" }}>cửa hàng:</span>{" "}
+                  <span style={{ color: "#8A784E" }}>{store.name}</span>
+                </Card.Title>
+
                 <div className="d-flex align-items-center mb-3">
                   {[...Array(5)].map((_, i) => (
                     <i
                       key={i}
-                      className={`fas fa-star ${i < Math.round(averageRating) ? "text-warning" : "text-muted"} me-1`}
+                      className={`fas fa-star ${
+                        i < Math.round(averageRating)
+                          ? "text-warning"
+                          : "text-muted"
+                      } me-1`}
                     ></i>
                   ))}
                   <small className="text-muted ms-2">
@@ -218,14 +260,19 @@ const ProductDetail = () => {
 
                 <div className="mb-4">
                   <h5 className="fw-semibold mb-3" style={{ color: "#8A784E" }}>
-                    <i className="fas fa-ruler me-2"></i>Kích thước <span className="text-danger">*</span>
+                    <i className="fas fa-ruler me-2"></i>Kích thước{" "}
+                    <span className="text-danger">*</span>
                   </h5>
                   <div className="d-flex gap-2 flex-wrap">
                     {product.sizes &&
                       product.sizes.map((size) => (
                         <Button
                           key={size}
-                          variant={selectedSize === size ? "primary" : "outline-secondary"}
+                          variant={
+                            selectedSize === size
+                              ? "primary"
+                              : "outline-secondary"
+                          }
                           className="rounded-4 px-3 py-1"
                           onClick={() => setSelectedSize(size)}
                         >
@@ -245,12 +292,18 @@ const ProductDetail = () => {
 
                 {showCalculator && (
                   <Card className="border-0 shadow-sm rounded-4 p-4 mb-4">
-                    <h5 className="fw-semibold mb-3" style={{ color: "#8A784E" }}>
+                    <h5
+                      className="fw-semibold mb-3"
+                      style={{ color: "#8A784E" }}
+                    >
                       Dự đoán Size Quần Áo
                     </h5>
                     <Form.Group className="mb-3">
                       <Form.Label>Giới tính:</Form.Label>
-                      <Form.Select value={gender} onChange={(e) => setGender(e.target.value)}>
+                      <Form.Select
+                        value={gender}
+                        onChange={(e) => setGender(e.target.value)}
+                      >
                         <option value="male">Nam</option>
                         <option value="female">Nữ</option>
                       </Form.Select>
@@ -293,7 +346,10 @@ const ProductDetail = () => {
                     <i className="fas fa-shopping-basket me-2"></i>Số lượng
                   </h5>
                   <div className="d-flex align-items-center mb-3">
-                    <div className="input-group me-3" style={{ width: "150px" }}>
+                    <div
+                      className="input-group me-3"
+                      style={{ width: "150px" }}
+                    >
                       <Button
                         variant="outline-secondary"
                         className="rounded-4"
@@ -325,11 +381,18 @@ const ProductDetail = () => {
                     variant="primary"
                     className="rounded-4 px-4 py-2 w-100"
                     onClick={handleAddToCart}
-                    disabled={addingToCart || !product.isAvailable || product.quantity <= 0}
+                    disabled={
+                      addingToCart ||
+                      !product.isAvailable ||
+                      product.quantity <= 0
+                    }
                   >
                     {addingToCart ? (
                       <>
-                        <div className="spinner-border spinner-border-sm me-2" role="status">
+                        <div
+                          className="spinner-border spinner-border-sm me-2"
+                          role="status"
+                        >
                           <span className="visually-hidden">Loading...</span>
                         </div>
                         Đang thêm...
@@ -370,7 +433,12 @@ const ProductDetail = () => {
                         key={index}
                         variant="outline-secondary"
                         className="rounded-circle"
-                        style={{ background: social.bg, color: "white", width: "40px", height: "40px" }}
+                        style={{
+                          background: social.bg,
+                          color: "white",
+                          width: "40px",
+                          height: "40px",
+                        }}
                       >
                         <i className={social.icon}></i>
                       </Button>
@@ -391,17 +459,34 @@ const ProductDetail = () => {
                 className="border-0"
                 style={{ background: "#f1f1f0" }}
               >
-                <Tab eventKey="description" title={<><i className="fas fa-align-left me-2"></i>Mô tả</>}>
+                <Tab
+                  eventKey="description"
+                  title={
+                    <>
+                      <i className="fas fa-align-left me-2"></i>Mô tả
+                    </>
+                  }
+                >
                   <Card.Body>
-                    <h4 className="fw-semibold mb-4" style={{ color: "#8A784E" }}>
+                    <h4
+                      className="fw-semibold mb-4"
+                      style={{ color: "#8A784E" }}
+                    >
                       <i className="fas fa-tag me-2"></i>Chi tiết sản phẩm
                     </h4>
-                    <Card className="border-0 rounded-4 p-4" style={{ background: "#f1f1f0" }}>
+                    <Card
+                      className="border-0 rounded-4 p-4"
+                      style={{ background: "#f1f1f0" }}
+                    >
                       <p className="lead">{product.description}</p>
                       <Row>
                         <Col md={6}>
-                          <h5 className="fw-semibold mb-3" style={{ color: "#8A784E" }}>
-                            <i className="fas fa-check-circle me-2"></i>Đặc điểm nổi bật
+                          <h5
+                            className="fw-semibold mb-3"
+                            style={{ color: "#8A784E" }}
+                          >
+                            <i className="fas fa-check-circle me-2"></i>Đặc điểm
+                            nổi bật
                           </h5>
                           <ul className="list-unstyled">
                             {[
@@ -411,14 +496,19 @@ const ProductDetail = () => {
                               "Tôn lên vẻ trang nhã và mạnh mẽ",
                             ].map((item, index) => (
                               <li key={index} className="mb-2">
-                                <i className="fas fa-check text-success me-2"></i>{item}
+                                <i className="fas fa-check text-success me-2"></i>
+                                {item}
                               </li>
                             ))}
                           </ul>
                         </Col>
                         <Col md={6}>
-                          <h5 className="fw-semibold mb-3" style={{ color: "#8A784E" }}>
-                            <i className="fas fa-info-circle me-2"></i>Hướng dẫn bảo quản
+                          <h5
+                            className="fw-semibold mb-3"
+                            style={{ color: "#8A784E" }}
+                          >
+                            <i className="fas fa-info-circle me-2"></i>Hướng dẫn
+                            bảo quản
                           </h5>
                           <ul className="list-unstyled">
                             {[
@@ -428,7 +518,8 @@ const ProductDetail = () => {
                               "Ủi nhiệt độ trung bình",
                             ].map((item, index) => (
                               <li key={index} className="mb-2">
-                                <i className="fas fa-water text-info me-2"></i>{item}
+                                <i className="fas fa-water text-info me-2"></i>
+                                {item}
                               </li>
                             ))}
                           </ul>
@@ -437,25 +528,66 @@ const ProductDetail = () => {
                     </Card>
                   </Card.Body>
                 </Tab>
-                <Tab eventKey="info" title={<><i className="fas fa-info-circle me-2"></i>Thông tin</>}>
+                <Tab
+                  eventKey="info"
+                  title={
+                    <>
+                      <i className="fas fa-info-circle me-2"></i>Thông tin
+                    </>
+                  }
+                >
                   <Card.Body>
-                    <h4 className="fw-semibold mb-4" style={{ color: "#8A784E" }}>
-                      <i className="fas fa-clipboard-list me-2"></i>Thông tin sản phẩm
+                    <h4
+                      className="fw-semibold mb-4"
+                      style={{ color: "#8A784E" }}
+                    >
+                      <i className="fas fa-clipboard-list me-2"></i>Thông tin
+                      sản phẩm
                     </h4>
                     <Row>
                       {[
-                        { label: "Số lượng còn lại", value: product.quantity, icon: "fas fa-boxes" },
-                        { label: "Tình trạng", value: product.isAvailable ? "Còn hàng" : "Hết hàng", icon: "fas fa-check-circle" },
-                        { label: "Ngày thêm", value: new Date(product.createdAt).toLocaleDateString("vi-VN"), icon: "fas fa-calendar-plus" },
-                        { label: "Cập nhật lần cuối", value: new Date(product.updatedAt).toLocaleDateString("vi-VN"), icon: "fas fa-sync-alt" },
+                        {
+                          label: "Số lượng còn lại",
+                          value: product.quantity,
+                          icon: "fas fa-boxes",
+                        },
+                        {
+                          label: "Tình trạng",
+                          value: product.isAvailable ? "Còn hàng" : "Hết hàng",
+                          icon: "fas fa-check-circle",
+                        },
+                        {
+                          label: "Ngày thêm",
+                          value: new Date(product.createdAt).toLocaleDateString(
+                            "vi-VN"
+                          ),
+                          icon: "fas fa-calendar-plus",
+                        },
+                        {
+                          label: "Cập nhật lần cuối",
+                          value: new Date(product.updatedAt).toLocaleDateString(
+                            "vi-VN"
+                          ),
+                          icon: "fas fa-sync-alt",
+                        },
                       ].map((item, index) => (
                         <Col key={index} md={6} className="mb-4">
                           <Card className="border-0 shadow-sm rounded-4 p-3">
                             <div className="d-flex align-items-center">
-                              <i className={`${item.icon} me-2`} style={{ color: "#8A784E" }}></i>
+                              <i
+                                className={`${item.icon} me-2`}
+                                style={{ color: "#8A784E" }}
+                              ></i>
                               <div>
-                                <small className="text-muted text-uppercase">{item.label}</small>
-                                <h5 className="mb-0" style={{ color: "#8A784E" }}>{item.value}</h5>
+                                <small className="text-muted text-uppercase">
+                                  {item.label}
+                                </small>
+                                <h5
+                                  className="mb-0"
+                                  style={{ color: "#8A784E" }}
+                                >
+                                  {item.value}
+                                </h5>
                               </div>
                             </div>
                           </Card>
@@ -464,47 +596,77 @@ const ProductDetail = () => {
                     </Row>
                   </Card.Body>
                 </Tab>
-                <Tab eventKey="review" title={<><i className="fas fa-star me-2"></i>Đánh giá</>}>
+                <Tab
+                  eventKey="review"
+                  title={
+                    <>
+                      <i className="fas fa-star me-2"></i>Đánh giá
+                    </>
+                  }
+                >
                   <Card.Body>
                     {reviews.length === 0 ? (
                       <div className="text-center">
                         <i className="fas fa-comments fa-4x text-muted mb-3"></i>
-                        <h4 className="fw-semibold mb-3" style={{ color: "#8A784E" }}>
+                        <h4
+                          className="fw-semibold mb-3"
+                          style={{ color: "#8A784E" }}
+                        >
                           Chưa có đánh giá nào
                         </h4>
                         <p className="text-muted lead">
-                          Hãy là người đầu tiên đánh giá sản phẩm này và chia sẻ trải nghiệm của bạn.
+                          Hãy là người đầu tiên đánh giá sản phẩm này và chia sẻ
+                          trải nghiệm của bạn.
                         </p>
                         <Button
                           variant="primary"
                           className="rounded-4 px-4 py-2"
                         >
-                          <i className="fas fa-edit me-2"></i>Viết đánh giá đầu tiên
+                          <i className="fas fa-edit me-2"></i>Viết đánh giá đầu
+                          tiên
                         </Button>
                       </div>
                     ) : (
                       <>
-                        <h4 className="fw-semibold mb-4" style={{ color: "#8A784E" }}>
-                          <i className="fas fa-star me-2"></i>Đánh giá từ khách hàng
+                        <h4
+                          className="fw-semibold mb-4"
+                          style={{ color: "#8A784E" }}
+                        >
+                          <i className="fas fa-star me-2"></i>Đánh giá từ khách
+                          hàng
                         </h4>
                         {reviews.map((review) => (
-                          <Card key={review._id} className="border-0 shadow-sm rounded-4 mb-3">
+                          <Card
+                            key={review._id}
+                            className="border-0 shadow-sm rounded-4 mb-3"
+                          >
                             <Card.Body>
                               <div className="d-flex justify-content-between align-items-center mb-2">
                                 <div>
-                                  <strong>{review.userId?.name || "Khách hàng ẩn danh"}</strong>
+                                  <strong>
+                                    {review.userId?.name ||
+                                      "Khách hàng ẩn danh"}
+                                  </strong>
                                   <div>
                                     {[...Array(5)].map((_, i) => (
                                       <i
                                         key={i}
-                                        className={`fas fa-star ${i < review.rating ? "text-warning" : "text-muted"} me-1`}
+                                        className={`fas fa-star ${
+                                          i < review.rating
+                                            ? "text-warning"
+                                            : "text-muted"
+                                        } me-1`}
                                       ></i>
                                     ))}
                                   </div>
                                 </div>
-                                <small className="text-muted">{formatDate(review.createdAt)}</small>
+                                <small className="text-muted">
+                                  {formatDate(review.createdAt)}
+                                </small>
                               </div>
-                              <p className="mb-0">{review.comment || "Không có bình luận"}</p>
+                              <p className="mb-0">
+                                {review.comment || "Không có bình luận"}
+                              </p>
                             </Card.Body>
                           </Card>
                         ))}

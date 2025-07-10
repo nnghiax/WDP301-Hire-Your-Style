@@ -228,6 +228,63 @@ const rentalController = {
       });
     }
   },
+
+  // Update rental status (user hoặc admin)
+  updateRentalStatus: async (req, res) => {
+    try {
+      const { id } = req.params; // rentalId
+      const { status } = req.body;
+
+      if (!status) {
+        return res.status(400).json({
+          success: false,
+          message: "Trường 'status' là bắt buộc",
+        });
+      }
+
+      const allowedStatuses = [
+        "pending",
+        "confirmed",
+        "received",
+        "returning",
+        "returned",
+        "completed",
+        "cancelled",
+      ];
+
+      if (!allowedStatuses.includes(status)) {
+        return res.status(400).json({
+          success: false,
+          message: "Trạng thái không hợp lệ",
+        });
+      }
+
+      const rental = await Rental.findById(id);
+
+      if (!rental) {
+        return res.status(404).json({
+          success: false,
+          message: "Không tìm thấy đơn thuê",
+        });
+      }
+
+      rental.status = status;
+      await rental.save();
+
+      res.status(200).json({
+        success: true,
+        message: "Cập nhật trạng thái thành công",
+        data: rental,
+      });
+    } catch (error) {
+      console.error("Update rental status error:", error);
+      res.status(500).json({
+        success: false,
+        message: "Lỗi khi cập nhật trạng thái đơn thuê",
+        error: error.message,
+      });
+    }
+  },
 };
 
 module.exports = rentalController;

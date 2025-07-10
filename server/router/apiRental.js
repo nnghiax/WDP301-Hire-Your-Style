@@ -14,8 +14,12 @@ router.get(
 );
 
 // Get all rentals (admin)
-router.get("/list", middleware.verifyToken, rentalController.getAllRentals);
-
+router.get(
+  "/list",
+  middleware.verifyToken,
+  middleware.verifyOwner,
+  rentalController.getAllRentals
+);
 
 // Get rental by ID
 
@@ -32,6 +36,13 @@ router.put(
   middleware.verifyToken,
   middleware.verifyAdmin,
   rentalController.cancelRental
+);
+
+// PUT /rental/update-status/:id
+router.put(
+  "/update-status/:id",
+  middleware.verifyToken,
+  rentalController.updateRentalStatus
 );
 
 module.exports = router;

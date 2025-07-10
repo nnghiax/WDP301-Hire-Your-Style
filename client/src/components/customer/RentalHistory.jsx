@@ -88,6 +88,33 @@ const RentalHistory = ({ userId }) => {
     }
   };
 
+  const handleUpdateStatus = async (rentalId, newStatus) => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const response = await axios.put(
+        `http://localhost:9999/rental/update-status/${rentalId}`,
+        { status: newStatus },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      console.log("Cập nhật trạng thái thành công:", response.data);
+      alert("Cập nhật trạng thái thành công!");
+      fetchRentalHistory(); // Gọi lại với storeId
+    } catch (error) {
+      console.error(
+        "Lỗi khi cập nhật trạng thái:",
+        error.response?.data || error.message
+      );
+      alert("Cập nhật trạng thái thất bại!");
+    }
+  };
+
   const formatDate = (dateString) =>
     new Date(dateString).toLocaleDateString("vi-VN", {
       day: "2-digit",
@@ -321,17 +348,19 @@ const RentalHistory = ({ userId }) => {
                   </Card.Body>
 
                   <Card.Footer className="text-end">
-                    <Button
-                      variant="outline-primary"
-                      className="rounded-4 me-2"
-                      onClick={() =>
-                        navigate(
-                          `/product-detail/${rental.items[0].productId._id}/${rental.items[0].storeId._id}`
-                        )
-                      }
-                    >
-                      Thuê lại
-                    </Button>
+                    {rental.status === "completed" && (
+                      <Button
+                        variant="outline-primary"
+                        className="rounded-4 me-2"
+                        onClick={() =>
+                          navigate(
+                            `/product-detail/${rental.items[0].productId._id}/${rental.items[0].storeId._id}`
+                          )
+                        }
+                      >
+                        Thuê lại
+                      </Button>
+                    )}
                     {rental.status === "completed" && (
                       <Button
                         variant="outline-success"
@@ -346,9 +375,27 @@ const RentalHistory = ({ userId }) => {
                     )}
 
                     {rental.status === "confirmed" && (
-                      <button className="btn btn-outline-success me-2">
+                      <Button
+                        variant="outline-success"
+                        className="rounded-4 me-2"
+                        onClick={() => {
+                          handleUpdateStatus(rental._id, "received");
+                        }}
+                      >
                         Đã nhận trang phục
-                      </button>
+                      </Button>
+                    )}
+
+                    {rental.status === "received" && (
+                      <Button
+                        variant="outline-success"
+                        className="rounded-4 me-2"
+                        onClick={() => {
+                          handleUpdateStatus(rental._id, "returning");
+                        }}
+                      >
+                        đã giao trang phục cho shipper
+                      </Button>
                     )}
 
                     <Button
