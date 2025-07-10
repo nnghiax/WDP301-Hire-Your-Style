@@ -114,7 +114,9 @@ const ShoppingCart = ({ userId }) => {
 
   const subtotal = getSubtotal();
   const shipping = 0;
-  const total = subtotal + shipping;
+  const totalRental = subtotal + shipping;
+  const deposit = Math.round(totalRental * 0.5);
+  const total = totalRental + deposit;
 
   // const tempRental = new URLSearchParams({
   //   userId: user._id,
@@ -156,7 +158,7 @@ const ShoppingCart = ({ userId }) => {
         description: `HireYourStyle Thuê ${rentalDays} ngày`,
         orderCode: Date.now(),
         returnUrl: `http://localhost:5173/payment/success?${tempRental.toString()}`,
-        cancelUrl: "http://localhost:3000/payment/cancel",
+        cancelUrl: "http://localhost:5173/payment/cancel",
         selectedItems: selectedItems, // Gửi toàn bộ thông tin items đã chọn
         rentalDate,
         returnDate,
@@ -515,12 +517,19 @@ const ShoppingCart = ({ userId }) => {
                 </p>
                 <hr />
                 <p className="d-flex justify-content-between">
-                  <span>Tổng cộng:</span>
-                  <strong className="text-success">{formatPrice(total)}</strong>
+                  <span>Tổng tiền thuê:</span>
+                  <strong className="text-success">
+                    {formatPrice(totalRental)}
+                  </strong>
                 </p>
                 <p className="d-flex justify-content-between text-muted">
                   <span>Tiền cọc (50%):</span>
-                  <span>{formatPrice(Math.round(total * 0.5))}</span>
+                  <span>{formatPrice(deposit)}</span>
+                </p>
+                <hr />
+                <p className="d-flex justify-content-between text-muted">
+                  <span>Tổng cộng:</span>
+                  <span>{formatPrice(total)}</span>
                 </p>
                 <button
                   className={`btn btn-block ${
