@@ -17,6 +17,8 @@ const apiRental = require("./router/apiRental");
 const apiAdminUser = require("./router/apiAdminUser");
 const apiReview = require("./router/apiReview");
 const apiBlog = require("./router/apiBlog");
+const apiDeposit = require("./router/depositRoutes");
+
 const hostname = process.env.HOSTNAME;
 const port = process.env.PORT;
 const url = process.env.URL;
@@ -74,6 +76,8 @@ app.use("/review", apiReview);
 
 // BLOG
 app.use("/blog", apiBlog);
+
+app.use("/apiDeposit", apiDeposit);
 
 app.listen(port, () => {
   console.log(`Server is running on http://${hostname}:${port}`);

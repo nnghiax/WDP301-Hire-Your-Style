@@ -83,6 +83,35 @@ const storeController = {
       return res.status(500).json(error.message);
     }
   },
+
+  getStoreByUserId: async (req, res) => {
+    try {
+      const { userId } = req.params;
+
+      if (!userId) {
+        return res.status(400).json({ message: "Missing userId" });
+      }
+
+      const store = await Store.findOne({ userId, isActive: true });
+
+      if (!store) {
+        return res
+          .status(404)
+          .json({ message: "Store not found for this user" });
+      }
+
+      return res.status(200).json({
+        success: true,
+        data: store,
+      });
+    } catch (error) {
+      console.error("Error fetching store by userId:", error);
+      return res.status(500).json({
+        message: "Server error",
+        error: error.message,
+      });
+    }
+  },
 };
 
 module.exports = storeController;

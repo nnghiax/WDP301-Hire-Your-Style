@@ -75,6 +75,7 @@ const cartController = {
         const p = item.productId;
         return {
           _id: item._id,
+          productId: p._id,
           name: p.name,
           storeId: item.storeId,
           image: p.image,
