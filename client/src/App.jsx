@@ -21,7 +21,10 @@ import AdminStoreRequestDetail from "./components/admin/AdminStoreRequestDetail"
 import AdminUsers from "./components/admin/AdminUsers";
 import RentalHistory from "./components/customer/RentalHistory";
 import RentalDashboard from "./components/admin/RentalDashboard";
-
+import StoreOwnerBlog from "./components/store_owner/StoreOwnerBlog";
+import BlogList from './pages/BlogList';
+import BlogDetail from './pages/BlogDetail';
+import Contact from './pages/Contact';
 function App() {
   return (
     <Router>
@@ -40,6 +43,9 @@ function App() {
         <Route path="/cart" element={<CartPage />} />
         <Route path="/request" element={<RequestStore />} />
         <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/blog" element={<BlogList />} />
+        <Route path="/blog/detail/:blogId" element={<BlogDetail />} />
+        <Route path="/contact" element={<Contact />} />
 
         {/* Route store-owner */}
         <Route element={<ProtectedRoute />}>
@@ -53,6 +59,7 @@ function App() {
             element={<StoreOwnerProducts />}
           />
           <Route path="/store-owner/profile" element={<StoreOwnerProfile />} />
+          <Route path="/store-owner/blog" element={<StoreOwnerBlog />} />
         </Route>
 
         {/* Route admin */}
