@@ -408,8 +408,8 @@ export default function Header() {
                   <Nav.Link href="/shop" className="text-dark">
                     Cửa hàng
                   </Nav.Link>
-                  <Nav.Link href="/detail" className="text-dark">
-                    Chi tiết sản phẩm
+                  <Nav.Link href="/blog" className="text-dark">
+                    Blog
                   </Nav.Link>
                   <NavDropdown
                     title="Trang"

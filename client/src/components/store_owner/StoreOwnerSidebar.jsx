@@ -1,12 +1,8 @@
-import React from "react";
-import { NavLink, useNavigate } from "react-router-dom";
-import {
-  FaChartBar,
-  FaBoxOpen,
-  FaFileInvoice,
-  FaUser,
-  FaSignOutAlt,
-} from "react-icons/fa";
+
+import React from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { FaChartBar, FaBoxOpen, FaFileInvoice, FaUser, FaSignOutAlt, FaPen } from 'react-icons/fa';
+
 
 const linkStyle = {
   color: "#ccc",
@@ -99,21 +95,19 @@ const StoreOwnerSidebar = () => {
           fontWeight: "bold",
         }}
       >
-        🏪 Store Owner Panel
+        Store Owner Panel
       </h4>
       <div className="nav flex-column" style={{ flex: 1 }}>
-        <StyledNavLink to="/store-owner/dashboard" icon={FaChartBar}>
-          Doanh thu
-        </StyledNavLink>
-        <StyledNavLink to="/store-owner/products" icon={FaBoxOpen}>
-          Sản phẩm
-        </StyledNavLink>
+
+        <StyledNavLink to="/store-owner/dashboard" icon={FaChartBar}>Doanh thu</StyledNavLink>
+        <StyledNavLink to="/store-owner/products" icon={FaBoxOpen}>Sản phẩm</StyledNavLink>
         <StyledNavLink to="/store-owner/manager-rental" icon={FaFileInvoice}>
           Đơn hàng
         </StyledNavLink>
-        <StyledNavLink to="/store-owner/profile" icon={FaUser}>
-          Hồ sơ
-        </StyledNavLink>
+        <StyledNavLink to="/store-owner/blog" icon={FaPen}>Blog</StyledNavLink>
+        <StyledNavLink to="/store-owner/profile" icon={FaUser}>Hồ sơ</StyledNavLink>
+        
+      
       </div>
       <div style={{ marginTop: "auto" }}>
         <StyledNavLink icon={FaSignOutAlt} onClick={handleLogout} isLogout>
