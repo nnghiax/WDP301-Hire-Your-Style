@@ -4,6 +4,7 @@ import StoreOwnerSidebar from './StoreOwnerSidebar';
 import HeaderStoreOwner from './HeaderStoreOwner';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import '@fortawesome/fontawesome-free/css/all.min.css';
 
 // Thêm CSS tùy chỉnh
 const customStyles = `
@@ -21,10 +22,13 @@ function ManageProducts() {
   const [isEdit, setIsEdit] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [error, setError] = useState('');
-  const [successMessage, setSuccessMessage] = useState(''); 
+  const [successMessage, setSuccessMessage] = useState('');
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [reviewLoading, setReviewLoading] = useState(false);
+  const [reviews, setReviews] = useState([]);
+  const [reviewError, setReviewError] = useState('');
 
   const navigate = useNavigate();
-
 
   const showSuccessMessage = (message) => {
     setSuccessMessage(message);
@@ -138,6 +142,33 @@ function ManageProducts() {
     setError('');
   };
 
+  const handleViewReviews = async (productId) => {
+    setShowReviewModal(true);
+    setReviewLoading(true);
+    setReviewError('');
+    setReviews([]);
+
+    try {
+      const token = localStorage.getItem('token');
+      const res = await axios.get(`http://localhost:9999/review/product/${productId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setReviews(res.data.data || []);
+    } catch (error) {
+      console.error('Error fetching reviews:', error);
+      setReviewError('Lỗi khi tải đánh giá. Vui lòng thử lại.');
+    } finally {
+      setReviewLoading(false);
+    }
+  };
+
+  const formatDate = (dateString) =>
+    new Date(dateString).toLocaleDateString('vi-VN', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    });
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.storeId || !formData.categoryId) {
@@ -163,13 +194,13 @@ function ManageProducts() {
           headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' },
         });
         setProducts(products.map(p => (p._id === selectedProduct._id ? res.data.data : p)));
-        showSuccessMessage('Cập nhật sản phẩm thành công!'); 
+        showSuccessMessage('Cập nhật sản phẩm thành công!');
       } else {
         const res = await axios.post('http://localhost:9999/product/create', form, {
           headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'multipart/form-data' },
         });
         setProducts([...products, res.data.data]);
-        showSuccessMessage('Thêm sản phẩm thành công!'); 
+        showSuccessMessage('Thêm sản phẩm thành công!');
       }
       setShowModal(false);
       setError('');
@@ -223,7 +254,7 @@ function ManageProducts() {
               </Button>
             </Col>
           </Row>
-          {successMessage && <Alert variant="success">{successMessage}</Alert>} 
+          {successMessage && <Alert variant="success">{successMessage}</Alert>}
           {error && <Alert variant="danger">{error}</Alert>}
           <Card className="shadow-sm border-0">
             <Card.Body className="p-3">
@@ -274,8 +305,15 @@ function ManageProducts() {
                           <Button variant="info text-white" size="sm" className="me-2" onClick={() => handleEditProduct(product)}>
                             Sửa
                           </Button>
-                          <Button variant="danger" size="sm" onClick={() => handleDelete(product._id)}>
+                          <Button variant="danger" size="sm" className="me-2" onClick={() => handleDelete(product._id)}>
                             Xóa
+                          </Button>
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            onClick={() => handleViewReviews(product._id)}
+                          >
+                            Xem đánh giá
                           </Button>
                         </td>
                       </tr>
@@ -285,7 +323,7 @@ function ManageProducts() {
               </Table>
             </Card.Body>
           </Card>
-         
+
           <Modal show={showModal} onHide={() => setShowModal(false)} centered size="lg" className="custom-modal">
             <Modal.Header closeButton>
               <Modal.Title>{isEdit ? 'Sửa sản phẩm' : 'Thêm sản phẩm'}</Modal.Title>
@@ -379,6 +417,54 @@ function ManageProducts() {
                 </Button>
               </Form>
             </Modal.Body>
+          </Modal>
+
+          <Modal show={showReviewModal} onHide={() => setShowReviewModal(false)} centered size="lg" className="custom-modal">
+            <Modal.Header closeButton>
+              <Modal.Title>Đánh giá sản phẩm</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              {reviewError && <Alert variant="danger">{reviewError}</Alert>}
+              {reviewLoading ? (
+                <div className="text-center py-4">
+                  <Spinner animation="border" variant="primary" />
+                  <div>Đang tải đánh giá...</div>
+                </div>
+              ) : reviews.length === 0 ? (
+                <div className="text-center py-4">
+                  <i className="fas fa-comments fa-4x text-muted mb-3"></i>
+                  <h5 className="fw-bold">Chưa có đánh giá nào</h5>
+                  <p className="text-muted">Sản phẩm này chưa nhận được đánh giá từ người dùng.</p>
+                </div>
+              ) : (
+                reviews.map((review) => (
+                  <Card key={review._id} className="shadow-sm border-0 mb-3">
+                    <Card.Body>
+                      <div className="d-flex justify-content-between align-items-center mb-2">
+                        <div>
+                          <strong>{review.userId?.name || 'Khách hàng ẩn danh'}</strong>
+                          <div>
+                            {[...Array(5)].map((_, i) => (
+                              <i
+                                key={i}
+                                className={`fas fa-star ${i < review.rating ? 'text-warning' : 'text-muted'} me-1`}
+                              ></i>
+                            ))}
+                          </div>
+                        </div>
+                        <small className="text-muted">{formatDate(review.createdAt)}</small>
+                      </div>
+                      <p className="mb-0">{review.comment || 'Không có bình luận'}</p>
+                    </Card.Body>
+                  </Card>
+                ))
+              )}
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="secondary" onClick={() => setShowReviewModal(false)}>
+                Đóng
+              </Button>
+            </Modal.Footer>
           </Modal>
         </Container>
       </div>
