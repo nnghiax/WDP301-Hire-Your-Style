@@ -22,7 +22,12 @@ import AdminUsers from "./components/admin/AdminUsers";
 import RentalHistory from "./components/customer/RentalHistory";
 import RentalDashboard from "./components/admin/RentalDashboard";
 import PaymentSuccess from "./components/customer/PaymentSuccess";
+
+import PaymentCancel from "./components/customer/PaymentCancel";
+import ManageRentals from "./components/store_owner/ManageRentals";
+
 import DepositDashboard from "./components/admin/DepositDashboard";
+
 
 function App() {
   return (
@@ -39,7 +44,7 @@ function App() {
           element={<ProductDetailPage />}
         />
         <Route path="/payment/success" element={<PaymentSuccess />} />
-
+        <Route path="/payment/cancel" element={<PaymentCancel />} />
         <Route path="/rental-history" element={<RentalHistory />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/request" element={<RequestStore />} />
@@ -57,6 +62,10 @@ function App() {
             element={<StoreOwnerProducts />}
           />
           <Route path="/store-owner/profile" element={<StoreOwnerProfile />} />
+          <Route
+            path="/store-owner/manager-rental"
+            element={<ManageRentals />}
+          />
         </Route>
 
         {/* Route admin */}

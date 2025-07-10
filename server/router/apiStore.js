@@ -5,6 +5,12 @@ const { uploadCloud } = require("../controller/imageUpload");
 router.get("/list", middleware.verifyToken, storeController.listStores);
 router.get("/listall", middleware.verifyToken, storeController.listAllStores);
 router.get("/detail/:storeId", storeController.detailStore);
+router.get(
+  "/by-user/:userId",
+  middleware.verifyToken,
+  middleware.verifyOwner,
+  storeController.getStoreByUserId
+);
 
 router.put(
   "/update/:storeId",
