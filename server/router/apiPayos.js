@@ -1,19 +1,31 @@
 const router = require("express").Router();
 const PayOS = require("@payos/node");
+const middleware = require("../controller/middleware");
 
 const payos = new PayOS(
-  "40bf60f0-2231-42c7-98ea-5cd5f8de6afb",
-  "b980b35f-d0b5-46bd-a008-e08583ab8c5c",
-  "e79cb78fe71a4e76a153b70e8a198189d37bd8ef543f2ccf227cd0cf89e02fb7"
+  process.env.PAYOS_CLIENT_ID,
+  process.env.PAYOS_API_KEY,
+  process.env.PAYOS_CHECKSUM_KEY
 );
 
-router.post("/", async (req, res) => {
+router.post("/", middleware.verifyToken, async (req, res) => {
+  const { amount, description, orderCode, returnUrl, cancelUrl } = req.body;
+
+  // Kiểm tra dữ liệu đầu vào
+  if (!amount || !description || !orderCode || !returnUrl || !cancelUrl) {
+    return res.status(400).json({ error: "Thiếu thông tin bắt buộc" });
+  }
+
+  if (isNaN(amount) || amount <= 0) {
+    return res.status(400).json({ error: "Số tiền không hợp lệ" });
+  }
+
   const order = {
-    amount: req.body.amount,
-    description: req.body.description,
-    orderCode: req.body.orderCode,
-    returnUrl: req.body.returnUrl,
-    cancelUrl: req.body.cancelUrl,
+    amount: Math.round(amount),
+    description,
+    orderCode: parseInt(orderCode),
+    returnUrl,
+    cancelUrl,
   };
 
   try {
@@ -25,8 +37,9 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.post("/receive-hook", async (req, res) => {
+router.post("/receive-hook", middleware.verifyToken, async (req, res) => {
   console.log("Received webhook:", req.body);
+  // Xử lý webhook (cập nhật trạng thái đơn hàng, lưu vào DB, v.v.)
   res.sendStatus(200);
 });
 

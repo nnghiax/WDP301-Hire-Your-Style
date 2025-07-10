@@ -2,18 +2,20 @@ import React from "react";
 import { Container, Row, Col, Form, Button } from "react-bootstrap";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 
+const iconStyle = { color: "#B6B09F" };
+
 const Footer = () => {
   return (
-    <div className="bg-secondary text-dark mt-5 pt-5">
-      <Container fluid>
+    <div>
+      <Container fluid style={{ backgroundColor: "#EAE4D5" }}>
         <Row className="px-xl-5 pt-5">
           <Col lg={4} md={12} className="mb-5 pr-3 pr-xl-5">
             <a href="#" className="text-decoration-none">
-              <h1 className="mb-4 display-5 font-weight-semi-bold">
-                <span className="text-primary font-weight-bold border border-white px-3 mr-1">
-                  Hire
-                </span>
-                Your Style
+              <h1
+                className="mb-4 display-5 font-weight-semi-bold"
+                style={{ color: "#B6B09F" }}
+              >
+                Hire Your Style
               </h1>
             </a>
             <p>
@@ -22,15 +24,15 @@ const Footer = () => {
               nghiệm tốt nhất.
             </p>
             <p className="mb-2">
-              <i className="fa fa-map-marker-alt text-primary mr-3"></i>
+              <i className="fa fa-map-marker-alt mr-3" style={iconStyle}></i>
               Khu Công Nghệ Cao Hòa Lạc, km 29, Đại lộ, Thăng Long, Hà Nội
             </p>
             <p className="mb-2">
-              <i className="fa fa-envelope text-primary mr-3"></i>
+              <i className="fa fa-envelope mr-3" style={iconStyle}></i>
               nghianthe170569@eshopper.vn
             </p>
             <p className="mb-0">
-              <i className="fa fa-phone-alt text-primary mr-3"></i>
+              <i className="fa fa-phone-alt mr-3" style={iconStyle}></i>
               0962286003
             </p>
           </Col>
@@ -51,7 +53,10 @@ const Footer = () => {
                     "Liên hệ",
                   ].map((item, idx) => (
                     <a key={idx} className="text-dark mb-2" href="#">
-                      <i className="fa fa-angle-right mr-2"></i>
+                      <i
+                        className="fa fa-angle-right mr-2"
+                        style={iconStyle}
+                      ></i>
                       {item}
                     </a>
                   ))}
@@ -72,7 +77,10 @@ const Footer = () => {
                     "Liên hệ",
                   ].map((item, idx) => (
                     <a key={idx} className="text-dark mb-2" href="#">
-                      <i className="fa fa-angle-right mr-2"></i>
+                      <i
+                        className="fa fa-angle-right mr-2"
+                        style={iconStyle}
+                      ></i>
                       {item}
                     </a>
                   ))}
@@ -104,37 +112,16 @@ const Footer = () => {
                     variant="primary"
                     type="submit"
                     className="btn-block border-0 py-3"
+                    style={{
+                      backgroundColor: "#B6B09F",
+                      borderColor: "#B6B09F",
+                    }}
                   >
                     Đăng ký ngay
                   </Button>
                 </Form>
               </Col>
             </Row>
-          </Col>
-        </Row>
-
-        <Row className="border-top border-light mx-xl-5 py-4">
-          <Col md={6} className="px-xl-0 text-center text-md-left">
-            <p className="mb-md-0 text-dark">
-              &copy;{" "}
-              <a className="text-dark font-weight-semi-bold" href="#">
-                EShopper Việt Nam
-              </a>
-              . Đã đăng ký bản quyền. Thiết kế bởi{" "}
-              <a
-                className="text-dark font-weight-semi-bold"
-                href="https://htmlcodex.com"
-              >
-                HTML Codex
-              </a>
-            </p>
-          </Col>
-          <Col md={6} className="px-xl-0 text-center text-md-right">
-            <img
-              className="img-fluid"
-              src="/img/payments.png"
-              alt="Thanh toán"
-            />
           </Col>
         </Row>
       </Container>

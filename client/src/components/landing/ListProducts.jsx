@@ -45,44 +45,16 @@ const Featured = () => {
               className="d-flex align-items-center border mb-4"
               style={{ padding: "30px" }}
             >
-              <h1 className={`fa ${feature.icon} text-primary m-0 me-3`}></h1>
+              <h1
+                className={`fa ${feature.icon}  m-0 me-3`}
+                style={{ color: "#B6B09F" }}
+              ></h1>
               <h5 className="font-weight-semi-bold m-0">{feature.title}</h5>
             </div>
           </Col>
         ))}
       </Row>
     </Container>
-  );
-};
-
-// Icon quay về đầu trang
-const BackToTop = () => {
-  const scrollToTop = (e) => {
-    e.preventDefault();
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
-  return (
-    <Button
-      variant="primary"
-      className="back-to-top"
-      onClick={scrollToTop}
-      style={{
-        position: "fixed",
-        bottom: "40px",
-        right: "40px",
-        borderRadius: "50%",
-        width: "45px",
-        height: "45px",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        zIndex: 9999,
-      }}
-      aria-label="Lên đầu trang"
-    >
-      <i className="fa fa-angle-double-up"></i>
-    </Button>
   );
 };
 
@@ -137,8 +109,10 @@ function TopbarNavbar() {
     <div>
       <Container fluid className="mb-5" style={{ backgroundColor: "#f1f1f0" }}>
         <Row>
-          <Col lg={3} className="d-none d-lg-block" />
-          <Col lg={9}>
+          <Col className="d-none d-lg-block">
+            <Card></Card>
+          </Col>
+          <Col>
             <Slider {...sliderSettings}>
               {/* Slide 1 */}
               <div>
@@ -148,27 +122,33 @@ function TopbarNavbar() {
                     alt="Slide 1"
                     style={{
                       width: "100%",
-                      height: "410px",
+                      height: "700px",
                       objectFit: "cover",
                     }}
                   />
-                  {/* <div
+                  <div
                     style={{
                       position: "absolute",
                       top: "50%",
                       left: "50%",
                       transform: "translate(-50%, -50%)",
-                      backgroundColor: "rgba(255,255,255,0.8)",
+                      // backgroundColor: "rgba(255,255,255,0.8)",
                       padding: "20px",
                       borderRadius: "5px",
                       textAlign: "center",
-                      color: "#000",
+                      color: "#fff",
                     }}
                   >
-                    <h3>Tiêu đề slide 1</h3>
-                    <p>Mô tả cho slide 1</p>
-                    <Button variant="primary">Mua ngay</Button>
-                  </div> */}
+                    <h3>
+                      Phong cách cho mọi giới – Tỏa sáng trong từng khoảnh khắc
+                    </h3>
+                    <p>
+                      Khám phá bộ sưu tập trang phục đa dạng cho cả nam và nữ –
+                      từ vest lịch lãm, áo dài truyền thống đến váy dạ hội lộng
+                      lẫy và trang phục biểu diễn nổi bật.
+                    </p>
+                    {/* <Button variant="primary">Mua ngay</Button> */}
+                  </div>
                 </div>
               </div>
 
@@ -180,27 +160,31 @@ function TopbarNavbar() {
                     alt="Slide 2"
                     style={{
                       width: "100%",
-                      height: "410px",
+                      height: "700px",
                       objectFit: "cover",
                     }}
                   />
-                  {/* <div
+                  <div
                     style={{
                       position: "absolute",
                       top: "50%",
                       left: "50%",
                       transform: "translate(-50%, -50%)",
-                      backgroundColor: "rgba(255,255,255,0.8)",
+                      // backgroundColor: "rgba(255,255,255,0.8)",
                       padding: "20px",
                       borderRadius: "5px",
                       textAlign: "center",
                       color: "#000",
                     }}
                   >
-                    <h3>Tiêu đề slide 2</h3>
-                    <p>Mô tả cho slide 2</p>
-                    <Button variant="primary">Mua ngay</Button>
-                  </div> */}
+                    <h3>Biến hóa phong cách – Tỏa sáng mọi sự kiện</h3>
+                    <p>
+                      {" "}
+                      Thuê trang phục dễ dàng, nhanh chóng với hàng trăm mẫu đa
+                      dạng cho kỷ yếu, lễ hội, biểu diễn và tiệc tùng.
+                    </p>
+                    {/* <Button variant="primary">Mua ngay</Button> */}
+                  </div>
                 </div>
               </div>
             </Slider>
@@ -217,6 +201,22 @@ const ListProducts = () => {
   const [categories, setCategories] = useState([]);
 
   const navigate = useNavigate();
+
+  const handleViewAll = (categoryId) => {
+    const filteredProducts = products.filter(
+      (p) => p.categoryId === categoryId
+    );
+    const category = categories.find((c) => c._id === categoryId);
+
+    navigate(
+      `/filter-product?search=&category=${encodeURIComponent(
+        category?.name || ""
+      )}`,
+      {
+        state: { products: filteredProducts },
+      }
+    );
+  };
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -325,20 +325,27 @@ const ListProducts = () => {
     <section
       id="best-sellers"
       style={{
-        backgroundColor: "#f1f1f0",
+        backgroundColor: "#F2F2F2",
         marginTop: 0,
         marginBottom: 0,
         paddingTop: 0,
         paddingBottom: 0,
       }}
+      className=" pb-5"
     >
-      <BackToTop />
       <TopbarNavbar cate={categories} />
       <Featured />
       <Container>
         <div className="d-flex flex-wrap justify-content-between align-items-center mt-5 mb-3">
-          <h4 className="text-uppercase">Áo Dài</h4>
-          <Button variant="link" className="text-decoration-none p-0">
+          <h4 className="text-uppercase" style={{ color: "#8A784E" }}>
+            Áo Dài
+          </h4>
+          <Button
+            variant="link"
+            className="text-decoration-none p-0"
+            style={{ color: "#8A784E" }}
+            onClick={() => handleViewAll("682835c1b3ac70579bc4ccf6")} // ID danh mục Áo Dài
+          >
             Xem tất cả sản phẩm
           </Button>
         </div>
@@ -378,10 +385,8 @@ const ListProducts = () => {
                       </Button>
                     </Card.Title>
 
-                    <div className="d-flex justify-content-between align-items-center mb-2">
-                      <span className="fw-bold text-primary">
-                        {product.price}
-                      </span>
+                    {/* <div className="d-flex justify-content-between align-items-center mb-2">
+                      <span className="fw-bold ">{product.price}</span>
                       <Button
                         variant="outline-primary"
                         size="sm"
@@ -389,13 +394,18 @@ const ListProducts = () => {
                       >
                         Thêm vào giỏ
                       </Button>
-                    </div>
+                    </div> */}
 
                     <Button
                       variant="link"
                       size="sm"
-                      className="text-primary text-decoration-none p-0 mt-1 text-start"
-                      onClick={() => navigate(`/product-detail/${product._id}`)}
+                      className=" text-decoration-none p-0 mt-1 text-start"
+                      onClick={() =>
+                        navigate(
+                          `/product-detail/${product._id}/${product.storeId}`
+                        )
+                      }
+                      style={{ color: "#8A784E" }}
                     >
                       Xem chi tiết
                     </Button>
@@ -406,8 +416,15 @@ const ListProducts = () => {
         </Slider>
 
         <div className="d-flex flex-wrap justify-content-between align-items-center mt-5 mb-3">
-          <h4 className="text-uppercase">Vest</h4>
-          <Button variant="link" className="text-decoration-none p-0">
+          <h4 className="text-uppercase" style={{ color: "#8A784E" }}>
+            Vest
+          </h4>
+          <Button
+            variant="link"
+            className="text-decoration-none p-0"
+            style={{ color: "#8A784E" }}
+            onClick={() => handleViewAll("6839b61a5c80c624e38683ab")} // ID danh mục Vest
+          >
             Xem tất cả sản phẩm
           </Button>
         </div>
@@ -447,10 +464,8 @@ const ListProducts = () => {
                       </Button>
                     </Card.Title>
 
-                    <div className="d-flex justify-content-between align-items-center mb-2">
-                      <span className="fw-bold text-primary">
-                        {product.price}
-                      </span>
+                    {/* <div className="d-flex justify-content-between align-items-center mb-2">
+                      <span className="fw-bold ">{product.price}</span>
                       <Button
                         variant="outline-primary"
                         size="sm"
@@ -458,80 +473,18 @@ const ListProducts = () => {
                       >
                         Thêm vào giỏ
                       </Button>
-                    </div>
+                    </div> */}
 
                     <Button
                       variant="link"
                       size="sm"
-                      className="text-primary text-decoration-none p-0 mt-1 text-start"
-                    >
-                      Xem chi tiết
-                    </Button>
-                  </Card.Body>
-                </Card>
-              </div>
-            ))}
-        </Slider>
-
-        <div className="d-flex flex-wrap justify-content-between align-items-center mt-5 mb-3">
-          <h4 className="text-uppercase">Váy Cưới</h4>
-          <Button variant="link" className="text-decoration-none p-0">
-            Xem tất cả sản phẩm
-          </Button>
-        </div>
-        <Slider {...settings} className="product-carousel">
-          {products
-            .filter((p) => p.categoryId === "682835e33bae4dfdf16522c1")
-            .map((product) => (
-              <div key={product.id} className="px-3">
-                <Card className="border-0 shadow-sm rounded-4 overflow-hidden h-100">
-                  <div className="position-relative">
-                    <Card.Img
-                      variant="top"
-                      src={product.image}
-                      alt={product.name}
-                      className="img-fluid"
-                    />
-                  </div>
-                  <Card.Body className="px-3 pt-3 pb-4 d-flex flex-column justify-content-between">
-                    <Card.Title
-                      className="text-uppercase fs-6 mb-2 fw-semibold text-truncate"
-                      style={{
-                        whiteSpace: "nowrap",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                      }}
-                    >
-                      <Button
-                        variant="link"
-                        className="text-dark text-decoration-none p-0"
-                        style={{
-                          whiteSpace: "nowrap",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                        }}
-                      >
-                        {product.name}
-                      </Button>
-                    </Card.Title>
-
-                    <div className="d-flex justify-content-between align-items-center mb-2">
-                      <span className="fw-bold text-primary">
-                        {product.price}
-                      </span>
-                      <Button
-                        variant="outline-primary"
-                        size="sm"
-                        className="rounded-pill px-3 py-1"
-                      >
-                        Thêm vào giỏ
-                      </Button>
-                    </div>
-
-                    <Button
-                      variant="link"
-                      size="sm"
-                      className="text-primary text-decoration-none p-0 mt-1 text-start"
+                      className=" text-decoration-none p-0 mt-1 text-start"
+                      onClick={() =>
+                        navigate(
+                          `/product-detail/${product._id}/${product.storeId}`
+                        )
+                      }
+                      style={{ color: "#8A784E" }}
                     >
                       Xem chi tiết
                     </Button>

@@ -75,7 +75,7 @@ const StoreOwnerRevenueDashboard = () => {
     }
     setShowDailyChart(true);
     setLoading(true);
-    await fetchData(); // Gọi lại fetchData khi nhấn Lọc
+    await fetchData(); 
   };
 
   const handleClearFilter = () => {
@@ -83,7 +83,7 @@ const StoreOwnerRevenueDashboard = () => {
     setEndDate(null);
     setShowDailyChart(false);
     setLoading(true);
-    fetchData(); // Tải lại dữ liệu khi xóa bộ lọc
+    fetchData(); 
   };
 
   const dailyChartData = {

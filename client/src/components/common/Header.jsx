@@ -38,10 +38,12 @@ export default function Header() {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
-        console.log("User data:", res.data);
+        // console.log("User data:", res.data);
         const userData = {
           ...res.data.data,
-          avatar: res.data.data.avatar || "https://res.cloudinary.com/dh4vnrtg5/image/upload/v1747473243/avatar_user_orcdde.jpg",
+          avatar:
+            res.data.data.avatar ||
+            "https://res.cloudinary.com/dh4vnrtg5/image/upload/v1747473243/avatar_user_orcdde.jpg",
         };
         setUser(userData);
         setIsLoggedIn(true);
@@ -63,7 +65,7 @@ export default function Header() {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
-        console.log("Categories data:", res.data);
+        // console.log("Categories data:", res.data);
         setCategories(res.data.data || []);
       } catch (error) {
         console.error("Lỗi khi tải danh mục:", error);
@@ -78,7 +80,7 @@ export default function Header() {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
-        console.log("Products data:", res.data);
+        // console.log("Products data:", res.data);
         setProducts(res.data.data || []);
       } catch (error) {
         console.error("Lỗi khi tải sản phẩm:", error);
@@ -117,6 +119,7 @@ export default function Header() {
     const filterSearch = products.filter((rep) => {
       let matchesSearch = true;
       let matchesCategory = true;
+
       if (currentSearchValue) {
         const keyword = removeVietnameseTones(currentSearchValue.toLowerCase());
         const productName = removeVietnameseTones(
@@ -124,23 +127,23 @@ export default function Header() {
         );
         matchesSearch = productName.includes(keyword);
       }
+
       if (currentSelectedCategory) {
         matchesCategory =
           String(rep.categoryId) === String(currentSelectedCategory);
       }
+
       return matchesSearch && matchesCategory;
     });
 
-    if (currentSearchValue || currentSelectedCategory) {
-      navigate(
-        `/filter-product?search=${encodeURIComponent(
-          currentSearchValue
-        )}&category=${encodeURIComponent(currentSelectedCategory || "")}`,
-        {
-          state: { products: filterSearch },
-        }
-      );
-    }
+    navigate(
+      `/filter-product?search=${encodeURIComponent(
+        currentSearchValue
+      )}&category=${encodeURIComponent(currentSelectedCategory || "")}`,
+      {
+        state: { products: filterSearch },
+      }
+    );
   };
 
   const handleCategorySelect = (categoryId) => {
@@ -153,6 +156,7 @@ export default function Header() {
     const filterSearch = products.filter((rep) => {
       let matchesSearch = true;
       let matchesCategory = true;
+
       if (currentActiveSearchValue) {
         const keyword = removeVietnameseTones(
           currentActiveSearchValue.toLowerCase()
@@ -162,77 +166,111 @@ export default function Header() {
         );
         matchesSearch = productName.includes(keyword);
       }
+
       if (currentSelectedCategory) {
         matchesCategory =
           String(rep.categoryId) === String(currentSelectedCategory);
       }
+
       return matchesSearch && matchesCategory;
     });
 
-    if (currentSelectedCategory || currentActiveSearchValue) {
-      navigate(
-        `/filter-product?search=${encodeURIComponent(
-          currentActiveSearchValue
-        )}&category=${encodeURIComponent(currentSelectedCategory || "")}`,
-        {
-          state: { products: filterSearch },
-        }
-      );
-    }
+    // Luôn navigate, không cần kiểm tra điều kiện
+    navigate(
+      `/filter-product?search=${encodeURIComponent(
+        currentActiveSearchValue || ""
+      )}&category=${encodeURIComponent(currentSelectedCategory || "")}`,
+      {
+        state: { products: filterSearch },
+      }
+    );
   };
 
   return (
     <div style={{ backgroundColor: "#f1f1f0", color: "#000" }}>
       <Container fluid>
-        <Row className="bg-secondary py-2 px-xl-5">
+        <Row className="py-2 px-xl-5" style={{ backgroundColor: "#e9e9e9" }}>
           <Col lg={6} className="d-none d-lg-block">
             <div className="d-inline-flex align-items-center">
-              <a className="text-dark" href="#">
+              <a href="#" style={{ textDecoration: "none", color: "#000000" }}>
                 Câu hỏi thường gặp
               </a>
-              <span className="text-muted px-2">|</span>
-              <a className="text-dark" href="#">
+              <span className="px-2" style={{ color: "#B6B09F" }}>
+                |
+              </span>
+              <a href="#" style={{ textDecoration: "none", color: "#000000" }}>
                 Trợ giúp
               </a>
-              <span className="text-muted px-2">|</span>
-              <a className="text-dark" href="#">
+              <span className="px-2" style={{ color: "#B6B09F" }}>
+                |
+              </span>
+              <a href="#" style={{ textDecoration: "none", color: "#000000" }}>
                 Hỗ trợ
               </a>
             </div>
           </Col>
           <Col lg={6} className="text-center text-lg-right">
             <div className="d-flex w-100 justify-content-end align-items-center">
-              <a className="text-dark px-2" href="#">
+              <a
+                href="#"
+                className="px-2"
+                style={{ textDecoration: "none", color: "#B6B09F" }}
+              >
                 <i className="fab fa-facebook-f"></i>
               </a>
-              <a className="text-dark px-2" href="#">
+              <a
+                href="#"
+                className="px-2"
+                style={{ textDecoration: "none", color: "#B6B09F" }}
+              >
                 <i className="fab fa-twitter"></i>
               </a>
-              <a className="text-dark px-2" href="#">
+              <a
+                href="#"
+                className="px-2"
+                style={{ textDecoration: "none", color: "#B6B09F" }}
+              >
                 <i className="fab fa-linkedin-in"></i>
               </a>
-              <a className="text-dark px-2" href="#">
+              <a
+                href="#"
+                className="px-2"
+                style={{ textDecoration: "none", color: "#B6B09F" }}
+              >
                 <i className="fab fa-instagram"></i>
               </a>
-              <a className="text-dark pl-2" href="#">
+              <a
+                href="#"
+                className="pl-2"
+                style={{ textDecoration: "none", color: "#B6B09F" }}
+              >
                 <i className="fab fa-youtube"></i>
               </a>
             </div>
           </Col>
         </Row>
+
         <Row
           className="align-items-center py-3 px-xl-5"
           style={{ backgroundColor: "#f1f1f0" }}
         >
           <Col lg={3} className="d-none d-lg-block">
-            <a href="#" className="text-decoration-none">
-              <h1 className="m-0 display-5 font-weight-semi-bold">
-                <span className="text-primary font-weight-bold border px-3 mr-1">
-                  Hire
-                </span>
-                Your Style
+            <Button
+              onClick={() => navigate("/")}
+              style={{
+                backgroundColor: "transparent",
+                border: "none",
+                padding: 0,
+                boxShadow: "none",
+              }}
+            >
+              <h1
+                className="m-0 display-5 font-weight-semi-bold"
+                style={{ color: "#B6B09F", textDecoration: "none" }}
+              >
+                Hire Your Style
               </h1>
-            </a>
+            </Button>
           </Col>
           <Col lg={6} xs={6} className="text-left">
             <Form
@@ -249,27 +287,28 @@ export default function Header() {
                 onChange={(e) => setSearchValue(e.target.value)}
                 style={{ backgroundColor: "#fff" }}
               />
-              <Button variant="primary" className="ml-2" type="submit">
+              <Button
+                variant="primary"
+                className="ml-2"
+                type="submit"
+                style={{ backgroundColor: "#B6B09F" }}
+              >
                 <i className="fas fa-search"></i>
               </Button>
             </Form>
           </Col>
           <Col lg={3} xs={6} className="text-right">
-            <Button variant="light" className="border mr-2">
-              <i className="fas fa-heart text-primary"></i>
-              <Badge variant="danger" className="ml-1">
-                0
-              </Badge>
-            </Button>
             <Button
               variant="light"
               className="border"
               onClick={() => navigate(`/cart`)}
+              style={{ backgroundColor: "#B6B09F" }}
             >
-              <i className="fas fa-shopping-cart text-primary"></i>
-              <Badge variant="danger" className="ml-1">
+              <i className="fas fa-shopping-cart" style={{ color: "#fff" }}></i>
+
+              {/* <Badge variant="danger" className="ml-1">
                 0
-              </Badge>
+              </Badge> */}
             </Button>
           </Col>
         </Row>
@@ -280,7 +319,12 @@ export default function Header() {
             <Button
               variant="primary"
               className="d-flex align-items-center justify-content-between w-100 shadow-none"
-              style={{ height: "65px", marginTop: "-1px", padding: "0 30px" }}
+              style={{
+                height: "65px",
+                marginTop: "-1px",
+                padding: "0 30px",
+                backgroundColor: "#B6B09F",
+              }}
               onClick={() => setOpen(!open)}
               aria-expanded={open}
             >
@@ -308,8 +352,9 @@ export default function Header() {
                   <Nav.Link
                     key={0}
                     href="#"
-                    className={`text-dark ${selectedCategory === "" ? "fw-bold" : ""
-                      }`}
+                    className={`text-dark ${
+                      selectedCategory === "" ? "fw-bold" : ""
+                    }`}
                     onClick={(e) => {
                       e.preventDefault();
                       handleCategorySelect("");
@@ -321,8 +366,9 @@ export default function Header() {
                     <Nav.Link
                       key={index + 1}
                       href="#"
-                      className={`text-dark ${selectedCategory === category._id ? "fw-bold" : ""
-                        }`}
+                      className={`text-dark ${
+                        selectedCategory === category._id ? "fw-bold" : ""
+                      }`}
                       onClick={(e) => {
                         e.preventDefault();
                         handleCategorySelect(category._id);
@@ -336,7 +382,12 @@ export default function Header() {
             )}
           </Col>
           <Col lg={9}>
-            <Navbar bg="light" expand="lg" className="py-3 py-lg-0 px-0">
+            <Navbar
+              bg="light"
+              expand="lg"
+              className="py-3 py-lg-0 px-0"
+              style={{ height: "60px" }}
+            >
               <Navbar.Brand href="#" className="d-block d-lg-none">
                 <h1 className="m-0 display-5 font-weight-semi-bold">
                   <span className="text-primary font-weight-bold border px-3 mr-1">
@@ -384,25 +435,36 @@ export default function Header() {
                         variant="link"
                         id="avatar-dropdown"
                         className="p-0 d-flex align-items-center"
-                        style={{ lineHeight: 0 }}
+                        style={{ lineHeight: 0, textDecoration: "none" }}
                       >
-                        
                         {user && (
                           <>
-                            <Navbar.Text>Chào, {user.name}</Navbar.Text>
+                            <Navbar.Text style={{ marginRight: "20px" }}>
+                              Chào, {user.name}
+                            </Navbar.Text>
                             <Image
-                              src={user.avatar || '/images/default-avatar.png'}
+                              src={user.avatar || "/images/default-avatar.png"}
                               roundedCircle
                               width={36}
                               height={36}
                               alt="avatar"
-                              style={{ objectFit: 'cover' }}
+                              style={{ objectFit: "cover" }}
                             />
                           </>
                         )}
+                        <style>
+                          {`#avatar-dropdown::after {
+                          display: none;} `}
+                        </style>
                       </Dropdown.Toggle>
                       <Dropdown.Menu>
                         <Dropdown.Item href="/profile">Hồ sơ</Dropdown.Item>
+                        <Dropdown.Item href="/request">
+                          Đăng kí kinh doanh
+                        </Dropdown.Item>
+                        <Dropdown.Item href="/rental-history">
+                          Lịch sử Thuê
+                        </Dropdown.Item>
                         <Dropdown.Item onClick={handleLogout}>
                           Đăng xuất
                         </Dropdown.Item>
@@ -429,6 +491,14 @@ export default function Header() {
             </Navbar>
           </Col>
         </Row>
+        <Row
+          style={{
+            height: "5vh",
+            position: "relative",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        ></Row>
       </Container>
     </div>
   );

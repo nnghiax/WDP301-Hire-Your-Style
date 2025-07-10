@@ -1,6 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import LandingPage from "./pages/LandingPage";
+import HomePage from "./pages/HomePage";
 import LoginPage from "./components/auth/LoginPage";
 import RegisterPage from "./components/auth/RegisterPage";
 import ForgetPasswordPage from "./components/auth/ForgetPasswordPage";
@@ -19,21 +19,27 @@ import StoreOwnerProfile from "./components/store_owner/StoreOwnerProfile";
 import AdminStoreRequest from "./components/admin/AdminStoreRequest";
 import AdminStoreRequestDetail from "./components/admin/AdminStoreRequestDetail";
 import AdminUsers from "./components/admin/AdminUsers";
+import RentalHistory from "./components/customer/RentalHistory";
+import RentalDashboard from "./components/admin/RentalDashboard";
+import PaymentSuccess from "./components/customer/PaymentSuccess";
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<LandingPage />} />
+        <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/forget-password" element={<ForgetPasswordPage />} />
-        <Route path="/LandingPage" element={<LandingPage />} />
+        <Route path="/homepage" element={<HomePage />} />
         <Route path="/filter-product" element={<FilterProduct />} />
         <Route
-          path="/product-detail/:productId"
+          path="/product-detail/:productId/:storeId"
           element={<ProductDetailPage />}
         />
+        <Route path="/payment/success" element={<PaymentSuccess />} />
+
+        <Route path="/rental-history" element={<RentalHistory />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/request" element={<RequestStore />} />
         <Route path="/profile" element={<ProfilePage />} />
@@ -57,11 +63,12 @@ function App() {
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/products" element={<AdminProduct />} />
           <Route path="/admin/request" element={<AdminStoreRequest />} />
-          <Route path="/admin/users" element={<AdminUsers />} />
           <Route
             path="/admin/request/:requestId"
             element={<AdminStoreRequestDetail />}
           />
+          <Route path="/admin/users" element={<AdminUsers />} />
+          <Route path="/admin/rental-dashboard" element={<RentalDashboard />} />
         </Route>
       </Routes>
     </Router>

@@ -31,13 +31,16 @@ function ProductFilter({ headerProducts }) {
 
   const itemsPerPage = 12;
   const navigate = useNavigate();
+
+  // Initial loading of products
+  // Updated price options for VND
   const priceOptions = [
-    { id: "all", label: "All Price", count: 1000, checked: true },
-    { id: "0-100", label: "$0 - $100", count: 150 },
-    { id: "100-200", label: "$100 - $200", count: 295 },
-    { id: "200-300", label: "$200 - $300", count: 246 },
-    { id: "300-400", label: "$300 - $400", count: 145 },
-    { id: "400-500", label: "$400 - $500", count: 168 },
+    { id: "all", label: "Tất cả giá", count: 1000, checked: true },
+    { id: "100000-300000", label: "100,000₫ - 300,000₫", count: 150 },
+    { id: "300000-500000", label: "300,000₫ - 500,000₫", count: 295 },
+    { id: "500000-700000", label: "500,000₫ - 700,000₫", count: 246 },
+    { id: "700000-900000", label: "700,000₫ - 900,000₫", count: 145 },
+    { id: "900000-1000000", label: "900,000₫ - 1,000,000₫", count: 168 },
   ];
 
   const colorOptions = [
@@ -58,6 +61,16 @@ function ProductFilter({ headerProducts }) {
     { id: "l", label: "L", count: 145 },
     { id: "xl", label: "XL", count: 168 },
   ];
+
+  // Helper function to format VND currency
+  const formatVND = (amount) => {
+    return new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
+  };
 
   // Filter functions
   const filterByPrice = (product, priceRanges) => {
@@ -270,7 +283,7 @@ function ProductFilter({ headerProducts }) {
       {/* Filter bên trái */}
       <Col lg={3}>
         <FilterSection
-          title="Filter by price"
+          title="Lọc theo giá"
           options={priceOptions}
           namePrefix="price"
           selectedItems={selectedPriceRanges}
@@ -304,7 +317,7 @@ function ProductFilter({ headerProducts }) {
                     value={searchTerm}
                     onChange={handleSearchChange}
                   />
-                  <InputGroup.Text className="bg-transparent text-primary">
+                  <InputGroup.Text className="bg-transparent ">
                     <FaSearch />
                   </InputGroup.Text>
                 </InputGroup>
@@ -364,9 +377,9 @@ function ProductFilter({ headerProducts }) {
                   <Card.Body className="border-start border-end text-center p-0 pt-4 pb-3">
                     <h6 className="text-truncate mb-3">{product.name}</h6>
                     <div className="d-flex justify-content-center">
-                      <h6>${product.price?.toFixed(2) || "0.00"}</h6>
+                      <h6>{formatVND(product.price || 0)}</h6>
                       <h6 className="text-muted ms-2">
-                        <del>${product.price?.toFixed(2) || "0.00"}</del>
+                        <del>{formatVND(product.price || 0)}</del>
                       </h6>
                     </div>
                   </Card.Body>
@@ -374,14 +387,14 @@ function ProductFilter({ headerProducts }) {
                     <Button
                       variant="link"
                       className="text-dark p-0 btn-sm"
-                      onClick={() => navigate(`/product-detail/${product._id}`)}
+                      onClick={() =>
+                        navigate(
+                          `/product-detail/${product._id}/${product.storeId}`
+                        )
+                      }
                     >
-                      <FaEye className="text-primary me-1" />
-                      View Detail
-                    </Button>
-                    <Button variant="link" className="text-dark p-0 btn-sm">
-                      <FaShoppingCart className="text-primary me-1" />
-                      Add To Cart
+                      <FaEye style={{ color: "#8A784E" }} />
+                      Xem chi tiết
                     </Button>
                   </Card.Footer>
                 </Card>

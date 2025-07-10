@@ -13,7 +13,7 @@ const BackToTop = () => {
         position: "fixed",
         bottom: 20,
         right: 20,
-        background: "#fff",
+        background: "#8A784E", // ✅ Màu nền mới
         border: "1px solid #ccc",
         borderRadius: "50%",
         width: 48,
@@ -29,14 +29,14 @@ const BackToTop = () => {
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
         <path
           d="M7 15l5-5 5 5"
-          stroke="#333"
+          stroke="#fff"
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
         />
         <path
           d="M7 11l5-5 5 5"
-          stroke="#333"
+          stroke="#fff"
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
