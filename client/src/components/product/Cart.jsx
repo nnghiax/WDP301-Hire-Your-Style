@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "../css/Cart.css"; // Import your custom CSS for styling
+import { useNavigate } from "react-router-dom";
 
 const ShoppingCart = ({ userId }) => {
   const [cartData, setCartData] = useState([]);
@@ -12,7 +13,7 @@ const ShoppingCart = ({ userId }) => {
   // Thêm state cho rental dates
   const [rentalDate, setRentalDate] = useState("");
   const [returnDate, setReturnDate] = useState("");
-
+  const navigate = useNavigate();
   // Tính số ngày thuê
   const getRentalDays = () => {
     if (!rentalDate || !returnDate) return 0;
@@ -115,14 +116,24 @@ const ShoppingCart = ({ userId }) => {
   const shipping = 0;
   const total = subtotal + shipping;
 
+  // const tempRental = new URLSearchParams({
+  //   userId: user._id,
+  //   items: JSON.stringify(selectedItems), // ✅ Chuyển mảng thành chuỗi
+  //   rentalDate: rentalDate,
+  //   returnDate: returnDate,
+  //   totalAmount: total.toString(),
+  //   depositAmount: Math.round(total * 0.5).toString(),
+  //   paymentId: "", // null không được hỗ trợ trong URLSearchParams
+  //   status: "pending",
+  // });
+
   const tempRental = new URLSearchParams({
     userId: user._id,
-    items: JSON.stringify(selectedItems), // ✅ Chuyển mảng thành chuỗi
-    rentalDate: rentalDate,
-    returnDate: returnDate,
+    items: encodeURIComponent(JSON.stringify(selectedItems)), // ✅ encode an toàn hơn
+    rentalDate,
+    returnDate,
     totalAmount: total.toString(),
     depositAmount: Math.round(total * 0.5).toString(),
-    paymentId: "", // null không được hỗ trợ trong URLSearchParams
     status: "pending",
   });
 
@@ -523,6 +534,13 @@ const ShoppingCart = ({ userId }) => {
                   }
                 >
                   Thanh toán
+                </button>
+                <button
+                  onClick={() =>
+                    navigate(`/payment/success?${tempRental.toString()}`)
+                  }
+                >
+                  test
                 </button>
               </div>
             </div>

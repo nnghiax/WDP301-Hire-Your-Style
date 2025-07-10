@@ -1,8 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Card, Table, Badge, Button, Modal, Form, Alert } from "react-bootstrap";
 import axios from "axios";
+
+import "../css/Cart.css";
+import { Breadcrumb } from "react-bootstrap";
+
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import { useNavigate } from "react-router-dom";
+
 
 const RentalHistory = ({ userId }) => {
   const [rentals, setRentals] = useState([]);
@@ -83,17 +88,25 @@ const RentalHistory = ({ userId }) => {
 
   const getStatusBadge = (status) => {
     const statusClasses = {
-      pending: "badge bg-warning text-dark",
-      confirmed: "badge bg-primary",
-      cancelled: "badge bg-danger",
-      completed: "badge bg-success",
+      pending: "badge bg-warning text-dark", // Chờ xác nhận
+      confirmed: "badge bg-info text-dark", // Đã xác nhận - đang giao hàng
+      received: "badge bg-primary", // Người thuê đã nhận
+      returning: "badge bg-secondary", // Đang trả lại trang phục
+      returned: "badge bg-dark", // Shop đã nhận lại
+      completed: "badge bg-success", // Hoàn tất
+      cancelled: "badge bg-danger", // Hủy
     };
+
     const statusText = {
-      pending: "Đang chờ",
-      confirmed: "Đã xác nhận",
+      pending: "Chờ xác nhận",
+      confirmed: "Đang giao hàng",
+      received: "Đã nhận trang phục",
+      returning: "Đang trả trang phục",
+      returned: "Đã trả trang phục",
+      completed: "Hoàn tất",
       cancelled: "Đã hủy",
-      completed: "Hoàn thành",
     };
+
     return (
       <Badge className={statusClasses[status]} style={{ borderRadius: "0.5rem", padding: "0.4rem 0.8rem" }}>
         {statusText[status] || status}
@@ -126,11 +139,14 @@ const RentalHistory = ({ userId }) => {
   }
 
   return (
-    <section style={{ backgroundColor: "#F2F2F2", padding: "3rem 0" }}>
-      <Container>
-        <h1 className="text-center mb-4 fw-semibold text-uppercase" style={{ color: "#8A784E" }}>
-          <i className="fas fa-history me-2"></i>Lịch Sử Thuê
-        </h1>
+
+    <div className="container-fluid bg-light py-5">
+      <div className="container">
+        <Breadcrumb>
+          <Breadcrumb.Item href="/"> Trang chủ</Breadcrumb.Item>
+        </Breadcrumb>
+        <h1 className="text-center mb-4">Lịch Sử Thuê</h1>
+
 
         {rentals.length === 0 ? (
           <Card className="border-0 shadow-sm rounded-4">
@@ -250,11 +266,20 @@ const RentalHistory = ({ userId }) => {
                         Đánh giá
                       </Button>
                     )}
+
+                    {rental.status === "confirmed" && (
+                      <button className="btn btn-outline-success me-2">
+                        Đã nhận trang phục
+                      </button>
+                    )}
+                    <button className="btn btn-outline-secondary">
+
                     <Button
                       variant="outline-secondary"
                       className="rounded-4"
                       onClick={() => navigate(`/rental-detail/${rental._id}`)}
                     >
+
                       Chi tiết
                     </Button>
                   </Card.Footer>

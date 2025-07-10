@@ -54,7 +54,15 @@ const rentalSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["pending", "confirmed", "cancelled", "completed"],
+      enum: [
+        "pending", // Chờ xác nhận
+        "confirmed", // Đã xác nhận và đang giao hàng
+        "received", // Người thuê đã nhận trang phục
+        "returning", // Đang trả lại trang phục
+        "returned", // Shop đã nhận lại trang phục
+        "completed", // Hoàn tất quy trình
+        "cancelled", // Đã hủy
+      ],
       default: "pending",
     },
   },
