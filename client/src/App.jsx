@@ -21,6 +21,7 @@ import AdminStoreRequestDetail from "./components/admin/AdminStoreRequestDetail"
 import AdminUsers from "./components/admin/AdminUsers";
 import RentalHistory from "./components/customer/RentalHistory";
 import RentalDashboard from "./components/admin/RentalDashboard";
+import PaymentSuccess from "./components/customer/PaymentSuccess";
 
 function App() {
   return (
@@ -36,6 +37,8 @@ function App() {
           path="/product-detail/:productId/:storeId"
           element={<ProductDetailPage />}
         />
+        <Route path="/payment/success" element={<PaymentSuccess />} />
+
         <Route path="/rental-history" element={<RentalHistory />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/request" element={<RequestStore />} />

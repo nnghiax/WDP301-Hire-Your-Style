@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "../css/Cart.css";
+import { Breadcrumb } from "react-bootstrap";
 
 const RentalHistory = ({ userId }) => {
   const [rentals, setRentals] = useState([]);
@@ -48,17 +49,25 @@ const RentalHistory = ({ userId }) => {
 
   const getStatusBadge = (status) => {
     const statusClasses = {
-      pending: "badge bg-warning text-dark",
-      confirmed: "badge bg-primary",
-      cancelled: "badge bg-danger",
-      completed: "badge bg-success",
+      pending: "badge bg-warning text-dark", // Chờ xác nhận
+      confirmed: "badge bg-info text-dark", // Đã xác nhận - đang giao hàng
+      received: "badge bg-primary", // Người thuê đã nhận
+      returning: "badge bg-secondary", // Đang trả lại trang phục
+      returned: "badge bg-dark", // Shop đã nhận lại
+      completed: "badge bg-success", // Hoàn tất
+      cancelled: "badge bg-danger", // Hủy
     };
+
     const statusText = {
-      pending: "Đang chờ",
-      confirmed: "Đã xác nhận",
+      pending: "Chờ xác nhận",
+      confirmed: "Đang giao hàng",
+      received: "Đã nhận trang phục",
+      returning: "Đang trả trang phục",
+      returned: "Đã trả trang phục",
+      completed: "Hoàn tất",
       cancelled: "Đã hủy",
-      completed: "Hoàn thành",
     };
+
     return (
       <span className={statusClasses[status]}>
         {statusText[status] || status}
@@ -78,6 +87,9 @@ const RentalHistory = ({ userId }) => {
   return (
     <div className="container-fluid bg-light py-5">
       <div className="container">
+        <Breadcrumb>
+          <Breadcrumb.Item href="/"> Trang chủ</Breadcrumb.Item>
+        </Breadcrumb>
         <h1 className="text-center mb-4">Lịch Sử Thuê</h1>
 
         {rentals.length === 0 ? (
@@ -198,6 +210,11 @@ const RentalHistory = ({ userId }) => {
                     {rental.status === "completed" && (
                       <button className="btn btn-outline-success me-2">
                         Đánh giá
+                      </button>
+                    )}
+                    {rental.status === "confirmed" && (
+                      <button className="btn btn-outline-success me-2">
+                        Đã nhận trang phục
                       </button>
                     )}
                     <button className="btn btn-outline-secondary">

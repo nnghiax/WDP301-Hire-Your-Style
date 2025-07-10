@@ -462,6 +462,9 @@ export default function Header() {
                         <Dropdown.Item href="/request">
                           Đăng kí kinh doanh
                         </Dropdown.Item>
+                        <Dropdown.Item href="/rental-history">
+                          Lịch sử Thuê
+                        </Dropdown.Item>
                         <Dropdown.Item onClick={handleLogout}>
                           Đăng xuất
                         </Dropdown.Item>
