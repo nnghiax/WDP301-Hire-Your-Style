@@ -93,6 +93,9 @@ const AdminSidebar = () => {
         <StyledNavLink to="/admin/rental-dashboard" icon={FaUsers}>
           Quản lý đơn thuê
         </StyledNavLink>
+        <StyledNavLink to="/admin/deposit-dashboard" icon={FaMoneyBill}>
+          Quản lý tiền đặt cọc
+        </StyledNavLink>
       </div>
     </div>
   );

@@ -22,6 +22,7 @@ import AdminUsers from "./components/admin/AdminUsers";
 import RentalHistory from "./components/customer/RentalHistory";
 import RentalDashboard from "./components/admin/RentalDashboard";
 import PaymentSuccess from "./components/customer/PaymentSuccess";
+import DepositDashboard from "./components/admin/DepositDashboard";
 
 function App() {
   return (
@@ -69,6 +70,10 @@ function App() {
           />
           <Route path="/admin/users" element={<AdminUsers />} />
           <Route path="/admin/rental-dashboard" element={<RentalDashboard />} />
+          <Route
+            path="/admin/deposit-dashboard"
+            element={<DepositDashboard />}
+          />
         </Route>
       </Routes>
     </Router>
