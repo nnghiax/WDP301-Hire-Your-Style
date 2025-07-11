@@ -17,7 +17,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    phone: String,
+    phone: { type: String },
     role: {
       type: String,
       enum: ["customer", "store_owner", "admin"],
@@ -37,6 +37,12 @@ const userSchema = new mongoose.Schema(
     isAvailable: {
       type: Boolean,
       default: true,
+    },
+    resetPasswordToken: {
+      type: String,
+    },
+    resetPasswordExpires: {
+      type: Date,
     },
   },
   { timestamps: true }

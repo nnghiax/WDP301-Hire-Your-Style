@@ -472,18 +472,22 @@ export default function Header() {
                     </Dropdown>
                   ) : (
                     <>
-                      <Nav.Link
+                     <Button
+                        variant="dark"
+                        className="mr-2"
                         onClick={() => navigate("/login")}
-                        className="text-dark"
+                        style={{ borderRadius: "20px", padding: "5px 15px", marginRight: "10px", backgroundColor: "#B6B09F" }}
                       >
                         Đăng nhập
-                      </Nav.Link>
-                      <Nav.Link
+                      </Button>
+                      <Button
+                        variant="light"
+                        className="border"
                         onClick={() => navigate("/register")}
-                        className="text-dark"
+                        style={{ borderRadius: "20px", padding: "5px 15px" }}
                       >
                         Đăng ký
-                      </Nav.Link>
+                      </Button>
                     </>
                   )}
                 </Nav>

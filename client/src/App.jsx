@@ -4,6 +4,7 @@ import HomePage from "./pages/HomePage";
 import LoginPage from "./components/auth/LoginPage";
 import RegisterPage from "./components/auth/RegisterPage";
 import ForgetPasswordPage from "./components/auth/ForgetPasswordPage";
+import ResetPasswordPage from "./components/auth/ResetPasswordPage";
 import ProductDetailPage from "./pages/ProductDetailPage";
 import CartPage from "./pages/CartPage";
 import FilterProduct from "./pages/customer/FilterProduct";
@@ -40,7 +41,8 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
-        <Route path="/forget-password" element={<ForgetPasswordPage />} />
+        <Route path="/forgot-password" element={<ForgetPasswordPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route path="/homepage" element={<HomePage />} />
         <Route path="/filter-product" element={<FilterProduct />} />
         <Route
