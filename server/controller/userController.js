@@ -30,7 +30,7 @@ const userController = {
   updateProfile: async (req, res) => {
     try {
       const id = req.userId;
-      const { name, address } = req.body;
+      const { name, address, phone } = req.body;
       const avatar = req.file?.path;
 
       const user = await User.findById(id);
@@ -61,6 +61,13 @@ const userController = {
         updateFields.address = addressData;
       }
 
+      if (phone !== undefined) {
+        if (typeof phone !== 'string') {
+          return res.status(400).json({ message: 'Phone must be a string' });
+        }
+        updateFields.phone = phone;
+      }
+
       if (!avatar && !user.avatar) {
         updateFields.avatar = "https://res.cloudinary.com/dh4vnrtg5/image/upload/v1747473243/avatar_user_orcdde.jpg";
       } else if (avatar) {
@@ -68,7 +75,7 @@ const userController = {
       }
 
       const updateProfile = await User.findByIdAndUpdate(id, updateFields, { new: true });
-
+      
       return res.status(200).json({ message: 'Update profile successfully', data: updateProfile });
     } catch (error) {
       return res.status(500).json(error.message);
@@ -89,6 +96,7 @@ const userController = {
         email: user.email,
         role: user.role,
         address: user.address,
+        phone: user.phone,
         avatar: user.avatar || "https://res.cloudinary.com/dh4vnrtg5/image/upload/v1747473243/avatar_user_orcdde.jpg",
       };
       return res.status(200).json({ data: userData });

@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { Container, Row, Col, Form, Button, Alert, Image } from 'react-bootstrap';
+import { Container, Row, Col, Form, Button, Alert, Image, InputGroup } from 'react-bootstrap';
+import { Eye, EyeSlash } from 'react-bootstrap-icons';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [message, setMessage] = useState(null);
   const [variant, setVariant] = useState('danger');
   const navigate = useNavigate();
@@ -34,7 +36,7 @@ function Login() {
           } else if (userRole === 'store_owner') {
             navigate('/store-owner/dashboard');
           } else {
-            navigate('/'); 
+            navigate('/');
           }
         }, 1500);
       }
@@ -43,6 +45,10 @@ function Login() {
       setMessage(errMsg);
       setVariant('danger');
     }
+  };
+
+  const toggleShowPassword = () => {
+    setShowPassword(!showPassword);
   };
 
   return (
@@ -67,18 +73,36 @@ function Login() {
 
               <Form.Group className="mb-3" controlId="formPassword">
                 <Form.Label className="fw-semibold text-brown" style={{ float: 'left' }}>Mật khẩu</Form.Label>
-                <Form.Control
-                  type="password"
-                  placeholder="Nhập mật khẩu"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="rounded-pill px-3 py-2"
-                />
+                <InputGroup className="mb-2">
+                  <Form.Control
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Nhập mật khẩu"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="rounded-pill px-3 py-2"
+                    style={{ borderRight: 'none' }}
+                  />
+                  <Button
+                    variant="outline-secondary"
+                    onClick={toggleShowPassword}
+                    className="rounded-pill"
+                    style={{ marginLeft: '8px', padding: '0 12px' }}
+                  >
+                    {showPassword ? <EyeSlash /> : <Eye />}
+                  </Button>
+                </InputGroup>
               </Form.Group>
 
               <div className="d-flex justify-content-between align-items-center mb-3">
                 <Form.Check type="checkbox" label="Ghi nhớ" />
-                <a href="#" className="text-decoration-none small text-brown">Quên mật khẩu?</a>
+                <span
+                  className="text-decoration-none small text-brown"
+                  role="button"
+                  style={{ cursor: 'pointer' }}
+                  onClick={() => navigate('/forgot-password')}
+                >
+                  Quên mật khẩu?
+                </span>
               </div>
 
               <Button

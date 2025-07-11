@@ -44,7 +44,7 @@ export default function BlogList() {
   useEffect(() => {
     const slideInterval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 30000);
+    }, 2500);
     return () => clearInterval(slideInterval);
   }, [slides.length]);
 
@@ -211,9 +211,28 @@ export default function BlogList() {
   return (
     <Container fluid className="blog-container">
       <style>{customStyles}</style>
-      <Button className="btn-home" onClick={() => navigate('/')}>
-        Quay lại trang chủ
-      </Button>
+      <div style={{ marginBottom: "1.5rem" }}>
+        <a
+          href="/"
+          style={{
+            color: "#8A784E",
+            fontSize: "1.1rem",
+            fontWeight: 600,
+            textDecoration: "none",
+            display: "inline-flex",
+            alignItems: "center",
+            transition: "all 0.3s ease",
+          }}
+          onMouseEnter={(e) => (e.target.style.textDecoration = "underline")}
+          onMouseLeave={(e) => (e.target.style.textDecoration = "none")}
+        >
+          <i
+            className="fas fa-home me-2"
+            style={{ marginRight: "0.5rem" }}
+          ></i>
+          Trang chủ
+        </a>
+      </div>
       <div className="slider-container">
         {slides.map((slide, index) => (
           <img
