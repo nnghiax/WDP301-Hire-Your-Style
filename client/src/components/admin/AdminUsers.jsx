@@ -8,6 +8,7 @@ import {
   Alert,
   Button,
   Table,
+  Form,
 } from "react-bootstrap";
 import axios from "axios";
 import AdminSidebar from "./AdminSidebar";
@@ -15,11 +16,14 @@ import HeaderAdmin from "./HeaderAdmin";
 
 function AdminUsers() {
   const [users, setUsers] = useState([]);
+  const [filteredUsers, setFilteredUsers] = useState([]);
   const [totalUsers, setTotalUsers] = useState(0);
   const [customerCount, setCustomerCount] = useState(0);
   const [storeOwnerCount, setStoreOwnerCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [roleFilter, setRoleFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -44,6 +48,7 @@ function AdminUsers() {
         setCustomerCount(customerCount);
         setStoreOwnerCount(storeOwnerCount);
         setUsers(userData);
+        setFilteredUsers(userData); // Khởi tạo filteredUsers
       } catch (error) {
         console.error("Error fetching users:", error);
         setError("Không thể tải danh sách người dùng. Vui lòng thử lại.");
@@ -53,6 +58,24 @@ function AdminUsers() {
     };
     fetchUsers();
   }, []);
+
+  useEffect(() => {
+    // Lọc người dùng dựa trên roleFilter và statusFilter
+    let updatedUsers = [...users];
+
+    if (roleFilter !== "all") {
+      updatedUsers = updatedUsers.filter((user) => user.role === roleFilter);
+    }
+
+    if (statusFilter !== "all") {
+      const isAvailable = statusFilter === "active";
+      updatedUsers = updatedUsers.filter(
+        (user) => user.isAvailable === isAvailable
+      );
+    }
+
+    setFilteredUsers(updatedUsers);
+  }, [roleFilter, statusFilter, users]);
 
   const toggleUserAvailability = async (userId, currentStatus) => {
     try {
@@ -71,18 +94,6 @@ function AdminUsers() {
       setError("Không thể cập nhật trạng thái người dùng.");
     }
   };
-
-  if (loading) {
-    return (
-      <div
-        className="d-flex justify-content-center align-items-center"
-        style={{ height: "100vh" }}
-      >
-        <Spinner animation="border" variant="primary" />
-        <div className="ms-2">Đang tải dữ liệu...</div>
-      </div>
-    );
-  }
 
   if (error) {
     return (
@@ -139,45 +150,92 @@ function AdminUsers() {
               </Card>
             </Col>
           </Row>
+          <Row className="mb-4">
+            <Col md={4}>
+              <Form.Group controlId="roleFilter">
+                <Form.Label>Lọc theo vai trò</Form.Label>
+                <Form.Select
+                  value={roleFilter}
+                  onChange={(e) => setRoleFilter(e.target.value)}
+                >
+                  <option value="all">Tất cả</option>
+                  <option value="admin">Admin</option>
+                  <option value="customer">Khách hàng</option>
+                  <option value="store_owner">Chủ cửa hàng</option>
+                </Form.Select>
+              </Form.Group>
+            </Col>
+            <Col md={4}>
+              <Form.Group controlId="statusFilter">
+                <Form.Label>Lọc theo trạng thái</Form.Label>
+                <Form.Select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                >
+                  <option value="all">Tất cả</option>
+                  <option value="active">Hoạt động</option>
+                  <option value="inactive">Đã khóa</option>
+                </Form.Select>
+              </Form.Group>
+            </Col>
+          </Row>
           <Row>
             <Col>
               <Card className="shadow-sm border-0">
                 <Card.Body>
                   <Card.Title>Danh sách người dùng</Card.Title>
-                  <Table striped bordered hover>
-                    <thead>
-                      <tr>
-                        <th>Tên</th>
-                        <th>Email</th>
-                        <th>Vai trò</th>
-                        <th>Trạng thái</th>
-                        <th>Hành động</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {users.map((user) => (
-                        <tr key={user._id}>
-                          <td>{user.name}</td>
-                          <td>{user.email}</td>
-                          <td>{user.role}</td>
-                          <td>{user.isAvailable ? "Hoạt động" : "Đã khóa"}</td>
-                          <td>
-                            <Button
-                              variant={user.isAvailable ? "danger" : "success"}
-                              onClick={() =>
-                                toggleUserAvailability(
-                                  user._id,
-                                  user.isAvailable
-                                )
-                              }
-                            >
-                              {user.isAvailable ? "Khóa" : "Mở khóa"}
-                            </Button>
-                          </td>
+                  {loading ? (
+                    <div
+                      className="d-flex justify-content-center align-items-center"
+                      style={{ height: "200px" }}
+                    >
+                      <Spinner animation="border" variant="primary" />
+                      <div className="ms-2">Đang tải dữ liệu...</div>
+                    </div>
+                  ) : filteredUsers.length === 0 ? (
+                    <div className="text-center text-muted py-4">
+                      Không có người dùng nào phù hợp với bộ lọc.
+                    </div>
+                  ) : (
+                    <Table striped bordered hover>
+                      <thead>
+                        <tr>
+                          <th>Tên</th>
+                          <th>Email</th>
+                          <th>Vai trò</th>
+                          <th>Trạng thái</th>
+                          <th>Hành động</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </Table>
+                      </thead>
+                      <tbody>
+                        {filteredUsers.map((user) => (
+                          <tr key={user._id}>
+                            <td>{user.name}</td>
+                            <td>{user.email}</td>
+                            <td>{user.role}</td>
+                            <td>
+                              {user.isAvailable ? "Hoạt động" : "Đã khóa"}
+                            </td>
+                            <td>
+                              <Button
+                                variant={
+                                  user.isAvailable ? "danger" : "success"
+                                }
+                                onClick={() =>
+                                  toggleUserAvailability(
+                                    user._id,
+                                    user.isAvailable
+                                  )
+                                }
+                              >
+                                {user.isAvailable ? "Khóa" : "Mở khóa"}
+                              </Button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </Table>
+                  )}
                 </Card.Body>
               </Card>
             </Col>
