@@ -1,13 +1,34 @@
 import React, { useState, useEffect } from "react";
-import { Container, Table, Alert, Spinner } from "react-bootstrap";
+import {
+  Container,
+  Table,
+  Alert,
+  Spinner,
+  Form,
+  Row,
+  Col,
+} from "react-bootstrap";
 import axios from "axios";
 import HeaderAdmin from "./HeaderAdmin";
 import AdminSidebar from "./AdminSidebar";
 
 const DepositDashboard = () => {
   const [deposits, setDeposits] = useState([]);
+  const [filteredDeposits, setFilteredDeposits] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [statusFilter, setStatusFilter] = useState("all");
+
+  // Định nghĩa ánh xạ trạng thái sang tiếng Việt
+  const statusDisplay = {
+    pending: "Đang chờ",
+    confirmed: "Đã xác nhận",
+    received: "Đã nhận",
+    returning: "Đang trả",
+    returned: "Đã trả",
+    completed: "Hoàn tất",
+    cancelled: "Đã hủy",
+  };
 
   useEffect(() => {
     const fetchDeposits = async () => {
@@ -20,6 +41,7 @@ const DepositDashboard = () => {
           }
         );
         setDeposits(response.data.data);
+        setFilteredDeposits(response.data.data); // Khởi tạo filteredDeposits
         setLoading(false);
       } catch (err) {
         setError(
@@ -30,6 +52,17 @@ const DepositDashboard = () => {
     };
     fetchDeposits();
   }, []);
+
+  useEffect(() => {
+    // Lọc deposits dựa trên statusFilter
+    if (statusFilter === "all") {
+      setFilteredDeposits(deposits);
+    } else {
+      setFilteredDeposits(
+        deposits.filter((deposit) => deposit.status === statusFilter)
+      );
+    }
+  }, [statusFilter, deposits]);
 
   const formatAddress = (address) => {
     if (!address) return "N/A";
@@ -88,6 +121,26 @@ const DepositDashboard = () => {
           >
             Quản lý tiền đặt cọc
           </h2>
+          <Row className="mb-4">
+            <Col md={4}>
+              <Form.Group controlId="statusFilter">
+                <Form.Label>Lọc theo trạng thái</Form.Label>
+                <Form.Select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                >
+                  <option value="all">Tất cả</option>
+                  <option value="pending">Đang chờ</option>
+                  <option value="confirmed">Đã xác nhận</option>
+                  <option value="received">Đã nhận</option>
+                  <option value="returning">Đang trả</option>
+                  <option value="returned">Đã trả</option>
+                  <option value="completed">Hoàn tất</option>
+                  <option value="cancelled">Đã hủy</option>
+                </Form.Select>
+              </Form.Group>
+            </Col>
+          </Row>
           {loading ? (
             <div className="text-center py-5">
               <Spinner
@@ -103,12 +156,12 @@ const DepositDashboard = () => {
             >
               {error}
             </Alert>
-          ) : deposits.length === 0 ? (
+          ) : filteredDeposits.length === 0 ? (
             <Alert
               variant="info"
               style={{ borderRadius: "8px", fontWeight: 500 }}
             >
-              Không có giao dịch đặt cọc nào.
+              Không có giao dịch đặt cọc nào phù hợp với bộ lọc.
             </Alert>
           ) : (
             <div
@@ -142,13 +195,12 @@ const DepositDashboard = () => {
                     <th style={{ padding: "15px" }}>Địa chỉ</th>
                     <th style={{ padding: "15px" }}>Số tiền đặt cọc</th>
                     <th style={{ padding: "15px" }}>Ngày thuê</th>
-                    <th style={{ padding: "15px" }}>Ngày trả</th>
                     <th style={{ padding: "15px" }}>Trạng thái</th>
-                    <th style={{ padding: "15px" }}>Ngày tạo</th>
+                    <th style={{ padding: "15px" }}>Ngày trả</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {deposits.map((deposit) => (
+                  {filteredDeposits.map((deposit) => (
                     <tr key={deposit._id}>
                       <td style={{ padding: "15px" }}>{deposit.name}</td>
                       <td style={{ padding: "15px" }}>{deposit.phone}</td>
@@ -170,7 +222,6 @@ const DepositDashboard = () => {
                         )}
                       </td>
                       <td style={{ padding: "15px" }}>
-                        {/* Hiển thị trạng thái màu */}
                         <div
                           style={{
                             marginBottom:
@@ -182,21 +233,23 @@ const DepositDashboard = () => {
                               backgroundColor:
                                 deposit.status === "completed"
                                   ? "#28a745"
+                                  : deposit.status === "cancelled"
+                                  ? "#6c757d"
+                                  : deposit.status === "pending"
+                                  ? "#ffc107"
                                   : "#dc3545",
                               color: "#fff",
                               padding: "5px 10px",
                               borderRadius: "12px",
                               fontSize: "0.85rem",
                               display: "inline-block",
-                              width: "100px",
+                              width: "120px",
                               textAlign: "center",
                             }}
                           >
-                            {deposit.status}
+                            {statusDisplay[deposit.status] || deposit.status}
                           </span>
                         </div>
-
-                        {/* Nếu trạng thái là returned thì hiển thị nút riêng dòng */}
                         {deposit.status === "returned" && (
                           <div>
                             <button
@@ -217,7 +270,6 @@ const DepositDashboard = () => {
                           </div>
                         )}
                       </td>
-
                       <td style={{ padding: "15px" }}>
                         {new Date(deposit.createdAt).toLocaleDateString(
                           "vi-VN"
