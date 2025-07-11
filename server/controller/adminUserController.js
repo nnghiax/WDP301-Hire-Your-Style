@@ -1,4 +1,5 @@
 const User = require("../model/User");
+const nodemailer = require("nodemailer");
 
 const adminUserController = {
   getUsers: async (req, res) => {
@@ -73,6 +74,30 @@ const adminUserController = {
 
       user.isAvailable = isAvailable;
       await user.save();
+
+      // Send email notification if user has an email
+      if (user.email) {
+        const transporter = nodemailer.createTransport({
+          service: "gmail",
+          auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASS,
+          },
+        });
+
+        const mailOptions = {
+          from: process.env.EMAIL_USER,
+          to: user.email,
+          subject: isAvailable
+            ? "Tài khoản của bạn đã được mở khóa"
+            : "Tài khoản của bạn đã bị khóa",
+          text: isAvailable
+            ? `Chào ${user.name},\n\nTài khoản của bạn đã được mở khóa bởi quản trị viên (${process.env.EMAIL_USER}). Bạn có thể tiếp tục sử dụng dịch vụ.\n\nTrân trọng,\nQuản trị viên Kết Sân`
+            : `Chào ${user.name},\n\nTài khoản của bạn đã bị khóa bởi quản trị viên (${process.env.EMAIL_USER}). Vui lòng liên hệ quản trị viên để biết thêm chi tiết.\n\nTrân trọng,\nQuản trị viên Kết Sân`,
+        };
+
+        await transporter.sendMail(mailOptions);
+      }
 
       return res.status(200).json({
         success: true,

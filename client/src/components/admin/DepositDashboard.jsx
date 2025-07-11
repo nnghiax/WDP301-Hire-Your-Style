@@ -31,11 +31,33 @@ const DepositDashboard = () => {
     fetchDeposits();
   }, []);
 
-  // Hàm để định dạng địa chỉ từ đối tượng thành chuỗi
   const formatAddress = (address) => {
     if (!address) return "N/A";
     const { street, ward, district, city } = address;
     return `${street}, ${ward}, ${district}, ${city}`;
+  };
+
+  const handleUpdateStatus = async (rentalId) => {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.patch(
+        `http://localhost:9999/apiDeposit/deposits/${rentalId}/status`,
+        { newStatus: "completed" },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setDeposits((prev) =>
+        prev.map((d) =>
+          d._id === rentalId ? { ...d, status: "completed" } : d
+        )
+      );
+    } catch (error) {
+      alert(
+        "Cập nhật trạng thái thất bại: " +
+          (error.response?.data?.message || error.message)
+      );
+    }
   };
 
   return (
@@ -77,22 +99,14 @@ const DepositDashboard = () => {
           ) : error ? (
             <Alert
               variant="danger"
-              style={{
-                borderRadius: "8px",
-                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-                fontWeight: 500,
-              }}
+              style={{ borderRadius: "8px", fontWeight: 500 }}
             >
               {error}
             </Alert>
           ) : deposits.length === 0 ? (
             <Alert
               variant="info"
-              style={{
-                borderRadius: "8px",
-                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-                fontWeight: 500,
-              }}
+              style={{ borderRadius: "8px", fontWeight: 500 }}
             >
               Không có giao dịch đặt cọc nào.
             </Alert>
@@ -102,7 +116,6 @@ const DepositDashboard = () => {
                 backgroundColor: "#fff",
                 borderRadius: "12px",
                 boxShadow: "0 6px 12px rgba(0, 0, 0, 0.15)",
-                overflow: "hidden",
                 padding: "20px",
               }}
             >
@@ -121,40 +134,22 @@ const DepositDashboard = () => {
                     color: "#fff",
                     textTransform: "uppercase",
                     fontWeight: "600",
-                    letterSpacing: "0.5px",
                   }}
                 >
                   <tr>
-                    <th style={{ padding: "15px", borderTopLeftRadius: "8px" }}>
-                      Tên khách hàng
-                    </th>
+                    <th style={{ padding: "15px" }}>Tên khách hàng</th>
                     <th style={{ padding: "15px" }}>Số điện thoại</th>
                     <th style={{ padding: "15px" }}>Địa chỉ</th>
                     <th style={{ padding: "15px" }}>Số tiền đặt cọc</th>
                     <th style={{ padding: "15px" }}>Ngày thuê</th>
                     <th style={{ padding: "15px" }}>Ngày trả</th>
                     <th style={{ padding: "15px" }}>Trạng thái</th>
-                    <th
-                      style={{ padding: "15px", borderTopRightRadius: "8px" }}
-                    >
-                      Ngày tạo
-                    </th>
+                    <th style={{ padding: "15px" }}>Ngày tạo</th>
                   </tr>
                 </thead>
                 <tbody>
                   {deposits.map((deposit) => (
-                    <tr
-                      key={deposit._id}
-                      style={{
-                        transition: "background-color 0.3s ease",
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = "#f8f9fa";
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = "#fff";
-                      }}
-                    >
+                    <tr key={deposit._id}>
                       <td style={{ padding: "15px" }}>{deposit.name}</td>
                       <td style={{ padding: "15px" }}>{deposit.phone}</td>
                       <td style={{ padding: "15px" }}>
@@ -175,28 +170,54 @@ const DepositDashboard = () => {
                         )}
                       </td>
                       <td style={{ padding: "15px" }}>
-                        {deposit.returnDate
-                          ? new Date(deposit.returnDate).toLocaleDateString(
-                              "vi-VN"
-                            )
-                          : "Chưa trả"}
-                      </td>
-                      <td style={{ padding: "15px" }}>
-                        <span
+                        {/* Hiển thị trạng thái màu */}
+                        <div
                           style={{
-                            backgroundColor:
-                              deposit.status === "completed"
-                                ? "#28a745"
-                                : "#dc3545",
-                            color: "#fff",
-                            padding: "5px 10px",
-                            borderRadius: "12px",
-                            fontSize: "0.85rem",
+                            marginBottom:
+                              deposit.status === "returned" ? "8px" : "0",
                           }}
                         >
-                          {deposit.status}
-                        </span>
+                          <span
+                            style={{
+                              backgroundColor:
+                                deposit.status === "completed"
+                                  ? "#28a745"
+                                  : "#dc3545",
+                              color: "#fff",
+                              padding: "5px 10px",
+                              borderRadius: "12px",
+                              fontSize: "0.85rem",
+                              display: "inline-block",
+                              width: "100px",
+                              textAlign: "center",
+                            }}
+                          >
+                            {deposit.status}
+                          </span>
+                        </div>
+
+                        {/* Nếu trạng thái là returned thì hiển thị nút riêng dòng */}
+                        {deposit.status === "returned" && (
+                          <div>
+                            <button
+                              onClick={() => handleUpdateStatus(deposit._id)}
+                              style={{
+                                backgroundColor: "#007bff",
+                                color: "#fff",
+                                border: "none",
+                                padding: "6px 12px",
+                                borderRadius: "8px",
+                                fontSize: "0.8rem",
+                                cursor: "pointer",
+                                marginTop: "4px",
+                              }}
+                            >
+                              Xác nhận hoàn tất
+                            </button>
+                          </div>
+                        )}
                       </td>
+
                       <td style={{ padding: "15px" }}>
                         {new Date(deposit.createdAt).toLocaleDateString(
                           "vi-VN"
