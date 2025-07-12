@@ -97,7 +97,6 @@ export default function Header() {
     Promise.all([fetchUser(), fetchCategories(), fetchProducts()]).catch(
       (error) => console.error("Lỗi khi tải dữ liệu:", error)
     );
-
   }, []);
 
   const handleLogout = () => {
@@ -268,12 +267,26 @@ export default function Header() {
                 boxShadow: "none",
               }}
             >
-              <h1
-                className="m-0 display-5 font-weight-semi-bold"
-                style={{ color: "#B6B09F", textDecoration: "none" }}
-              >
-                Hire Your Style
-              </h1>
+              <div className="d-flex align-items-center">
+                <img
+                  src="/img/Hire.png" // Thay bằng đường dẫn ảnh thực tế
+                  alt="Logo"
+                  style={{
+                    width: "50px",
+                    height: "50px",
+                    objectFit: "cover",
+                    borderRadius: "50%",
+                    marginRight: "10px",
+                    border: "2px solid #B6B09F", // Khung ảnh
+                  }}
+                />
+                <h1
+                  className="m-0 display-6 font-weight-semi-bold"
+                  style={{ color: "#B6B09F", textDecoration: "none" }}
+                >
+                  Hire Your Style
+                </h1>
+              </div>
             </Button>
           </Col>
           <Col lg={6} xs={6} className="text-left">
