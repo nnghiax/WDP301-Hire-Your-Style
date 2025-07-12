@@ -207,8 +207,8 @@ const ShoppingCart = ({ userId }) => {
   console.log("tempRental:", tempRental.toString());
 
   const handlePayment = async () => {
-    if (selectedItems.length === 0 || !rentalDate || !returnDate) {
-      alert("Vui lòng chọn sản phẩm và nhập ngày thuê/trả.");
+    if (selectedItems.length === 0) {
+      alert("Vui lòng chọn ít nhất một sản phẩm để thanh toán.");
       return;
     }
 
@@ -348,6 +348,10 @@ const ShoppingCart = ({ userId }) => {
   }
 
   const rentalDays = getRentalDays();
+
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const tomorrowStr = tomorrow.toISOString().split("T")[0];
 
   return (
     <div className="container-fluid bg-light py-5">
@@ -554,7 +558,7 @@ const ShoppingCart = ({ userId }) => {
                       type="date"
                       value={rentalDate}
                       onChange={(e) => setRentalDate(e.target.value)}
-                      min={new Date().toISOString().split("T")[0]}
+                      min={tomorrowStr}
                       style={{
                         width: "100%",
                         padding: "0.5rem",
@@ -658,14 +662,12 @@ const ShoppingCart = ({ userId }) => {
                 </p>
                 <button
                   className={`btn btn-block ${
-                    selectedItems.length === 0 || !rentalDate || !returnDate
+                    selectedItems.length === 0
                       ? "btn-secondary disabled"
                       : "btn-primary"
                   }`}
                   onClick={handlePayment}
-                  disabled={
-                    selectedItems.length === 0 || !rentalDate || !returnDate
-                  }
+                  disabled={selectedItems.length === 0}
                 >
                   Thanh toán
                 </button>
