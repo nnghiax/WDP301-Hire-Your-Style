@@ -16,7 +16,7 @@ const revenueController = {
       }
 
       const query = {
-        storeId: store._id,
+        "items.storeId": store._id,
         status: "completed",
       };
       if (req.query.startDate) {
@@ -66,7 +66,7 @@ const revenueController = {
       }
 
       const query = {
-        storeId: store._id,
+        "items.storeId": store._id,
         status: "completed",
       };
       if (req.query.startDate) {
@@ -83,23 +83,29 @@ const revenueController = {
         .populate("items.productId", "name price")
         .populate("userId", "name email");
 
-      const revenueDetails = rentals.map((rental) => ({
-        rentalId: rental._id,
-        user: {
+      const revenueDetails = rentals.map((rental) => {
+        const user = rental.userId ? {
           name: rental.userId.name,
           email: rental.userId.email,
-        },
-        items: rental.items.map((item) => ({
-          productName: item.productId.name,
-          size: item.size,
-          quantity: item.quantity,
-          price: item.productId.price,
-          subtotal: item.quantity * item.productId.price,
-        })),
-        totalAmount: rental.totalAmount,
-        rentalDate: rental.rentalDate,
-        returnDate: rental.returnDate,
-      }));
+        } : { name: "Unknown", email: "Unknown" };
+
+        return {
+          rentalId: rental._id,
+          user: user,
+          items: rental.items
+            .filter((item) => item.storeId.toString() === store._id.toString())
+            .map((item) => ({
+              productName: item.productId.name,
+              size: item.size,
+              quantity: item.quantity,
+              price: item.productId.price,
+              subtotal: item.quantity * item.productId.price,
+            })),
+          totalAmount: rental.totalAmount,
+          rentalDate: rental.rentalDate,
+          returnDate: rental.returnDate,
+        };
+      });
 
       return res.status(200).json({
         success: true,
@@ -114,6 +120,7 @@ const revenueController = {
       });
     }
   },
+
   getDailyRevenue: async (req, res) => {
     try {
       const userId = req.user._id;
@@ -127,7 +134,7 @@ const revenueController = {
       }
 
       const query = {
-        storeId: store._id,
+        "items.storeId": store._id,
         status: "completed",
       };
       if (req.query.startDate) {
@@ -181,7 +188,7 @@ const revenueController = {
       }
 
       const query = {
-        storeId: store._id,
+        "items.storeId": store._id,
         status: "completed",
       };
       if (req.query.startDate) {
@@ -235,7 +242,7 @@ const revenueController = {
       }
 
       const query = {
-        storeId: store._id,
+        "items.storeId": store._id,
         status: "completed",
       };
       if (req.query.startDate) {
@@ -292,7 +299,7 @@ const revenueController = {
       }
 
       const query = {
-        storeId: store._id,
+        "items.storeId": store._id,
         status: "completed",
       };
       if (req.query.startDate) {
@@ -621,7 +628,7 @@ const revenueController = {
             },
           },
         },
-      ]);
+     ]);
 
       const formattedResult = rentals.map((store) => ({
         storeName: store.storeName,
@@ -718,7 +725,7 @@ const revenueController = {
             },
           },
         },
-      ]);
+     ]);
 
       const formattedResult = rentals.map((store) => ({
         storeName: store.storeName,

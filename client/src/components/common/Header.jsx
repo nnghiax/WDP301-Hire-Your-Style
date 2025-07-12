@@ -27,18 +27,24 @@ export default function Header() {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("token"));
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [showDropdown, setShowDropdown] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUser = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+
       try {
         const res = await axios.get("http://localhost:9999/user/profile", {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${token}`,
           },
         });
-        // console.log("User data:", res.data);
         const userData = {
           ...res.data.data,
           avatar:
@@ -50,11 +56,13 @@ export default function Header() {
       } catch (error) {
         console.error("Lỗi khi tải thông tin người dùng:", error);
         if (error.response?.status === 401) {
-          localStorage.removeItem("token");
+          localStorage.removeItem("token"); // Xóa token nếu hết hạn
           setIsLoggedIn(false);
           setUser(null);
           navigate("/login");
         }
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -62,10 +70,9 @@ export default function Header() {
       try {
         const res = await axios.get("http://localhost:9999/cate/list", {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
           },
         });
-        // console.log("Categories data:", res.data);
         setCategories(res.data.data || []);
       } catch (error) {
         console.error("Lỗi khi tải danh mục:", error);
@@ -77,10 +84,9 @@ export default function Header() {
       try {
         const res = await axios.get("http://localhost:9999/product/list", {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
           },
         });
-        // console.log("Products data:", res.data);
         setProducts(res.data.data || []);
       } catch (error) {
         console.error("Lỗi khi tải sản phẩm:", error);
@@ -88,11 +94,10 @@ export default function Header() {
       }
     };
 
-    if (localStorage.getItem("token")) {
-      fetchUser();
-    }
-    fetchCategories();
-    fetchProducts();
+    Promise.all([fetchUser(), fetchCategories(), fetchProducts()]).catch(
+      (error) => console.error("Lỗi khi tải dữ liệu:", error)
+    );
+
   }, []);
 
   const handleLogout = () => {
@@ -175,7 +180,6 @@ export default function Header() {
       return matchesSearch && matchesCategory;
     });
 
-    // Luôn navigate, không cần kiểm tra điều kiện
     navigate(
       `/filter-product?search=${encodeURIComponent(
         currentActiveSearchValue || ""
@@ -426,7 +430,9 @@ export default function Header() {
                   </Nav.Link>
                 </Nav>
                 <Nav className="ml-auto py-0">
-                  {isLoggedIn ? (
+                  {loading ? (
+                    <Navbar.Text>Đang tải...</Navbar.Text>
+                  ) : isLoggedIn ? (
                     <Dropdown
                       show={showDropdown}
                       onToggle={() => setShowDropdown(!showDropdown)}
@@ -472,11 +478,16 @@ export default function Header() {
                     </Dropdown>
                   ) : (
                     <>
-                     <Button
+                      <Button
                         variant="dark"
                         className="mr-2"
                         onClick={() => navigate("/login")}
-                        style={{ borderRadius: "20px", padding: "5px 15px", marginRight: "10px", backgroundColor: "#B6B09F" }}
+                        style={{
+                          borderRadius: "20px",
+                          padding: "5px 15px",
+                          marginRight: "10px",
+                          backgroundColor: "#B6B09F",
+                        }}
                       >
                         Đăng nhập
                       </Button>
