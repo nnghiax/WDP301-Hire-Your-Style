@@ -119,11 +119,7 @@ const StoreOwnerRevenueDashboard = () => {
       <div style={{ marginLeft: '250px', flexGrow: 1, backgroundColor: '#f8f9fa', minHeight: '100vh' }}>
         <HeaderStoreOwner />
         <Container fluid className="p-4">
-          <Row className="mb-3">
-            <Col>
-              <h5 className="fw-bold">📊 Bảng điều khiển doanh thu</h5>
-            </Col>
-          </Row>
+          
           <Row className="mb-4">
             <Col md={4}>
               <Card className="shadow-sm border-0">
