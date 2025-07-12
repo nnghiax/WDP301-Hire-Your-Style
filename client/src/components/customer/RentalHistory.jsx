@@ -10,6 +10,7 @@ import {
   Modal,
   Form,
   Alert,
+  FormSelect,
 } from "react-bootstrap";
 import axios from "axios";
 
@@ -21,6 +22,8 @@ import { useNavigate } from "react-router-dom";
 
 const RentalHistory = ({ userId }) => {
   const [rentals, setRentals] = useState([]);
+  const [filteredRentals, setFilteredRentals] = useState([]);
+  const [statusFilter, setStatusFilter] = useState("all");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showReviewModal, setShowReviewModal] = useState(false);
@@ -47,10 +50,13 @@ const RentalHistory = ({ userId }) => {
         }
       );
 
-      setRentals(response.data.data || []);
+      const rentalData = response.data.data || [];
+      setRentals(rentalData);
+      setFilteredRentals(rentalData);
     } catch (err) {
       setError(err.response?.data?.message || err.message);
       setRentals([]);
+      setFilteredRentals([]);
     } finally {
       setLoading(false);
     }
@@ -146,7 +152,7 @@ const RentalHistory = ({ userId }) => {
       returning: "Đang trả trang phục",
       returned: "Đã trả trang phục",
       completed: "Hoàn tất",
-      cancelled: "Đã hủy",
+      cancelled: "Shop đã hủy đơn",
     };
 
     return (
@@ -157,6 +163,19 @@ const RentalHistory = ({ userId }) => {
         {statusText[status] || status}
       </Badge>
     );
+  };
+
+  const handleStatusFilterChange = (e) => {
+    const selectedStatus = e.target.value;
+    setStatusFilter(selectedStatus);
+
+    if (selectedStatus === "all") {
+      setFilteredRentals(rentals);
+    } else {
+      setFilteredRentals(
+        rentals.filter((rental) => rental.status === selectedStatus)
+      );
+    }
   };
 
   useEffect(() => {
@@ -221,19 +240,41 @@ const RentalHistory = ({ userId }) => {
           <i className="fas fa-history me-2"></i>Lịch Sử Thuê
         </h1>
 
-        {rentals.length === 0 ? (
+        <Form.Group className="mb-4" style={{ maxWidth: "300px" }}>
+          <Form.Label className="fw-semibold" style={{ color: "#8A784E" }}>
+            <i className="fas fa-filter me-2"></i>Lọc theo trạng thái
+          </Form.Label>
+          <FormSelect
+            value={statusFilter}
+            onChange={handleStatusFilterChange}
+            className="rounded-4"
+          >
+            <option value="all">Tất cả</option>
+            <option value="pending">Chờ xác nhận</option>
+            <option value="confirmed">Đang giao hàng</option>
+            <option value="received">Đã nhận trang phục</option>
+            <option value="returning">Đang trả trang phục</option>
+            <option value="returned">Đã trả trang phục</option>
+            <option value="completed">Hoàn tất</option>
+            <option value="cancelled">Shop đã hủy đơn</option>
+          </FormSelect>
+        </Form.Group>
+
+        {filteredRentals.length === 0 ? (
           <Card className="border-0 shadow-sm rounded-4">
             <Card.Body className="text-center py-5">
-              <h4 className="fw-semibold">Bạn chưa có đơn thuê nào</h4>
+              <h4 className="fw-semibold">Không tìm thấy đơn thuê nào</h4>
               <p className="text-muted lead">
-                Hãy thuê sản phẩm để bắt đầu trải nghiệm
+                {statusFilter === "all"
+                  ? "Hãy thuê sản phẩm để bắt đầu trải nghiệm"
+                  : "Không có đơn hàng nào với trạng thái này"}
               </p>
             </Card.Body>
           </Card>
         ) : (
           <Row>
             <Col lg={12}>
-              {rentals.map((rental) => (
+              {filteredRentals.map((rental) => (
                 <Card
                   key={rental._id}
                   className="border-0 shadow-sm rounded-4 mb-4"
@@ -349,35 +390,36 @@ const RentalHistory = ({ userId }) => {
 
                   <Card.Footer className="text-end">
                     {rental.status === "completed" && (
-                      <Button
-                        variant="outline-primary"
-                        className="rounded-4 me-2"
-                        onClick={() =>
-                          navigate(
-                            `/product-detail/${rental.items[0].productId._id}/${rental.items[0].storeId._id}`
-                          )
-                        }
-                      >
-                        Thuê lại
-                      </Button>
-                    )}
-                    {rental.status === "completed" && (
-                      <Button
-                        variant="outline-success"
-                        className="rounded-4 me-2"
-                        onClick={() => {
-                          setSelectedRental(rental);
-                          setShowReviewModal(true);
-                        }}
-                      >
-                        Đánh giá
-                      </Button>
+                      <>
+                        <Button
+                          variant="primary" // phù hợp với màu của 'received' (để thuê lại sản phẩm)
+                          className="rounded-4 me-2"
+                          onClick={() =>
+                            navigate(
+                              `/product-detail/${rental.items[0].productId._id}/${rental.items[0].storeId._id}`
+                            )
+                          }
+                        >
+                          Thuê lại
+                        </Button>
+
+                        <Button
+                          variant="success" // phù hợp với màu của 'completed'
+                          className="rounded-4 me-2"
+                          onClick={() => {
+                            setSelectedRental(rental);
+                            setShowReviewModal(true);
+                          }}
+                        >
+                          Đánh giá
+                        </Button>
+                      </>
                     )}
 
                     {rental.status === "confirmed" && (
                       <Button
-                        variant="outline-success"
-                        className="rounded-4 me-2"
+                        variant="info" // tương ứng với 'confirmed'
+                        className="rounded-4 me-2 text-dark"
                         onClick={() => {
                           handleUpdateStatus(rental._id, "received");
                         }}
@@ -388,18 +430,30 @@ const RentalHistory = ({ userId }) => {
 
                     {rental.status === "received" && (
                       <Button
-                        variant="outline-success"
+                        variant="secondary" // tương ứng với 'returning'
                         className="rounded-4 me-2"
                         onClick={() => {
                           handleUpdateStatus(rental._id, "returning");
                         }}
                       >
-                        đã giao trang phục cho shipper
+                        Đã giao trang phục cho shipper
+                      </Button>
+                    )}
+
+                    {rental.status === "pending" && (
+                      <Button
+                        variant="danger" // tương ứng với 'cancelled'
+                        className="rounded-4 me-2"
+                        onClick={() => {
+                          handleUpdateStatus(rental._id, "cancelled");
+                        }}
+                      >
+                        Hủy đơn hàng
                       </Button>
                     )}
 
                     <Button
-                      variant="outline-secondary"
+                      variant="dark" // phù hợp với 'returned'
                       className="rounded-4"
                       onClick={() => navigate(`/rental-detail/${rental._id}`)}
                     >

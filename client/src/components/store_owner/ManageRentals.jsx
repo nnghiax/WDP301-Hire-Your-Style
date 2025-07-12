@@ -8,6 +8,8 @@ import {
   Badge,
   Button,
   Alert,
+  Form,
+  FormSelect,
 } from "react-bootstrap";
 import axios from "axios";
 import "../css/Cart.css";
@@ -15,6 +17,8 @@ import StoreOwnerSidebar from "./StoreOwnerSidebar";
 
 const ManageRentals = () => {
   const [rentals, setRentals] = useState([]);
+  const [filteredRentals, setFilteredRentals] = useState([]);
+  const [statusFilter, setStatusFilter] = useState("all");
   const [store, setStore] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -58,9 +62,11 @@ const ManageRentals = () => {
       );
 
       setRentals(filteredRentals);
+      setFilteredRentals(filteredRentals);
     } catch (err) {
       setError(err.response?.data?.message || err.message);
       setRentals([]);
+      setFilteredRentals([]);
     } finally {
       setLoading(false);
     }
@@ -90,6 +96,19 @@ const ManageRentals = () => {
         error.response?.data || error.message
       );
       alert("Cập nhật trạng thái thất bại!");
+    }
+  };
+
+  const handleStatusFilterChange = (e) => {
+    const selectedStatus = e.target.value;
+    setStatusFilter(selectedStatus);
+
+    if (selectedStatus === "all") {
+      setFilteredRentals(rentals);
+    } else {
+      setFilteredRentals(
+        rentals.filter((rental) => rental.status === selectedStatus)
+      );
     }
   };
 
@@ -138,7 +157,7 @@ const ManageRentals = () => {
       returning: "Đang trả trang phục",
       returned: "Đã trả trang phục",
       completed: "Hoàn tất",
-      cancelled: "Đã hủy",
+      cancelled: "Khách hàng đã hủy đơn",
     };
 
     return (
@@ -192,19 +211,41 @@ const ManageRentals = () => {
       <div style={{ marginLeft: "250px", padding: "30px", width: "100%" }}>
         <section style={{ backgroundColor: "#F2F2F2", padding: "3rem 0" }}>
           <Container>
-            {rentals.length === 0 ? (
+            <Form.Group className="mb-4" style={{ maxWidth: "300px" }}>
+              <Form.Label className="fw-semibold" style={{ color: "#8A784E" }}>
+                <i className="fas fa-filter me-2"></i>Lọc theo trạng thái
+              </Form.Label>
+              <FormSelect
+                value={statusFilter}
+                onChange={handleStatusFilterChange}
+                className="rounded-4"
+              >
+                <option value="all">Tất cả</option>
+                <option value="pending">Chờ xác nhận</option>
+                <option value="confirmed">Đang giao hàng</option>
+                <option value="received">Đã nhận trang phục</option>
+                <option value="returning">Đang trả trang phục</option>
+                <option value="returned">Đã trả trang phục</option>
+                <option value="completed">Hoàn tất</option>
+                <option value="cancelled">Khách hàng đã hủy đơn</option>
+              </FormSelect>
+            </Form.Group>
+
+            {filteredRentals.length === 0 ? (
               <Card className="border-0 shadow-sm rounded-4">
                 <Card.Body className="text-center py-5">
-                  <h4 className="fw-semibold">Bạn chưa có đơn thuê nào</h4>
+                  <h4 className="fw-semibold">Không tìm thấy đơn thuê nào</h4>
                   <p className="text-muted lead">
-                    Không có đơn thuê nào phù hợp với cửa hàng của bạn
+                    {statusFilter === "all"
+                      ? "Không có đơn thuê nào phù hợp với cửa hàng của bạn"
+                      : "Không có đơn hàng nào với trạng thái này"}
                   </p>
                 </Card.Body>
               </Card>
             ) : (
               <Row>
                 <Col lg={12}>
-                  {rentals.map((rental) => (
+                  {filteredRentals.map((rental) => (
                     <Card
                       key={rental._id}
                       className="border-0 shadow-sm rounded-4 mb-4"
@@ -324,20 +365,32 @@ const ManageRentals = () => {
 
                       <Card.Footer className="text-end">
                         {rental.status === "pending" && (
-                          <Button
-                            variant="outline-success"
-                            className="rounded-4 me-2"
-                            onClick={() => {
-                              handleUpdateStatus(rental._id, "confirmed");
-                            }}
-                          >
-                            đã giao hàng cho shipper
-                          </Button>
+                          <>
+                            <Button
+                              variant="info" // Tương ứng với 'confirmed' (bg-info text-dark)
+                              className="rounded-4 me-2 text-dark"
+                              onClick={() => {
+                                handleUpdateStatus(rental._id, "confirmed");
+                              }}
+                            >
+                              Đã giao hàng cho shipper
+                            </Button>
+
+                            <Button
+                              variant="danger" // Tương ứng với 'cancelled' (bg-danger)
+                              className="rounded-4 me-2"
+                              onClick={() => {
+                                handleUpdateStatus(rental._id, "cancelled");
+                              }}
+                            >
+                              Hủy đơn hàng
+                            </Button>
+                          </>
                         )}
 
                         {rental.status === "returning" && (
                           <Button
-                            variant="outline-success"
+                            variant="dark" // Tương ứng với 'returned' (bg-dark)
                             className="rounded-4 me-2"
                             onClick={() => {
                               handleUpdateStatus(rental._id, "returned");
