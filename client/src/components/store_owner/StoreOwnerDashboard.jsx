@@ -219,19 +219,20 @@ const StoreOwnerRevenueDashboard = () => {
                         <th>Giá</th>
                         <th>Tổng cộng</th>
                         <th>Ngày thuê</th>
+                        <th>Ngày trả</th> {/* Thêm cột Ngày trả */}
                       </tr>
                     </thead>
                     <tbody>
                       {loading ? (
                         <tr>
-                          <td colSpan="7" className="text-center py-4">
+                          <td colSpan="8" className="text-center py-4">
                             <Spinner animation="border" variant="primary" />
                             <div>Đang tải dữ liệu...</div>
                           </td>
                         </tr>
                       ) : revenueDetails.length === 0 ? (
                         <tr>
-                          <td colSpan="7" className="text-center text-muted py-4">
+                          <td colSpan="8" className="text-center text-muted py-4">
                             Không có dữ liệu doanh thu trong khoảng thời gian này.
                           </td>
                         </tr>
@@ -245,6 +246,7 @@ const StoreOwnerRevenueDashboard = () => {
                             <td>{(detail.items?.reduce((sum, item) => sum + item.subtotal, 0) || 0).toLocaleString()} VNĐ</td>
                             <td>{(detail.totalAmount || 0).toLocaleString()} VNĐ</td>
                             <td>{detail.rentalDate ? new Date(detail.rentalDate).toLocaleDateString('vi-VN') : 'N/A'}</td>
+                            <td>{detail.returnDate ? new Date(detail.returnDate).toLocaleDateString('vi-VN') : 'N/A'}</td> {/* Hiển thị Ngày trả */}
                           </tr>
                         ))
                       )}
