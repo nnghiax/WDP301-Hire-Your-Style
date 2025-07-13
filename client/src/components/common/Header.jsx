@@ -195,19 +195,28 @@ export default function Header() {
         <Row className="py-2 px-xl-5" style={{ backgroundColor: "#e9e9e9" }}>
           <Col lg={6} className="d-none d-lg-block">
             <div className="d-inline-flex align-items-center">
-              <a href="#" style={{ textDecoration: "none", color: "#000000" }}>
+              <a
+                href="/contact"
+                style={{ textDecoration: "none", color: "#000000" }}
+              >
                 Câu hỏi thường gặp
               </a>
               <span className="px-2" style={{ color: "#B6B09F" }}>
                 |
               </span>
-              <a href="#" style={{ textDecoration: "none", color: "#000000" }}>
+              <a
+                href="/contact"
+                style={{ textDecoration: "none", color: "#000000" }}
+              >
                 Trợ giúp
               </a>
               <span className="px-2" style={{ color: "#B6B09F" }}>
                 |
               </span>
-              <a href="#" style={{ textDecoration: "none", color: "#000000" }}>
+              <a
+                href="/contact"
+                style={{ textDecoration: "none", color: "#000000" }}
+              >
                 Hỗ trợ
               </a>
             </div>
@@ -422,7 +431,10 @@ export default function Header() {
                   <Nav.Link href="/" className="text-dark">
                     Trang chủ
                   </Nav.Link>
-                  <Nav.Link href="/shop" className="text-dark">
+                  <Nav.Link
+                    href="/filter-product?search=&category="
+                    className="text-dark"
+                  >
                     Cửa hàng
                   </Nav.Link>
                   <Nav.Link href="/blog" className="text-dark">
@@ -434,9 +446,7 @@ export default function Header() {
                     className="text-dark"
                   >
                     <NavDropdown.Item href="/cart">Giỏ hàng</NavDropdown.Item>
-                    <NavDropdown.Item href="/checkout">
-                      Thanh toán
-                    </NavDropdown.Item>
+                    <NavDropdown.Item href="/cart">Thanh toán</NavDropdown.Item>
                   </NavDropdown>
                   <Nav.Link href="/contact" className="text-dark">
                     Liên hệ

@@ -121,7 +121,7 @@ const rentalController = {
   // Get all rentals (admin)
   getAllRentals: async (req, res) => {
     try {
-      const { page = 1, limit = 10, status } = req.query;
+      const { page = 1, limit = 10000, status } = req.query;
 
       const query = {};
       if (status) {

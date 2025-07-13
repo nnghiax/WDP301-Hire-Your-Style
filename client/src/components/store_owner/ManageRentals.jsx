@@ -262,7 +262,7 @@ const ManageRentals = () => {
                         </div>
                         <div className="text-muted">
                           <small>
-                            Ngày tạo: {formatDate(rental.createdAt)}
+                            Ngày tạo: {formatDate(rental.rentalDate)}
                           </small>
                         </div>
                       </Card.Header>

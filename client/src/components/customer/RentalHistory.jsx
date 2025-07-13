@@ -290,7 +290,7 @@ const RentalHistory = ({ userId }) => {
                       </span>
                     </div>
                     <div className="text-muted">
-                      <small>Ngày tạo: {formatDate(rental.createdAt)}</small>
+                      <small>Ngày tạo: {formatDate(rental.rentalDate)}</small>
                     </div>
                   </Card.Header>
 
