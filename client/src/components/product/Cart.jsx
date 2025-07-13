@@ -671,13 +671,7 @@ const ShoppingCart = ({ userId }) => {
                 >
                   Thanh toán
                 </button>
-                <button
-                  onClick={() =>
-                    navigate(`/payment/success?${tempRental.toString()}`)
-                  }
-                >
-                  test
-                </button>
+
               </div>
             </div>
 
