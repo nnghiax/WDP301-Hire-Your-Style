@@ -246,7 +246,6 @@ function AdminDashboard() {
 
   return (
     <div className="d-flex">
-      <AdminSidebar />
       <div
         style={{
           marginLeft: "250px",

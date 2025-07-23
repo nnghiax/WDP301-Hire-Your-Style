@@ -1,7 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import HomePage from "./pages/HomePage";
-import LoginPage from "./components/auth/LoginPage";
+import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./components/auth/RegisterPage";
 import ForgetPasswordPage from "./components/auth/ForgetPasswordPage";
 import ResetPasswordPage from "./components/auth/ResetPasswordPage";
@@ -11,7 +11,7 @@ import FilterProduct from "./pages/FilterProduct";
 import StoreOwnerDashboard from "./components/store_owner/StoreOwnerDashboard";
 import StoreOwnerSidebar from "./components/store_owner/StoreOwnerSidebar";
 import StoreOwnerProducts from "./components/store_owner/ManageProducts";
-import AdminDashboard from "./components/admin/AdminDashboard";
+import AdminDashboardPage from "./pages/admin/AdminDashboardPage";
 import AdminProduct from "./components/admin/AdminProduct";
 import RequestStore from "./components/customer/RequestStore";
 import ProfilePage from "./components/auth/ProfilePage";
@@ -78,7 +78,7 @@ function App() {
 
         {/* Route admin */}
         <Route element={<ProtectedRoute />}>
-          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
           <Route path="/admin/products" element={<AdminProduct />} />
           <Route path="/admin/request" element={<AdminStoreRequest />} />
           <Route
