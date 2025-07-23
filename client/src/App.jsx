@@ -31,6 +31,8 @@ import PaymentSuccessPage from "./pages/customer/PaymentSuccessPage";
 import PaymentCancelPage from "./components/customer/PaymentCancel";
 import ManageRentalPage from "./pages/store-owner/ManageRentalPage";
 import DepositDashboard from "./components/admin/DepositDashboard";
+import AdminProductPage from "./pages/admin/AdminProductPage";
+import AdminUserPage from "./pages/admin/AdminUserPage";
 
 function App() {
   return (
@@ -79,13 +81,13 @@ function App() {
         {/* Route admin */}
         <Route element={<ProtectedRoute />}>
           <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
-          <Route path="/admin/products" element={<AdminProduct />} />
+          <Route path="/admin/products" element={<AdminProductPage />} />
           <Route path="/admin/request" element={<AdminStoreRequest />} />
           <Route
             path="/admin/request/:requestId"
             element={<AdminStoreRequestDetail />}
           />
-          <Route path="/admin/users" element={<AdminUsers />} />
+          <Route path="/admin/users" element={<AdminUserPage />} />
           <Route path="/admin/rental-dashboard" element={<RentalDashboard />} />
           <Route
             path="/admin/deposit-dashboard"
