@@ -1,4 +1,4 @@
-import ShoppingCart from "../../components/product/Cart";
+import ShoppingCart from "../../components/landing/Cart";
 import Header from "../../components/common/Header";
 import Footer from "../../components/common/Footer";
 function CartPage() {
