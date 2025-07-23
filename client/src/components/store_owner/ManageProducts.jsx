@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Row, Col, Table, Card, Button, Modal, Form, Alert, Spinner } from 'react-bootstrap';
+import { Container, Row, Col, Table, Card, Button, Modal, Form, Alert, Spinner, Pagination, FormControl } from 'react-bootstrap';
 import StoreOwnerSidebar from './StoreOwnerSidebar';
 import HeaderStoreOwner from './HeaderStoreOwner';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
-// Thêm CSS tùy chỉnh
 const customStyles = `
   .custom-modal .modal-dialog {
     max-width: 1000px;
@@ -27,6 +26,9 @@ function ManageProducts() {
   const [reviewLoading, setReviewLoading] = useState(false);
   const [reviews, setReviews] = useState([]);
   const [reviewError, setReviewError] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const productsPerPage = 10;
 
   const navigate = useNavigate();
 
@@ -204,6 +206,7 @@ function ManageProducts() {
       }
       setShowModal(false);
       setError('');
+      setCurrentPage(1); 
     } catch (error) {
       console.error('Error submitting product:', error);
       setError(error.response?.data?.message || 'Lỗi khi lưu sản phẩm. Vui lòng thử lại.');
@@ -218,11 +221,28 @@ function ManageProducts() {
         });
         setProducts(products.filter(p => p._id !== proId));
         showSuccessMessage('Xóa sản phẩm thành công!');
+      
+        if (filteredProducts.length <= productsPerPage * (currentPage - 1) + 1 && currentPage > 1) {
+          setCurrentPage(currentPage - 1);
+        }
       } catch (error) {
         console.error('Error deleting product:', error);
         setError(error.response?.data?.message || 'Lỗi khi xóa sản phẩm. Vui lòng thử lại.');
       }
     }
+  };
+
+  const filteredProducts = products.filter(product =>
+    product.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const indexOfLastProduct = currentPage * productsPerPage;
+  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+  const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
+  const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
   };
 
   if (error && !storeId) {
@@ -246,9 +266,19 @@ function ManageProducts() {
         <HeaderStoreOwner />
         <Container fluid className="px-4">
           <style>{customStyles}</style>
-          <Row className="mb-3">
-            <Col>
-              <h5 className="fw-bold">📦 Danh sách sản phẩm</h5>
+          <Row className="mb-3 align-items-center">
+            <Col xs={12} md={6} className="mb-2 mb-md-0">
+              <FormControl
+                type="text"
+                placeholder="Tìm kiếm theo tên sản phẩm..."
+                value={searchTerm}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setCurrentPage(1); 
+                }}
+              />
+            </Col>
+            <Col xs={12} md={6} className="text-md-end">
               <Button variant="primary" onClick={handleAddProduct} disabled={!storeId}>
                 Thêm sản phẩm
               </Button>
@@ -278,16 +308,16 @@ function ManageProducts() {
                         <div>Đang tải dữ liệu...</div>
                       </td>
                     </tr>
-                  ) : products.length === 0 ? (
+                  ) : currentProducts.length === 0 ? (
                     <tr>
                       <td colSpan="7" className="text-center text-muted py-4">
                         Không có sản phẩm nào.
                       </td>
                     </tr>
                   ) : (
-                    products.map((product, index) => (
+                    currentProducts.map((product, index) => (
                       <tr key={product._id}>
-                        <td>{index + 1}</td>
+                        <td>{indexOfFirstProduct + index + 1}</td>
                         <td>
                           <img
                             src={product.image || '/images/default-product.png'}
@@ -321,6 +351,35 @@ function ManageProducts() {
                   )}
                 </tbody>
               </Table>
+              {totalPages > 1 && (
+                <Pagination className="justify-content-center mt-3">
+                  <Pagination.First
+                    onClick={() => handlePageChange(1)}
+                    disabled={currentPage === 1}
+                  />
+                  <Pagination.Prev
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                  />
+                  {[...Array(totalPages)].map((_, i) => (
+                    <Pagination.Item
+                      key={i + 1}
+                      active={i + 1 === currentPage}
+                      onClick={() => handlePageChange(i + 1)}
+                    >
+                      {i + 1}
+                    </Pagination.Item>
+                  ))}
+                  <Pagination.Next
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                  />
+                  <Pagination.Last
+                    onClick={() => handlePageChange(totalPages)}
+                    disabled={currentPage === totalPages}
+                  />
+                </Pagination>
+              )}
             </Card.Body>
           </Card>
 
