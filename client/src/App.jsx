@@ -6,8 +6,8 @@ import RegisterPage from "./components/auth/RegisterPage";
 import ForgetPasswordPage from "./components/auth/ForgetPasswordPage";
 import ResetPasswordPage from "./components/auth/ResetPasswordPage";
 import ProductDetailPage from "./pages/ProductDetailPage";
-import CartPage from "./pages/CartPage";
-import FilterProduct from "./pages/customer/FilterProduct";
+import CartPage from "./pages/customer/CartPage";
+import FilterProduct from "./pages/FilterProduct";
 import StoreOwnerDashboard from "./components/store_owner/StoreOwnerDashboard";
 import StoreOwnerSidebar from "./components/store_owner/StoreOwnerSidebar";
 import StoreOwnerProducts from "./components/store_owner/ManageProducts";
@@ -20,19 +20,17 @@ import StoreOwnerProfile from "./components/store_owner/StoreOwnerProfile";
 import AdminStoreRequest from "./components/admin/AdminStoreRequest";
 import AdminStoreRequestDetail from "./components/admin/AdminStoreRequestDetail";
 import AdminUsers from "./components/admin/AdminUsers";
-import RentalHistory from "./components/customer/RentalHistory";
+import RentalHistoryPage from "./pages/customer/RentalHistoryPage";
 import RentalDashboard from "./components/admin/RentalDashboard";
 import StoreOwnerBlog from "./components/store_owner/StoreOwnerBlog";
-import BlogList from './pages/BlogList';
-import BlogDetail from './pages/BlogDetail';
-import Contact from './pages/Contact';
+import BlogList from "./pages/BlogList";
+import BlogDetail from "./pages/BlogDetail";
+import Contact from "./pages/Contact";
 
-import PaymentSuccess from "./components/customer/PaymentSuccess";
-import PaymentCancel from "./components/customer/PaymentCancel";
-import ManageRentals from "./components/store_owner/ManageRentals";
+import PaymentSuccessPage from "./pages/customer/PaymentSuccessPage";
+import PaymentCancelPage from "./components/customer/PaymentCancel";
+import ManageRentalPage from "./pages/store-owner/ManageRentalPage";
 import DepositDashboard from "./components/admin/DepositDashboard";
-
-
 
 function App() {
   return (
@@ -49,9 +47,9 @@ function App() {
           path="/product-detail/:productId/:storeId"
           element={<ProductDetailPage />}
         />
-        <Route path="/payment/success" element={<PaymentSuccess />} />
-        <Route path="/payment/cancel" element={<PaymentCancel />} />
-        <Route path="/rental-history" element={<RentalHistory />} />
+        <Route path="/payment/success" element={<PaymentSuccessPage />} />
+        <Route path="/payment/cancel" element={<PaymentCancelPage />} />
+        <Route path="/rental-history" element={<RentalHistoryPage />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/request" element={<RequestStore />} />
         <Route path="/profile" element={<ProfilePage />} />
@@ -74,7 +72,7 @@ function App() {
           <Route path="/store-owner/blog" element={<StoreOwnerBlog />} />
           <Route
             path="/store-owner/manager-rental"
-            element={<ManageRentals />}
+            element={<ManageRentalPage />}
           />
         </Route>
 
