@@ -63,6 +63,10 @@ const RentalHistory = ({ userId }) => {
   };
 
   const handleReviewSubmit = async () => {
+    if (!reviewData.rating || reviewData.comment.trim() === "") {
+    setReviewError("Vui lòng chọn số sao và nhập nhận xét.");
+    return;
+  }
     try {
       setReviewError(null);
       setReviewSuccess(null);
