@@ -56,7 +56,7 @@ const ManageRental = () => {
         },
       });
 
-      // Lọc các đơn thuê có items[0].storeId._id trùng với storeId
+      
       const filteredRentals = (response.data.data || []).filter(
         (rental) => rental.items[0]?.storeId?._id === storeId
       );
@@ -89,7 +89,7 @@ const ManageRental = () => {
 
       console.log("Cập nhật trạng thái thành công:", response.data);
       alert("Cập nhật trạng thái thành công!");
-      fetchRentalHistory(store?._id); // Gọi lại với storeId
+      fetchRentalHistory(store?._id); 
     } catch (error) {
       console.error(
         "Lỗi khi cập nhật trạng thái:",
@@ -114,12 +114,11 @@ const ManageRental = () => {
 
   useEffect(() => {
     const loadData = async () => {
-      await fetchStore(user._id); // Chờ lấy store trước
+      await fetchStore(user._id); 
     };
     loadData();
   }, [user._id]);
 
-  // Gọi fetchRentalHistory khi store đã được lấy
   useEffect(() => {
     if (store?._id) {
       fetchRentalHistory(store._id);
@@ -367,7 +366,7 @@ const ManageRental = () => {
                         {rental.status === "pending" && (
                           <>
                             <Button
-                              variant="info" // Tương ứng với 'confirmed' (bg-info text-dark)
+                              variant="info" 
                               className="rounded-4 me-2 text-dark"
                               onClick={() => {
                                 handleUpdateStatus(rental._id, "confirmed");
@@ -377,7 +376,7 @@ const ManageRental = () => {
                             </Button>
 
                             <Button
-                              variant="danger" // Tương ứng với 'cancelled' (bg-danger)
+                              variant="danger" 
                               className="rounded-4 me-2"
                               onClick={() => {
                                 handleUpdateStatus(rental._id, "cancelled");
@@ -390,7 +389,7 @@ const ManageRental = () => {
 
                         {rental.status === "returning" && (
                           <Button
-                            variant="dark" // Tương ứng với 'returned' (bg-dark)
+                            variant="dark" 
                             className="rounded-4 me-2"
                             onClick={() => {
                               handleUpdateStatus(rental._id, "returned");

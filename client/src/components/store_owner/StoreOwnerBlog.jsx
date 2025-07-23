@@ -1,200 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Row, Col, Card, Button, Modal, Form, Alert, Spinner } from 'react-bootstrap';
+import { Container, Row, Col, Card, Button, Modal, Form, Alert, Spinner, Pagination, FormControl } from 'react-bootstrap';
 import StoreOwnerSidebar from './StoreOwnerSidebar';
 import HeaderStoreOwner from './HeaderStoreOwner';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '@fortawesome/fontawesome-free/css/all.min.css';
-
-const customStyles = `
-  .dashboard-container {
-    margin-left: 250px;
-    flex-grow: 1;
-    background: linear-gradient(135deg, #f5f7fa 0%, #e3e8f0 100%);
-    min-height: 100vh;
-    padding: 30px 20px;
-    transition: all 0.3s ease;
-  }
-
-  .header-title {
-    font-size: 2rem;
-    font-weight: 700;
-    color: #1a2a44;
-    margin-bottom: 2rem;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-
-  .action-buttons .btn {
-    padding: 10px 20px;
-    font-weight: 600;
-    border-radius: 25px;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  }
-
-  .action-buttons .btn-primary {
-    background-color: #4a90e2;
-    border-color: #4a90e2;
-    color: #fff;
-  }
-
-  .action-buttons .btn-primary:hover {
-    background-color: #357abd;
-    border-color: #357abd;
-    transform: translateY(-2px);
-  }
-
-  .action-buttons .btn-secondary {
-    background-color: #95a5a6;
-    border-color: #95a5a6;
-    color: #fff;
-  }
-
-  .action-buttons .btn-secondary:hover {
-    background-color: #7f8c8d;
-    border-color: #7f8c8d;
-    transform: translateY(-2px);
-  }
-
-  .blog-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 20px;
-    margin-bottom: 20px;
-  }
-
-  .blog-card {
-    border: none;
-    border-radius: 15px;
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
-    background: #ffffff;
-    overflow: hidden;
-    transition: all 0.3s ease;
-    height: 100%;
-  }
-
-  .blog-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-  }
-
-  .blog-image {
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
-    border-radius: 15px 15px 0 0;
-  }
-
-  .blog-content {
-    padding: 15px;
-  }
-
-  .blog-title {
-    font-size: 1.3rem;
-    font-weight: 600;
-    color: #1a2a44;
-    margin-bottom: 10px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .blog-meta {
-    font-size: 0.9rem;
-    color: #7f8c8d;
-    margin-bottom: 10px;
-  }
-
-  .blog-status {
-    font-weight: 500;
-    color: #2ecc71;
-  }
-
-  .blog-status.draft {
-    color: #e74c3c;
-  }
-
-  .blog-actions .icon-btn {
-    padding: 6px 10px;
-    font-size: 1rem;
-    border-radius: 20px;
-    margin-right: 5px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: #fff;
-  }
-
-  .blog-actions .icon-btn.edit {
-    background-color: #3498db;
-  }
-
-  .blog-actions .icon-btn.edit:hover {
-    background-color: #2980b9;
-  }
-
-  .blog-actions .icon-btn.delete {
-    background-color: #e74c3c;
-  }
-
-  .blog-actions .icon-btn.delete:hover {
-    background-color: #c0392b;
-  }
-
-
-  .custom-modal .modal-content {
-    border-radius: 15px;
-    border: none;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-  }
-
-  .custom-modal .modal-header {
-    background: linear-gradient(90deg, #4a90e2, #2e6da4);
-    border-bottom: none;
-    border-radius: 15px 15px 0 0;
-    color: #fff;
-  }
-
-  .custom-modal .modal-title {
-    font-weight: 600;
-  }
-
-  .form-label {
-    font-weight: 500;
-    color: #1a2a44;
-  }
-
-  .form-control {
-    border-radius: 10px;
-    border-color: #dfe6e9;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-  }
-
-  .form-control:focus {
-    border-color: #4a90e2;
-    box-shadow: 0 0 8px rgba(74, 144, 226, 0.3);
-  }
-
-  .alert-success {
-    background-color: #2ecc71;
-    color: #fff;
-    border: none;
-    border-radius: 10px;
-    padding: 10px 15px;
-  }
-
-  .alert-danger {
-    background-color: #e74c3c;
-    color: #fff;
-    border: none;
-    border-radius: 10px;
-    padding: 10px 15px;
-  }
-`;
+import '../css/StoreOwnerBlog.css'; 
 
 function StoreOwnerBlog() {
   const [blogs, setBlogs] = useState([]);
@@ -206,6 +17,10 @@ function StoreOwnerBlog() {
   const [selectedBlog, setSelectedBlog] = useState(null);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const blogsPerPage = 9;
+
   const navigate = useNavigate();
 
   const showSuccessMessage = (message) => {
@@ -243,8 +58,8 @@ function StoreOwnerBlog() {
 
       setStoreId(userStore._id);
       setStores(storeRes.data.data.filter(store => store.userId === user._id));
-      setBlogs(blogRes.data.data); 
-      console.log('Fetched blogs:', blogRes.data.data); 
+      setBlogs(blogRes.data.data);
+      console.log('Fetched blogs:', blogRes.data.data);
     } catch (error) {
       console.error('Error fetching data:', error);
       setError('Không thể tải dữ liệu. Vui lòng kiểm tra kết nối hoặc đăng nhập lại.');
@@ -345,7 +160,8 @@ function StoreOwnerBlog() {
       }
       setShowModal(false);
       setError('');
-      await fetchData(); 
+      setCurrentPage(1);
+      await fetchData();
     } catch (error) {
       console.error('Error submitting blog:', error);
       setError(error.response?.data?.message || 'Lỗi khi lưu bài viết. Vui lòng thử lại.');
@@ -360,12 +176,30 @@ function StoreOwnerBlog() {
         });
         setBlogs(blogs.filter(b => b._id !== blogId));
         showSuccessMessage('Xóa bài viết thành công!');
+ 
+        if (filteredBlogs.length <= blogsPerPage * (currentPage - 1) + 1 && currentPage > 1) {
+          setCurrentPage(currentPage - 1);
+        }
         await fetchData();
       } catch (error) {
         console.error('Error deleting blog:', error);
         setError(error.response?.data?.message || 'Lỗi khi xóa bài viết. Vui lòng thử lại.');
       }
     }
+  };
+
+
+  const filteredBlogs = blogs.filter(blog =>
+    blog.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const indexOfLastBlog = currentPage * blogsPerPage;
+  const indexOfFirstBlog = indexOfLastBlog - blogsPerPage;
+  const currentBlogs = filteredBlogs.slice(indexOfFirstBlog, indexOfLastBlog);
+  const totalPages = Math.ceil(filteredBlogs.length / blogsPerPage);
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
   };
 
   if (error && !storeId) {
@@ -388,12 +222,22 @@ function StoreOwnerBlog() {
       <div className="dashboard-container">
         <HeaderStoreOwner />
         <Container fluid className="px-4">
-          <style>{customStyles}</style>
-          <Row className="mb-3">
-            <Col>
+          <Row className="mb-3 align-items-center">
+            <Col xs={12} md={6} className="mb-2 mb-md-0">
               <div className="header-title">
-                📝 <span>Danh sách bài viết</span>
+                <span>Danh sách bài viết</span>
               </div>
+              <FormControl
+                type="text"
+                placeholder="Tìm kiếm theo tiêu đề bài viết..."
+                value={searchTerm}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setCurrentPage(1); 
+                }}
+              />
+            </Col>
+            <Col xs={12} md={6} className="text-md-end">
               <div className="action-buttons">
                 <Button variant="primary" onClick={handleAddBlog} disabled={!storeId}>
                   Thêm bài viết
@@ -409,12 +253,12 @@ function StoreOwnerBlog() {
                 <Spinner animation="border" variant="primary" />
                 <div>Đang tải dữ liệu...</div>
               </div>
-            ) : blogs.length === 0 ? (
+            ) : currentBlogs.length === 0 ? (
               <div className="text-center text-muted py-4">
                 Không có bài viết nào.
               </div>
             ) : (
-              blogs.map((blog, index) => (
+              currentBlogs.map((blog, index) => (
                 <Card key={blog._id} className="blog-card">
                   <img
                     src={blog.image || '/images/default-blog.png'}
@@ -428,7 +272,7 @@ function StoreOwnerBlog() {
                       {blog.isPublished ? 'Công khai' : 'Nháp'}
                     </div>
                     <div className="blog-actions">
-                        <button
+                      <button
                         className="icon-btn edit"
                         onClick={() => handleEditBlog(blog)}
                       >
@@ -446,7 +290,35 @@ function StoreOwnerBlog() {
               ))
             )}
           </div>
-
+          {totalPages > 1 && (
+            <Pagination className="justify-content-center mt-3">
+              <Pagination.First
+                onClick={() => handlePageChange(1)}
+                disabled={currentPage === 1}
+              />
+              <Pagination.Prev
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+              />
+              {[...Array(totalPages)].map((_, i) => (
+                <Pagination.Item
+                  key={i + 1}
+                  active={i + 1 === currentPage}
+                  onClick={() => handlePageChange(i + 1)}
+                >
+                  {i + 1}
+                </Pagination.Item>
+              ))}
+              <Pagination.Next
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+              />
+              <Pagination.Last
+                onClick={() => handlePageChange(totalPages)}
+                disabled={currentPage === totalPages}
+              />
+            </Pagination>
+          )}
           <Modal show={showModal} onHide={() => setShowModal(false)} centered size="lg" className="custom-modal">
             <Modal.Header closeButton>
               <Modal.Title>{isEdit ? 'Sửa bài viết' : 'Thêm bài viết'}</Modal.Title>

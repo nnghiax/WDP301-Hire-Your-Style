@@ -219,7 +219,7 @@ const StoreOwnerRevenueDashboard = () => {
                         <th>Giá</th>
                         <th>Tổng cộng</th>
                         <th>Ngày thuê</th>
-                        <th>Ngày trả</th> {/* Thêm cột Ngày trả */}
+                        <th>Ngày trả</th> 
                       </tr>
                     </thead>
                     <tbody>
@@ -246,7 +246,7 @@ const StoreOwnerRevenueDashboard = () => {
                             <td>{(detail.items?.reduce((sum, item) => sum + item.subtotal, 0) || 0).toLocaleString()} VNĐ</td>
                             <td>{(detail.totalAmount || 0).toLocaleString()} VNĐ</td>
                             <td>{detail.rentalDate ? new Date(detail.rentalDate).toLocaleDateString('vi-VN') : 'N/A'}</td>
-                            <td>{detail.returnDate ? new Date(detail.returnDate).toLocaleDateString('vi-VN') : 'N/A'}</td> {/* Hiển thị Ngày trả */}
+                            <td>{detail.returnDate ? new Date(detail.returnDate).toLocaleDateString('vi-VN') : 'N/A'}</td> 
                           </tr>
                         ))
                       )}
