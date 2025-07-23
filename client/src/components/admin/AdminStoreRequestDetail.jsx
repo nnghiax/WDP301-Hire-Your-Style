@@ -93,7 +93,7 @@ function AdminStoreRequestDetail() {
 
   return (
     <div className="d-flex">
-      <AdminSidebar />
+      
       <div style={{ marginLeft: '250px', flexGrow: 1, backgroundColor: '#f8f9fa', minHeight: '100vh' }}>
         <HeaderAdmin />
         <Container fluid className="px-4">

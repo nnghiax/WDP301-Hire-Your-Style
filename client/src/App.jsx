@@ -13,12 +13,14 @@ import StoreOwnerSidebar from "./components/store_owner/StoreOwnerSidebar";
 import StoreOwnerProducts from "./pages/store-owner/ManageProductsPage";
 import AdminDashboardPage from "./pages/admin/AdminDashboardPage";
 import AdminProduct from "./components/admin/AdminProduct";
-import RequestStore from "./components/customer/RequestStore";
 import ProfilePage from "./pages/auth/ProfilePage";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import StoreOwnerProfile from "./pages/store-owner/StoreOwnerProfilePage";
-import AdminStoreRequest from "./components/admin/AdminStoreRequest";
-import AdminStoreRequestDetail from "./components/admin/AdminStoreRequestDetail";
+import RequestStore from "./pages/customer/RequestStorePage";
+import ProfilePage from "./components/auth/ProfilePage";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
+import AdminStoreRequest from "./pages/admin/AdminStoreRequestPage";
+import AdminStoreRequestDetail from "./pages/admin/AdminStoreRequestDetailPage";
 import AdminUsers from "./components/admin/AdminUsers";
 import RentalHistoryPage from "./pages/customer/RentalHistoryPage";
 import RentalDashboard from "./components/admin/RentalDashboard";
@@ -26,11 +28,12 @@ import StoreOwnerBlog from "./pages/store-owner/ManageBlogsPage";
 import BlogList from "./pages/BlogList";
 import BlogDetail from "./pages/BlogDetail";
 import Contact from "./pages/Contact";
-
 import PaymentSuccessPage from "./pages/customer/PaymentSuccessPage";
 import PaymentCancelPage from "./components/customer/PaymentCancel";
 import ManageRentalPage from "./pages/store-owner/ManageRentalPage";
 import DepositDashboard from "./components/admin/DepositDashboard";
+import AdminProductPage from "./pages/admin/AdminProductPage";
+import AdminUserPage from "./pages/admin/AdminUserPage";
 
 function App() {
   return (
@@ -79,13 +82,13 @@ function App() {
         {/* Route admin */}
         <Route element={<ProtectedRoute />}>
           <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
-          <Route path="/admin/products" element={<AdminProduct />} />
+          <Route path="/admin/products" element={<AdminProductPage />} />
           <Route path="/admin/request" element={<AdminStoreRequest />} />
           <Route
             path="/admin/request/:requestId"
             element={<AdminStoreRequestDetail />}
           />
-          <Route path="/admin/users" element={<AdminUsers />} />
+          <Route path="/admin/users" element={<AdminUserPage />} />
           <Route path="/admin/rental-dashboard" element={<RentalDashboard />} />
           <Route
             path="/admin/deposit-dashboard"
