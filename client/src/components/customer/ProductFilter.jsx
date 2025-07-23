@@ -44,7 +44,7 @@ function ProductFilter({ headerProducts }) {
   ];
 
   const colorOptions = [
-    { id: "all", label: "All Color", count: 1000, checked: true },
+    { id: "all", label: "Tất cả màu sắc", count: 1000, checked: true },
     { id: "Trắng", label: "Trắng", count: 295 },
     { id: "Xanh lá", label: "Xanh lá", count: 168 },
     { id: "Đỏ", label: "Đỏ", count: 246 },
@@ -54,7 +54,7 @@ function ProductFilter({ headerProducts }) {
   ];
 
   const sizeOptions = [
-    { id: "all", label: "All Size", count: 1000, checked: true },
+    { id: "all", label: "Tất cả size", count: 1000, checked: true },
     { id: "xs", label: "XS", count: 150 },
     { id: "s", label: "S", count: 295 },
     { id: "m", label: "M", count: 246 },
@@ -229,9 +229,9 @@ function ProductFilter({ headerProducts }) {
               onChange={(e) => onFilterChange(id, e.target.checked)}
               className="m-0"
             />
-            <Badge bg="light" text="dark" className="border fw-normal">
+            {/* <Badge bg="light" text="dark" className="border fw-normal">
               {count}
-            </Badge>
+            </Badge> */}
           </div>
         ))}
       </Form>
@@ -293,14 +293,14 @@ function ProductFilter({ headerProducts }) {
           onFilterChange={handlePriceFilterChange}
         />
         <FilterSection
-          title="Filter by color"
+          title="Lọc theo màu sắc"
           options={colorOptions}
           namePrefix="color"
           selectedItems={selectedColors}
           onFilterChange={handleColorFilterChange}
         />
         <FilterSection
-          title="Filter by size"
+          title="Lọc theo size"
           options={sizeOptions}
           namePrefix="size"
           selectedItems={selectedSizes}
