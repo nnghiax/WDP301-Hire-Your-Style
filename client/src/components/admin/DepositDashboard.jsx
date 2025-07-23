@@ -7,6 +7,7 @@ import {
   Form,
   Row,
   Col,
+  Button,
 } from "react-bootstrap";
 import axios from "axios";
 import HeaderAdmin from "./HeaderAdmin";
@@ -18,8 +19,20 @@ const DepositDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [statusFilter, setStatusFilter] = useState("all");
+  const [searchName, setSearchName] = useState("");
+  const [searchPhone, setSearchPhone] = useState("");
 
-  // Định nghĩa ánh xạ trạng thái sang tiếng Việt
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const recordsPerPage = 8;
+  const indexOfLastRecord = currentPage * recordsPerPage;
+  const indexOfFirstRecord = indexOfLastRecord - recordsPerPage;
+  const currentDeposits = filteredDeposits.slice(
+    indexOfFirstRecord,
+    indexOfLastRecord
+  );
+  const totalPages = Math.ceil(filteredDeposits.length / recordsPerPage);
+
   const statusDisplay = {
     pending: "Đang chờ",
     confirmed: "Đã xác nhận",
@@ -41,7 +54,7 @@ const DepositDashboard = () => {
           }
         );
         setDeposits(response.data.data);
-        setFilteredDeposits(response.data.data); // Khởi tạo filteredDeposits
+        setFilteredDeposits(response.data.data);
         setLoading(false);
       } catch (err) {
         setError(
@@ -54,15 +67,27 @@ const DepositDashboard = () => {
   }, []);
 
   useEffect(() => {
-    // Lọc deposits dựa trên statusFilter
-    if (statusFilter === "all") {
-      setFilteredDeposits(deposits);
-    } else {
-      setFilteredDeposits(
-        deposits.filter((deposit) => deposit.status === statusFilter)
+    let result = [...deposits];
+
+    if (statusFilter !== "all") {
+      result = result.filter((d) => d.status === statusFilter);
+    }
+
+    if (searchName.trim() !== "") {
+      result = result.filter((d) =>
+        d.name?.toLowerCase().includes(searchName.toLowerCase())
       );
     }
-  }, [statusFilter, deposits]);
+
+    if (searchPhone.trim() !== "") {
+      result = result.filter((d) =>
+        d.phone?.toLowerCase().includes(searchPhone.toLowerCase())
+      );
+    }
+
+    setFilteredDeposits(result);
+    setCurrentPage(1); // Reset về trang đầu
+  }, [statusFilter, searchName, searchPhone, deposits]);
 
   const formatAddress = (address) => {
     if (!address) return "N/A";
@@ -76,9 +101,7 @@ const DepositDashboard = () => {
       await axios.patch(
         `http://localhost:9999/apiDeposit/deposits/${rentalId}/status`,
         { newStatus: "completed" },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       setDeposits((prev) =>
         prev.map((d) =>
@@ -91,6 +114,10 @@ const DepositDashboard = () => {
           (error.response?.data?.message || error.message)
       );
     }
+  };
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
   };
 
   return (
@@ -115,12 +142,11 @@ const DepositDashboard = () => {
               WebkitTextFillColor: "transparent",
               textAlign: "center",
               fontSize: "2rem",
-              letterSpacing: "1px",
-              transition: "all 0.3s ease",
             }}
           >
             Quản lý tiền đặt cọc
           </h2>
+
           <Row className="mb-4">
             <Col md={4}>
               <Form.Group controlId="statusFilter">
@@ -140,7 +166,30 @@ const DepositDashboard = () => {
                 </Form.Select>
               </Form.Group>
             </Col>
+            <Col md={4}>
+              <Form.Group controlId="searchName">
+                <Form.Label>Tìm theo tên khách hàng</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Nhập tên"
+                  value={searchName}
+                  onChange={(e) => setSearchName(e.target.value)}
+                />
+              </Form.Group>
+            </Col>
+            <Col md={4}>
+              <Form.Group controlId="searchPhone">
+                <Form.Label>Tìm theo số điện thoại</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Nhập số điện thoại"
+                  value={searchPhone}
+                  onChange={(e) => setSearchPhone(e.target.value)}
+                />
+              </Form.Group>
+            </Col>
           </Row>
+
           {loading ? (
             <div className="text-center py-5">
               <Spinner
@@ -150,17 +199,9 @@ const DepositDashboard = () => {
               />
             </div>
           ) : error ? (
-            <Alert
-              variant="danger"
-              style={{ borderRadius: "8px", fontWeight: 500 }}
-            >
-              {error}
-            </Alert>
-          ) : filteredDeposits.length === 0 ? (
-            <Alert
-              variant="info"
-              style={{ borderRadius: "8px", fontWeight: 500 }}
-            >
+            <Alert variant="danger">{error}</Alert>
+          ) : currentDeposits.length === 0 ? (
+            <Alert variant="info">
               Không có giao dịch đặt cọc nào phù hợp với bộ lọc.
             </Alert>
           ) : (
@@ -172,105 +213,67 @@ const DepositDashboard = () => {
                 padding: "20px",
               }}
             >
-              <Table
-                hover
-                responsive
-                style={{
-                  borderCollapse: "separate",
-                  borderSpacing: 0,
-                  fontSize: "0.95rem",
-                }}
-              >
-                <thead
-                  style={{
-                    backgroundColor: "#1e1e2f",
-                    color: "#fff",
-                    textTransform: "uppercase",
-                    fontWeight: "600",
-                  }}
-                >
+              <Table hover responsive>
+                <thead style={{ backgroundColor: "#1e1e2f", color: "#fff" }}>
                   <tr>
-                    <th style={{ padding: "15px" }}>Tên khách hàng</th>
-                    <th style={{ padding: "15px" }}>Số điện thoại</th>
-                    <th style={{ padding: "15px" }}>Địa chỉ</th>
-                    <th style={{ padding: "15px" }}>Số tiền đặt cọc</th>
-                    <th style={{ padding: "15px" }}>Ngày thuê</th>
-                    <th style={{ padding: "15px" }}>Trạng thái</th>
-                    <th style={{ padding: "15px" }}>Ngày trả</th>
+                    <th>Tên khách hàng</th>
+                    <th>SĐT</th>
+                    <th>Địa chỉ</th>
+                    <th>Số tiền</th>
+                    <th>Ngày thuê</th>
+                    <th>Trạng thái</th>
+                    <th>Ngày tạo</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredDeposits.map((deposit) => (
+                  {currentDeposits.map((deposit) => (
                     <tr key={deposit._id}>
-                      <td style={{ padding: "15px" }}>{deposit.name}</td>
-                      <td style={{ padding: "15px" }}>{deposit.phone}</td>
-                      <td style={{ padding: "15px" }}>
-                        {formatAddress(deposit.address)}
-                      </td>
-                      <td
-                        style={{
-                          padding: "15px",
-                          color: "#28a745",
-                          fontWeight: "500",
-                        }}
-                      >
+                      <td>{deposit.name}</td>
+                      <td>{deposit.phone}</td>
+                      <td>{formatAddress(deposit.address)}</td>
+                      <td style={{ color: "#28a745", fontWeight: "500" }}>
                         {deposit.depositAmount.toLocaleString()} VND
                       </td>
-                      <td style={{ padding: "15px" }}>
+                      <td>
                         {new Date(deposit.rentalDate).toLocaleDateString(
                           "vi-VN"
                         )}
                       </td>
-                      <td style={{ padding: "15px" }}>
-                        <div
+                      <td>
+                        <span
                           style={{
-                            marginBottom:
-                              deposit.status === "returned" ? "8px" : "0",
+                            backgroundColor:
+                              deposit.status === "completed"
+                                ? "#28a745"
+                                : deposit.status === "cancelled"
+                                ? "#6c757d"
+                                : deposit.status === "pending"
+                                ? "#ffc107"
+                                : "#dc3545",
+                            color: "#fff",
+                            padding: "5px 10px",
+                            borderRadius: "12px",
+                            fontSize: "0.85rem",
+                            display: "inline-block",
+                            width: "120px",
+                            textAlign: "center",
                           }}
                         >
-                          <span
-                            style={{
-                              backgroundColor:
-                                deposit.status === "completed"
-                                  ? "#28a745"
-                                  : deposit.status === "cancelled"
-                                  ? "#6c757d"
-                                  : deposit.status === "pending"
-                                  ? "#ffc107"
-                                  : "#dc3545",
-                              color: "#fff",
-                              padding: "5px 10px",
-                              borderRadius: "12px",
-                              fontSize: "0.85rem",
-                              display: "inline-block",
-                              width: "120px",
-                              textAlign: "center",
-                            }}
-                          >
-                            {statusDisplay[deposit.status] || deposit.status}
-                          </span>
-                        </div>
+                          {statusDisplay[deposit.status] || deposit.status}
+                        </span>
                         {deposit.status === "returned" && (
-                          <div>
-                            <button
+                          <div className="mt-2">
+                            <Button
+                              variant="primary"
+                              size="sm"
                               onClick={() => handleUpdateStatus(deposit._id)}
-                              style={{
-                                backgroundColor: "#007bff",
-                                color: "#fff",
-                                border: "none",
-                                padding: "6px 12px",
-                                borderRadius: "8px",
-                                fontSize: "0.8rem",
-                                cursor: "pointer",
-                                marginTop: "4px",
-                              }}
                             >
                               Xác nhận hoàn tất
-                            </button>
+                            </Button>
                           </div>
                         )}
                       </td>
-                      <td style={{ padding: "15px" }}>
+                      <td>
                         {new Date(deposit.createdAt).toLocaleDateString(
                           "vi-VN"
                         )}
@@ -279,6 +282,24 @@ const DepositDashboard = () => {
                   ))}
                 </tbody>
               </Table>
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="d-flex justify-content-center mt-3">
+                  {[...Array(totalPages)].map((_, i) => (
+                    <Button
+                      key={i}
+                      variant={
+                        currentPage === i + 1 ? "primary" : "outline-primary"
+                      }
+                      className="me-2"
+                      onClick={() => handlePageChange(i + 1)}
+                    >
+                      {i + 1}
+                    </Button>
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </Container>

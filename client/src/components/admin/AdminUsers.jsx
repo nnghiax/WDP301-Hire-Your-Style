@@ -24,6 +24,11 @@ function AdminUsers() {
   const [error, setError] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [searchEmail, setSearchEmail] = useState("");
+
+  // Phân trang
+  const [currentPage, setCurrentPage] = useState(1);
+  const usersPerPage = 8;
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -48,7 +53,7 @@ function AdminUsers() {
         setCustomerCount(customerCount);
         setStoreOwnerCount(storeOwnerCount);
         setUsers(userData);
-        setFilteredUsers(userData); // Khởi tạo filteredUsers
+        setFilteredUsers(userData);
       } catch (error) {
         console.error("Error fetching users:", error);
         setError("Không thể tải danh sách người dùng. Vui lòng thử lại.");
@@ -60,7 +65,6 @@ function AdminUsers() {
   }, []);
 
   useEffect(() => {
-    // Lọc người dùng dựa trên roleFilter và statusFilter
     let updatedUsers = [...users];
 
     if (roleFilter !== "all") {
@@ -74,8 +78,19 @@ function AdminUsers() {
       );
     }
 
+    if (searchEmail.trim() !== "") {
+      const keyword = searchEmail.toLowerCase();
+      updatedUsers = updatedUsers.filter((user) =>
+        user.email.toLowerCase().includes(keyword)
+      );
+    }
+
     setFilteredUsers(updatedUsers);
-  }, [roleFilter, statusFilter, users]);
+  }, [roleFilter, statusFilter, users, searchEmail]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [roleFilter, statusFilter, searchEmail]);
 
   const toggleUserAvailability = async (userId, currentStatus) => {
     try {
@@ -93,6 +108,16 @@ function AdminUsers() {
     } catch (error) {
       setError("Không thể cập nhật trạng thái người dùng.");
     }
+  };
+
+  // Pagination logic
+  const indexOfLastUser = currentPage * usersPerPage;
+  const indexOfFirstUser = indexOfLastUser - usersPerPage;
+  const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
+  const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
   };
 
   if (error) {
@@ -150,7 +175,19 @@ function AdminUsers() {
               </Card>
             </Col>
           </Row>
+
           <Row className="mb-4">
+            <Col md={4}>
+              <Form.Group controlId="searchEmail">
+                <Form.Label>Tìm theo email</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Nhập email người dùng..."
+                  value={searchEmail}
+                  onChange={(e) => setSearchEmail(e.target.value)}
+                />
+              </Form.Group>
+            </Col>
             <Col md={4}>
               <Form.Group controlId="roleFilter">
                 <Form.Label>Lọc theo vai trò</Form.Label>
@@ -179,6 +216,7 @@ function AdminUsers() {
               </Form.Group>
             </Col>
           </Row>
+
           <Row>
             <Col>
               <Card className="shadow-sm border-0">
@@ -192,49 +230,72 @@ function AdminUsers() {
                       <Spinner animation="border" variant="primary" />
                       <div className="ms-2">Đang tải dữ liệu...</div>
                     </div>
-                  ) : filteredUsers.length === 0 ? (
+                  ) : currentUsers.length === 0 ? (
                     <div className="text-center text-muted py-4">
                       Không có người dùng nào phù hợp với bộ lọc.
                     </div>
                   ) : (
-                    <Table striped bordered hover>
-                      <thead>
-                        <tr>
-                          <th>Tên</th>
-                          <th>Email</th>
-                          <th>Vai trò</th>
-                          <th>Trạng thái</th>
-                          <th>Hành động</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {filteredUsers.map((user) => (
-                          <tr key={user._id}>
-                            <td>{user.name}</td>
-                            <td>{user.email}</td>
-                            <td>{user.role}</td>
-                            <td>
-                              {user.isAvailable ? "Hoạt động" : "Đã khóa"}
-                            </td>
-                            <td>
-                              <Button
-                                variant={
-                                  user.isAvailable ? "danger" : "success"
-                                }
-                                onClick={() =>
-                                  toggleUserAvailability(
-                                    user._id,
-                                    user.isAvailable
-                                  )
-                                }
-                              >
-                                {user.isAvailable ? "Khóa" : "Mở khóa"}
-                              </Button>
-                            </td>
+                    <>
+                      <Table striped bordered hover>
+                        <thead>
+                          <tr>
+                            <th>Tên</th>
+                            <th>Email</th>
+                            <th>Vai trò</th>
+                            <th>Trạng thái</th>
+                            <th>Hành động</th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </Table>
+                        </thead>
+                        <tbody>
+                          {currentUsers.map((user) => (
+                            <tr key={user._id}>
+                              <td>{user.name}</td>
+                              <td>{user.email}</td>
+                              <td>{user.role}</td>
+                              <td>
+                                {user.isAvailable ? "Hoạt động" : "Đã khóa"}
+                              </td>
+                              <td>
+                                <Button
+                                  variant={
+                                    user.isAvailable ? "danger" : "success"
+                                  }
+                                  onClick={() =>
+                                    toggleUserAvailability(
+                                      user._id,
+                                      user.isAvailable
+                                    )
+                                  }
+                                >
+                                  {user.isAvailable ? "Khóa" : "Mở khóa"}
+                                </Button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </Table>
+
+                      {totalPages > 1 && (
+                        <div className="d-flex justify-content-center mt-3">
+                          <div className="pagination">
+                            {[...Array(totalPages).keys()].map((number) => (
+                              <Button
+                                key={number}
+                                variant={
+                                  number + 1 === currentPage
+                                    ? "primary"
+                                    : "outline-primary"
+                                }
+                                className="me-2"
+                                onClick={() => handlePageChange(number + 1)}
+                              >
+                                {number + 1}
+                              </Button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </>
                   )}
                 </Card.Body>
               </Card>
