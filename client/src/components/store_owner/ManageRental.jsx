@@ -15,7 +15,7 @@ import axios from "axios";
 import "../css/Cart.css";
 import StoreOwnerSidebar from "./StoreOwnerSidebar";
 
-const ManageRentals = () => {
+const ManageRental = () => {
   const [rentals, setRentals] = useState([]);
   const [filteredRentals, setFilteredRentals] = useState([]);
   const [statusFilter, setStatusFilter] = useState("all");
@@ -412,4 +412,4 @@ const ManageRentals = () => {
   );
 };
 
-export default ManageRentals;
+export default ManageRental;
