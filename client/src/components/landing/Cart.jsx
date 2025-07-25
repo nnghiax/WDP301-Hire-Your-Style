@@ -199,7 +199,7 @@ const ShoppingCart = ({ userId }) => {
     rentalDate,
     returnDate,
     totalAmount: total.toString(),
-    depositAmount: Math.round(total * 0.5).toString(),
+    depositAmount: Math.round(totalRental * 0.5).toString(),
     status: "pending",
   });
 
@@ -671,7 +671,19 @@ const ShoppingCart = ({ userId }) => {
                 >
                   Thanh toán
                 </button>
-
+                {/* <button
+                  className={`btn btn-block ${
+                    selectedItems.length === 0
+                      ? "btn-secondary disabled"
+                      : "btn-primary"
+                  }`}
+                  onClick={() =>
+                    navigate(`/payment/success?${tempRental.toString()}`)
+                  }
+                  disabled={selectedItems.length === 0}
+                >
+                  test
+                </button> */}
               </div>
             </div>
 
