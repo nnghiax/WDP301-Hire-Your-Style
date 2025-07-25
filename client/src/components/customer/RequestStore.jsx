@@ -19,7 +19,7 @@ const RequestStore = () => {
   
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
-  const [submitStatus, setSubmitStatus] = useState('');
+  const [submitStatus, setSubmitStatus] = useState({ type: '', message: '' });
   const [provinces, setProvinces] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [wards, setWards] = useState([]);
@@ -37,6 +37,7 @@ const RequestStore = () => {
     };
     fetchProvinces();
   }, []);
+
   useEffect(() => {
     if (formData.address.city) {
       const fetchDistricts = async () => {
@@ -60,7 +61,6 @@ const RequestStore = () => {
     }
   }, [formData.address.city]);
 
-  // Fetch wards when a district is selected
   useEffect(() => {
     if (formData.address.district) {
       const fetchWards = async () => {
@@ -148,7 +148,7 @@ const RequestStore = () => {
     }
     
     setIsLoading(true);
-    setSubmitStatus('');
+    setSubmitStatus({ type: '', message: '' });
     
     try {
       const token = localStorage.getItem('token');
@@ -168,17 +168,25 @@ const RequestStore = () => {
       });
       
       if (response.status === 201) {
-        setSubmitStatus('success');
+        setSubmitStatus({ type: 'success', message: 'Đăng ký thành công! Chúng tôi sẽ xem xét và phản hồi trong vòng 24-48 giờ.' });
         setFormData({
           name: '',
           description: '',
           address: { street: '', ward: '', district: '', city: '' },
           phone: ''
         });
-        navigate("/");
+        setTimeout(() => navigate("/"), 2000);
       }
     } catch (error) {
-      setSubmitStatus('error');
+      let errorMessage = 'Có lỗi xảy ra! Vui lòng thử lại sau hoặc liên hệ hỗ trợ.';
+      if (error.response) {
+        if (error.response.status === 400 && error.response.data.message === 'You already submitted a request') {
+          errorMessage = 'Bạn đã gửi một yêu cầu trước đó. Vui lòng chờ xử lý hoặc liên hệ hỗ trợ.';
+        } else if (error.response.data.message) {
+          errorMessage = error.response.data.message;
+        }
+      }
+      setSubmitStatus({ type: 'error', message: errorMessage });
       console.error('Error:', error.response?.data || error.message);
     } finally {
       setIsLoading(false);
@@ -186,7 +194,17 @@ const RequestStore = () => {
   };
 
   return (
-    <section style={{ backgroundColor: "#F2F2F2", padding: "3rem 0" }}>
+    <section style={{ 
+      backgroundImage: `url(https://res.cloudinary.com/dj2liaz6d/image/upload/v1748015469/hfi8c2ljhjhz0u2vcacd.jpg)`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundRepeat: 'no-repeat',
+      backgroundAttachment: 'fixed',
+      padding: '3rem 0',
+      minHeight: '100vh',
+      position: 'relative',
+      
+    }}>
       <Container>
         <Row className="justify-content-center">
           <Col lg={8}>
@@ -204,39 +222,20 @@ const RequestStore = () => {
                   </p>
                 </div>
 
-                {submitStatus === 'success' && (
-                  <Alert variant="success" className="rounded-4 d-flex align-items-center">
-                    <i className="fas fa-check-circle fa-2x me-3"></i>
+                {submitStatus.type && (
+                  <Alert 
+                    variant={submitStatus.type === 'success' ? 'success' : 'danger'} 
+                    className="rounded-4 d-flex align-items-center"
+                    dismissible
+                    onClose={() => setSubmitStatus({ type: '', message: '' })}
+                  >
+                    <i className={`fas ${submitStatus.type === 'success' ? 'fa-check-circle' : 'fa-exclamation-triangle'} fa-2x me-3`}></i>
                     <div className="flex-grow-1">
-                      <h5 className="mb-1 fw-semibold">Đăng ký thành công!</h5>
-                      <p className="mb-0">Chúng tôi sẽ xem xét và phản hồi trong vòng 24-48 giờ.</p>
+                      <h5 className="mb-1 fw-semibold">
+                        {submitStatus.type === 'success' ? 'Đăng ký thành công!' : 'Lỗi đăng ký'}
+                      </h5>
+                      <p className="mb-0">{submitStatus.message}</p>
                     </div>
-                    <Button
-                      variant="link"
-                      className="p-0"
-                      onClick={() => setSubmitStatus('')}
-                      aria-label="Close"
-                    >
-                      <i className="fas fa-times"></i>
-                    </Button>
-                  </Alert>
-                )}
-
-                {submitStatus === 'error' && (
-                  <Alert variant="danger" className="rounded-4 d-flex align-items-center">
-                    <i className="fas fa-exclamation-triangle fa-2x me-3"></i>
-                    <div className="flex-grow-1">
-                      <h5 className="mb-1 fw-semibold">Có lỗi xảy ra!</h5>
-                      <p className="mb-0">Vui lòng thử lại sau hoặc liên hệ hỗ trợ.</p>
-                    </div>
-                    <Button
-                      variant="link"
-                      className="p-0"
-                      onClick={() => setSubmitStatus('')}
-                      aria-label="Close"
-                    >
-                      <i className="fas fa-times"></i>
-                    </Button>
                   </Alert>
                 )}
 
