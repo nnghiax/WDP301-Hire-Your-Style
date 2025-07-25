@@ -1,9 +1,19 @@
-import React, { useEffect, useState } from 'react';
-import { Container, Row, Col, Card, Table, Button, Alert, Spinner, Modal } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import AdminSidebar from './AdminSidebar';
-import HeaderAdmin from './HeaderAdmin';
+import React, { useEffect, useState } from "react";
+import {
+  Container,
+  Row,
+  Col,
+  Card,
+  Table,
+  Button,
+  Alert,
+  Spinner,
+  Modal,
+} from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import AdminSidebar from "./AdminSidebar";
+import HeaderAdmin from "./HeaderAdmin";
 
 const customStyles = `
   .shadow-sm {
@@ -18,39 +28,47 @@ const customStyles = `
 function AdminProduct() {
   const [lowRatedProducts, setLowRatedProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
+  const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [showModal, setShowModal] = useState(false);
+
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const productsPerPage = 8;
+
   const navigate = useNavigate();
 
   useEffect(() => {
-    const user = localStorage.getItem('user');
+    const user = localStorage.getItem("user");
     const parseUser = user ? JSON.parse(user) : null;
 
-    if (!parseUser || parseUser.role !== 'admin') {
-      navigate('/error');
+    if (!parseUser || parseUser.role !== "admin") {
+      navigate("/error");
       return;
     }
 
     const fetchData = async () => {
       try {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem("token");
         if (!token) {
-          setError('Không tìm thấy token. Vui lòng đăng nhập lại.');
+          setError("Không tìm thấy token. Vui lòng đăng nhập lại.");
           setLoading(false);
           return;
         }
 
-        const lowRatedRes = await axios.get('http://localhost:9999/admin/products/low-rated', {
-          headers: { Authorization: `Bearer ${token}` },
-        }).catch(() => ({ data: { data: [] } }));
+        const lowRatedRes = await axios
+          .get("http://localhost:9999/admin/products/low-rated", {
+            headers: { Authorization: `Bearer ${token}` },
+          })
+          .catch(() => ({ data: { data: [] } }));
 
-        console.log('API Response:', lowRatedRes.data);
         setLowRatedProducts(lowRatedRes.data.data);
       } catch (error) {
-        console.error('Error fetching low-rated products:', error);
-        setError('Không thể tải dữ liệu sản phẩm. Vui lòng kiểm tra kết nối hoặc đăng nhập lại.');
+        console.error("Error fetching low-rated products:", error);
+        setError(
+          "Không thể tải dữ liệu sản phẩm. Vui lòng kiểm tra kết nối hoặc đăng nhập lại."
+        );
       } finally {
         setLoading(false);
       }
@@ -60,22 +78,26 @@ function AdminProduct() {
 
   const handleToggleVisibility = async (productId, isAvailable) => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       await axios.patch(
         `http://localhost:9999/admin/products/${productId}/visibility`,
         { isAvailable: !isAvailable },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      setLowRatedProducts(products =>
-        products.map(p =>
+      setLowRatedProducts((products) =>
+        products.map((p) =>
           p._id === productId ? { ...p, isAvailable: !isAvailable } : p
         )
       );
-      setSuccessMessage(`Sản phẩm đã được ${isAvailable ? 'ẩn' : 'hiển thị'} thành công!`);
-      setTimeout(() => setSuccessMessage(''), 3000);
+      setSuccessMessage(
+        `Sản phẩm đã được ${isAvailable ? "ẩn" : "hiển thị"} thành công!`
+      );
+      setTimeout(() => setSuccessMessage(""), 3000);
     } catch (error) {
-      console.error('Error toggling visibility:', error);
-      setError(error.response?.data?.message || 'Lỗi khi cập nhật trạng thái sản phẩm.');
+      console.error("Error toggling visibility:", error);
+      setError(
+        error.response?.data?.message || "Lỗi khi cập nhật trạng thái sản phẩm."
+      );
     }
   };
 
@@ -89,10 +111,30 @@ function AdminProduct() {
     setSelectedProduct(null);
   };
 
+  // Pagination logic
+  const indexOfLastProduct = currentPage * productsPerPage;
+  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+  const currentProducts = lowRatedProducts.slice(
+    indexOfFirstProduct,
+    indexOfLastProduct
+  );
+  const totalPages = Math.ceil(lowRatedProducts.length / productsPerPage);
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
   return (
     <div className="d-flex">
       <AdminSidebar />
-      <div style={{ marginLeft: '250px', flexGrow: 1, backgroundColor: '#f8f9fa', minHeight: '100vh' }}>
+      <div
+        style={{
+          marginLeft: "250px",
+          flexGrow: 1,
+          backgroundColor: "#f8f9fa",
+          minHeight: "100vh",
+        }}
+      >
         <HeaderAdmin />
         <Container fluid className="px-4">
           <style>{customStyles}</style>
@@ -126,28 +168,35 @@ function AdminProduct() {
                         <div>Đang tải dữ liệu...</div>
                       </td>
                     </tr>
-                  ) : lowRatedProducts.length === 0 ? (
+                  ) : currentProducts.length === 0 ? (
                     <tr>
                       <td colSpan="8" className="text-center text-muted py-4">
                         Không có sản phẩm nào có đánh giá thấp.
                       </td>
                     </tr>
                   ) : (
-                    lowRatedProducts.map((product, index) => (
+                    currentProducts.map((product, index) => (
                       <tr key={product._id}>
-                        <td>{index + 1}</td>
+                        <td>{indexOfFirstProduct + index + 1}</td>
                         <td>{product.name}</td>
                         <td>{product.price.toLocaleString()} VNĐ</td>
-                        <td>{product.avgRating?.toFixed(2) || 'N/A'}</td>
+                        <td>{product.avgRating?.toFixed(2) || "N/A"}</td>
                         <td>{product.reviewCount}</td>
-                        <td>{product.isAvailable ? 'Có sẵn' : 'Đã ẩn'}</td>
+                        <td>{product.isAvailable ? "Có sẵn" : "Đã ẩn"}</td>
                         <td>
                           <Button
-                            variant={product.isAvailable ? 'warning' : 'success'}
+                            variant={
+                              product.isAvailable ? "warning" : "success"
+                            }
                             size="sm"
-                            onClick={() => handleToggleVisibility(product._id, product.isAvailable)}
+                            onClick={() =>
+                              handleToggleVisibility(
+                                product._id,
+                                product.isAvailable
+                              )
+                            }
                           >
-                            {product.isAvailable ? 'Ẩn' : 'Hiện'}
+                            {product.isAvailable ? "Ẩn" : "Hiện"}
                           </Button>
                         </td>
                         <td>
@@ -164,8 +213,28 @@ function AdminProduct() {
                   )}
                 </tbody>
               </Table>
+
+              {/* Pagination Controls */}
+              {totalPages > 1 && (
+                <div className="d-flex justify-content-center mt-3">
+                  {[...Array(totalPages)].map((_, i) => (
+                    <Button
+                      key={i}
+                      variant={
+                        currentPage === i + 1 ? "primary" : "outline-primary"
+                      }
+                      className="me-2"
+                      onClick={() => handlePageChange(i + 1)}
+                    >
+                      {i + 1}
+                    </Button>
+                  ))}
+                </div>
+              )}
             </Card.Body>
           </Card>
+
+          {/* Modal Chi tiết */}
           <Modal show={showModal} onHide={handleCloseModal}>
             <Modal.Header closeButton>
               <Modal.Title>Chi tiết sản phẩm</Modal.Title>
@@ -173,12 +242,13 @@ function AdminProduct() {
             <Modal.Body>
               {selectedProduct && (
                 <div>
-                  <h6>Tên chủ hàng: {selectedProduct.storeName || 'N/A'}</h6>
+                  <h6>Tên chủ hàng: {selectedProduct.storeName || "N/A"}</h6>
                   <h6>Bình luận:</h6>
                   <ul>
-                    {selectedProduct.comments && selectedProduct.comments.length > 0 ? (
+                    {selectedProduct.comments &&
+                    selectedProduct.comments.length > 0 ? (
                       selectedProduct.comments.map((comment, idx) => (
-                        <li key={idx}>{comment || 'Không có bình luận'}</li>
+                        <li key={idx}>{comment || "Không có bình luận"}</li>
                       ))
                     ) : (
                       <li>Không có bình luận nào.</li>
