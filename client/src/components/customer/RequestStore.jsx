@@ -203,8 +203,24 @@ const RequestStore = () => {
       padding: '3rem 0',
       minHeight: '100vh',
       position: 'relative',
-      
+      backgroundColor: 'rgba(242, 242, 242, 0.9)',
+      backgroundBlendMode: 'overlay'
     }}>
+      <Button
+        variant="link"
+        className="text-decoration-none"
+        style={{ 
+          color: "#8A784E",
+          position: 'absolute',
+          top: '20px',
+          left: '20px',
+          zIndex: 1000
+        }}
+        onClick={() => navigate('/')}
+      >
+        <i className="fas fa-home me-2"></i>
+        Quay Về Trang Chủ
+      </Button>
       <Container>
         <Row className="justify-content-center">
           <Col lg={8}>
@@ -417,17 +433,6 @@ const RequestStore = () => {
                       </>
                     )}
                   </Button>
-                  <div>
-                    <Button
-                      variant="link"
-                      className="text-decoration-none"
-                      style={{ color: "#8A784E" }}
-                      onClick={() => navigate('/')}
-                    >
-                      <i className="fas fa-home me-2"></i>
-                      Quay Về Trang Chủ
-                    </Button>
-                  </div>
                 </div>
 
                 <Card className="border-0 shadow-sm rounded-4 p-4 mt-4">
