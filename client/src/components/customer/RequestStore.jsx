@@ -203,20 +203,24 @@ const RequestStore = () => {
       padding: '3rem 0',
       minHeight: '100vh',
       position: 'relative',
-      backgroundColor: 'rgba(242, 242, 242, 0.9)',
-      backgroundBlendMode: 'overlay'
     }}>
       <Button
-        variant="link"
-        className="text-decoration-none"
+        variant="primary"
+        className="rounded-4 px-3 py-2 text-decoration-none"
         style={{ 
-          color: "#8A784E",
+          backgroundColor: '#005566',
+          borderColor: '#005566',
+          color: '#ffffff',
           position: 'absolute',
           top: '20px',
           left: '20px',
-          zIndex: 1000
+          zIndex: 1000,
+          boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+          transition: 'background-color 0.3s ease'
         }}
         onClick={() => navigate('/')}
+        onMouseEnter={(e) => e.target.style.backgroundColor = '#007b8a'}
+        onMouseLeave={(e) => e.target.style.backgroundColor = '#005566'}
       >
         <i className="fas fa-home me-2"></i>
         Quay Về Trang Chủ
