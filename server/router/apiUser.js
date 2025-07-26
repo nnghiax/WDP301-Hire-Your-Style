@@ -29,4 +29,11 @@ router.get(
   userController.getProfile
 );
 
+router.get(
+  "/profile/admin/:id",
+  middleware.verifyToken,
+  middleware.verifyAdmin,
+  userController.getProfile
+);
+
 module.exports = router;
