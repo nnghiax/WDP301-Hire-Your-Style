@@ -22,6 +22,8 @@ const ManageRental = () => {
   const [store, setStore] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [userAddresses, setUserAddresses] = useState({});
+  const [userPhone, setUserPhone] = useState(null); // Lưu số điện thoại theo userId
   const user = JSON.parse(localStorage.getItem("user"));
 
   const fetchStore = async (userId) => {
@@ -56,19 +58,63 @@ const ManageRental = () => {
         },
       });
 
-      
       const filteredRentals = (response.data.data || []).filter(
         (rental) => rental.items[0]?.storeId?._id === storeId
       );
 
       setRentals(filteredRentals);
       setFilteredRentals(filteredRentals);
+
+      // Lấy địa chỉ cho từng userId (tránh trùng lặp)
+      const uniqueUserIds = [
+        ...new Set(filteredRentals.map((rental) => rental.userId)),
+      ];
+      const addressPromises = uniqueUserIds.map((userId) =>
+        fetchUserAddress(userId)
+      );
+      await Promise.all(addressPromises);
     } catch (err) {
       setError(err.response?.data?.message || err.message);
       setRentals([]);
       setFilteredRentals([]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchUserAddress = async (userId) => {
+    if (!userId || userAddresses[userId]) return; // Bỏ qua nếu không có userId hoặc đã có địa chỉ
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) throw new Error("Không tìm thấy token xác thực");
+
+      const response = await axios.get(
+        `http://localhost:9999/user/profile/${userId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setUserPhone((prev) => ({
+        ...prev,
+        [userId]: response.data.data.phone || null,
+      }));
+
+      setUserAddresses((prev) => ({
+        ...prev,
+        [userId]: response.data.data.address || null,
+      }));
+    } catch (err) {
+      setUserAddresses((prev) => ({
+        ...prev,
+        [userId]: null,
+      }));
+      console.error(
+        "Lỗi khi lấy địa chỉ:",
+        err.response?.data?.message || err.message
+      );
     }
   };
 
@@ -89,7 +135,7 @@ const ManageRental = () => {
 
       console.log("Cập nhật trạng thái thành công:", response.data);
       alert("Cập nhật trạng thái thành công!");
-      fetchRentalHistory(store?._id); 
+      fetchRentalHistory(store?._id);
     } catch (error) {
       console.error(
         "Lỗi khi cập nhật trạng thái:",
@@ -114,7 +160,7 @@ const ManageRental = () => {
 
   useEffect(() => {
     const loadData = async () => {
-      await fetchStore(user._id); 
+      await fetchStore(user._id);
     };
     loadData();
   }, [user._id]);
@@ -277,6 +323,26 @@ const ManageRental = () => {
                               <strong>Ngày trả:</strong>{" "}
                               {formatDate(rental.returnDate)}
                             </p>
+                            <p>
+                              <strong>Địa chỉ:</strong>{" "}
+                              {userAddresses[rental.userId] ? (
+                                `${userAddresses[rental.userId].street}, ${
+                                  userAddresses[rental.userId].ward
+                                }, ${userAddresses[rental.userId].district}, ${
+                                  userAddresses[rental.userId].city
+                                }`
+                              ) : (
+                                <span className="text-muted">
+                                  Không có địa chỉ
+                                </span>
+                              )}
+                            </p>
+
+                            <p>
+                              <strong>Số điện thoại:</strong>{" "}
+                              {userPhone[rental.userId] ||
+                                "Không có số điện thoại"}
+                            </p>
                           </Col>
                           <Col md={6}>
                             <p>
@@ -366,7 +432,7 @@ const ManageRental = () => {
                         {rental.status === "pending" && (
                           <>
                             <Button
-                              variant="info" 
+                              variant="info"
                               className="rounded-4 me-2 text-dark"
                               onClick={() => {
                                 handleUpdateStatus(rental._id, "confirmed");
@@ -376,7 +442,7 @@ const ManageRental = () => {
                             </Button>
 
                             <Button
-                              variant="danger" 
+                              variant="danger"
                               className="rounded-4 me-2"
                               onClick={() => {
                                 handleUpdateStatus(rental._id, "cancelled");
@@ -389,7 +455,7 @@ const ManageRental = () => {
 
                         {rental.status === "returning" && (
                           <Button
-                            variant="dark" 
+                            variant="dark"
                             className="rounded-4 me-2"
                             onClick={() => {
                               handleUpdateStatus(rental._id, "returned");
