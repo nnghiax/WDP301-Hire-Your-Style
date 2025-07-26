@@ -64,9 +64,9 @@ const RentalHistory = ({ userId }) => {
 
   const handleReviewSubmit = async () => {
     if (!reviewData.rating || reviewData.comment.trim() === "") {
-    setReviewError("Vui lòng chọn số sao và nhập nhận xét.");
-    return;
-  }
+      setReviewError("Vui lòng chọn số sao và nhập nhận xét.");
+      return;
+    }
     try {
       setReviewError(null);
       setReviewSuccess(null);
@@ -146,7 +146,8 @@ const RentalHistory = ({ userId }) => {
       returning: "badge bg-secondary", // Đang trả lại trang phục
       returned: "badge bg-dark", // Shop đã nhận lại
       completed: "badge bg-success", // Hoàn tất
-      cancelled: "badge bg-danger", // Hủy
+      cancelled: "badge bg-danger",
+      reject: "badge bg-danger", // Từ chối nhận hàng
     };
 
     const statusText = {
@@ -157,6 +158,7 @@ const RentalHistory = ({ userId }) => {
       returned: "Đã trả trang phục",
       completed: "Hoàn tất",
       cancelled: "Shop đã hủy đơn",
+      reject: "Đã từ chối nhận hàng",
     };
 
     return (
@@ -453,6 +455,18 @@ const RentalHistory = ({ userId }) => {
                         }}
                       >
                         Hủy đơn hàng
+                      </Button>
+                    )}
+
+                    {rental.status === "confirmed" && (
+                      <Button
+                        variant="danger" // tương ứng với 'cancelled'
+                        className="rounded-4 me-2"
+                        onClick={() => {
+                          handleUpdateStatus(rental._id, "reject");
+                        }}
+                      >
+                        Từ chối nhận hàng
                       </Button>
                     )}
 
