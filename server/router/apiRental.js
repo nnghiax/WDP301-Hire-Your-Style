@@ -21,6 +21,13 @@ router.get(
   rentalController.getAllRentals
 );
 
+router.get(
+  "/list/admin",
+  middleware.verifyToken,
+  middleware.verifyAdmin,
+  rentalController.getAllRentals
+);
+
 // Get rental by ID
 
 router.get(

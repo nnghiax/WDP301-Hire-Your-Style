@@ -193,6 +193,7 @@ const ManageRental = () => {
       returned: "badge bg-dark",
       completed: "badge bg-success",
       cancelled: "badge bg-danger",
+      reject: "badge bg-danger",
     };
 
     const statusText = {
@@ -203,6 +204,7 @@ const ManageRental = () => {
       returned: "Đã trả trang phục",
       completed: "Hoàn tất",
       cancelled: "Khách hàng đã hủy đơn",
+      reject: "Đã từ chối nhận hàng",
     };
 
     return (

@@ -62,6 +62,7 @@ const rentalSchema = new mongoose.Schema(
         "returned", // Shop đã nhận lại trang phục
         "completed", // Hoàn tất quy trình
         "cancelled", // Đã hủy
+        "reject",
       ],
       default: "pending",
     },
